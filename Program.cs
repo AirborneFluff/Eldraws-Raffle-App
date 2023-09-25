@@ -6,11 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Configuration.AddJsonFile("appsettings.Development.json");
-}
-
 builder.Services.AddDbContext<DataContext>(options => {
     var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connStr);
