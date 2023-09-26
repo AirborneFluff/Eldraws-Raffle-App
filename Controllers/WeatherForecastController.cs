@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Azure_WebApi.Controllers;
+namespace RaffleApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]

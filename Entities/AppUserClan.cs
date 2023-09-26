@@ -1,8 +1,7 @@
-namespace Azure_WebApi.Entities
+namespace RaffleApi.Entities;
+
+public class AppUserClan
 {
-    public class AppUserClan
-    {
-        public AppUser? User { get; set; }
-        public Clan? Clan { get; set; }
-    }
+    public AppUser? User { get; set; }
+    public Clan? Clan { get; set; }
 }
