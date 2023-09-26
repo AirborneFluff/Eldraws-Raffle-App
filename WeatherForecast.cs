@@ -1,4 +1,4 @@
-namespace Azure_WebApi;
+namespace RaffleApi;
 
 public class WeatherForecast
 {

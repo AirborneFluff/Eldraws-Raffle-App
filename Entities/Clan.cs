@@ -1,8 +1,7 @@
-namespace Azure_WebApi.Entities
+namespace RaffleApi.Entities;
+
+public class Clan
 {
-    public class Clan
-    {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-    }
+    public int Id { get; set; }
+    public string? Name { get; set; }
 }

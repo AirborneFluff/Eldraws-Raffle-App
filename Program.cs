@@ -1,6 +1,5 @@
-using API.Data;
-using Azure_WebApi.Data;
-using Azure_WebApi.Entities;
+using RaffleApi.Data;
+using RaffleApi.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

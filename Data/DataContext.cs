@@ -1,20 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Azure_WebApi.Entities;
+using RaffleApi.Entities;
 
-namespace API.Data
+namespace RaffleApi.Data;
+
+public class DataContext : IdentityDbContext <AppUser>
 {
-    public class DataContext : IdentityDbContext <AppUser>
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
-        }
+    }
 
-        public DbSet<Clan> Clans { get; set; }
+    public DbSet<Clan> Clans { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
     }
 }
