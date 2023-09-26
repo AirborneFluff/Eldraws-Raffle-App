@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Azure_WebApi.Controllers;
+namespace RaffleApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
