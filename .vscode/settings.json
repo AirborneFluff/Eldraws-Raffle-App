@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "Gamertag"
-    ]
+    ],
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin\\Release\\net6.0\\publish",
+    "appService.defaultWebAppToDeploy": "/subscriptions/97912a57-bced-4bd9-9ded-d8c6a17c7331/resourceGroups/RaffleApp/providers/Microsoft.Web/sites/raffler"
 }
