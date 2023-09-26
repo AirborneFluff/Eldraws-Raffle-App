@@ -56,6 +56,21 @@ public sealed class AccountController: ControllerBase
         return userResult;
     }
 
+    [HttpPost("register")]
+    public async Task<ActionResult<AppUserDTO>> Register(RegisterDTO userDetails)
+    {
+        var newUser = new AppUser();
+        newUser.UserName = userDetails.UserName;
+
+        var result = await _userManager.CreateAsync(newUser, userDetails.Password);
+        if (!result.Succeeded) return BadRequest("Couldn't add user");
+
+        var userResult = _mapper.Map<AppUserDTO>(newUser);
+        userResult.Token = await _tokenService.CreateToken(newUser);
+
+        return userResult;
+    }
+
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<AppUserDTO>> GetUserInfo()
