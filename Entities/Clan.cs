@@ -1,7 +1,7 @@
 namespace RaffleApi.Entities;
 
-public class Clan
+public sealed class Clan
 {
     public int Id { get; set; }
-    public string? Name { get; set; }
+    public string Name { get; set; }
 }

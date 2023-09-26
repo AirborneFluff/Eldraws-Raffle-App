@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Azure_WebApi.Migrations
+namespace RaffleApi.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

@@ -4,7 +4,7 @@ using RaffleApi.Entities;
 
 namespace RaffleApi.Data;
 
-public class DataContext : IdentityDbContext <AppUser>
+public sealed class DataContext : IdentityDbContext <AppUser>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {

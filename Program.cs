@@ -1,14 +1,18 @@
 using RaffleApi.Data;
 using RaffleApi.Entities;
+using RaffleApi.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using RaffleApi.Services;
+using RaffleApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DataContext>(options => {
-    var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseSqlServer(connStr);
-});
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddControllers();
 
 builder.Services.AddIdentityCore<AppUser>(opt =>
     {
@@ -21,14 +25,26 @@ builder.Services.AddIdentityCore<AppUser>(opt =>
     })
     .AddRoles<IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddSignInManager<SignInManager<AppUser>>()
+    .AddRoleValidator<RoleValidator<IdentityRole>>()
     .AddEntityFrameworkStores<DataContext>();
 
-builder.Services.AddControllers();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
+builder.AddApplicationsServices();
 
 var app = builder.Build();
 
@@ -41,8 +57,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

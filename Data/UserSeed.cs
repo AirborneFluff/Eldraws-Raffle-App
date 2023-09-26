@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace RaffleApi.Data;
 
-public class UserSeed
+public sealed class UserSeed
 {
     public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {

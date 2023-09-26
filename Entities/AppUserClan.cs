@@ -1,6 +1,6 @@
 namespace RaffleApi.Entities;
 
-public class AppUserClan
+public sealed class AppUserClan
 {
     public AppUser? User { get; set; }
     public Clan? Clan { get; set; }
