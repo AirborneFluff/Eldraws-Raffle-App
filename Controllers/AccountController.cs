@@ -33,7 +33,9 @@ public sealed class AccountController: ControllerBase
         var result = await _userManager.Users.FirstOrDefaultAsync();
         if (result == null) return NotFound("No users in the database");
 
-        return Ok($"Username: {result.UserName}");
+        var testToken = await _tokenService.CreateToken(new AppUser());
+
+        return Ok($"Username: {result.UserName}\nToken: {testToken}");
     }
 
     [HttpPost("login")]
