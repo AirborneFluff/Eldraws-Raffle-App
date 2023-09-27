@@ -1,0 +1,12 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection" : "Server=localhost\\SQLEXPRESS;Database=raffledb;Trusted_Connection=True;Encrypt=False;"
+  },
+  "TokenKey": "<Token here>",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}
