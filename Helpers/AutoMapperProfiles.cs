@@ -11,5 +11,7 @@ public sealed class AutoMapperProfiles : Profile
         CreateMap<AppUser, AppUserDTO>();
         CreateMap<ClanDTO, Clan>();
         CreateMap<Clan, ClanDTO>();
+        CreateMap<NewRaffleDTO, Raffle>();
+        CreateMap<Raffle, RaffleDTO>();
     }
 }

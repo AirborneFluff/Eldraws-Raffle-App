@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RaffleApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,20 @@ namespace RaffleApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Entrants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Gamertag = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NormalizedGamertag = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entrants", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,7 +176,7 @@ namespace RaffleApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -173,6 +187,83 @@ namespace RaffleApi.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Raffles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntryCost = table.Column<int>(type: "int", nullable: false),
+                    DiscordMessageId = table.Column<decimal>(type: "decimal(20,0)", nullable: true),
+                    DiscordChannelId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OpenDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CloseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DrawDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Raffles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Raffles_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Entries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RaffleId = table.Column<int>(type: "int", nullable: false),
+                    EntrantId = table.Column<int>(type: "int", nullable: false),
+                    Donation = table.Column<int>(type: "int", nullable: false),
+                    InputDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Entries_Entrants_EntrantId",
+                        column: x => x.EntrantId,
+                        principalTable: "Entrants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Entries_Raffles_RaffleId",
+                        column: x => x.RaffleId,
+                        principalTable: "Raffles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Prizes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RaffleId = table.Column<int>(type: "int", nullable: false),
+                    Place = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WinningTicketNumber = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Prizes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Prizes_Raffles_RaffleId",
+                        column: x => x.RaffleId,
+                        principalTable: "Raffles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -218,6 +309,32 @@ namespace RaffleApi.Migrations
                 name: "IX_Clans_AppUserId",
                 table: "Clans",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entrants_NormalizedGamertag",
+                table: "Entrants",
+                column: "NormalizedGamertag",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entries_EntrantId",
+                table: "Entries",
+                column: "EntrantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entries_RaffleId",
+                table: "Entries",
+                column: "RaffleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Prizes_RaffleId",
+                table: "Prizes",
+                column: "RaffleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Raffles_AppUserId",
+                table: "Raffles",
+                column: "AppUserId");
         }
 
         /// <inheritdoc />
@@ -242,7 +359,19 @@ namespace RaffleApi.Migrations
                 name: "Clans");
 
             migrationBuilder.DropTable(
+                name: "Entries");
+
+            migrationBuilder.DropTable(
+                name: "Prizes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Entrants");
+
+            migrationBuilder.DropTable(
+                name: "Raffles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

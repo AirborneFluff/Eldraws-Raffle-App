@@ -10,9 +10,7 @@ using RaffleApi.Extensions;
 
 namespace RaffleApi.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public sealed class AccountController: ControllerBase
+public sealed class AccountController: BaseApiController
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
