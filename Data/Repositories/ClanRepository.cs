@@ -18,7 +18,10 @@ public sealed class ClanRepository
 
     public Task<Clan?> GetById(int id)
     {
-        return _context.Clans.FirstOrDefaultAsync(clan => clan.Id == id);
+        return _context.Clans
+            .Include(c => c.Members)
+            .Include(c => c.Entrants)
+            .FirstOrDefaultAsync(clan => clan.Id == id);
     }
 
     public Task<Clan?> GetByName(string name)

@@ -25,19 +25,20 @@ public sealed class ClanController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
-        var userId = User.GetUserId();
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest("Invalid login credentials");
-
-        var currentClan = await _unitOfWork.ClanRepository.GetByName(clan.Name);
-        if (currentClan != null) return Conflict("This clan name is already in use");
-
-        var newClan = _mapper.Map<Clan>(clan);
-        user.UserClans.Add(newClan);
-
-        var updateResult = await _userManager.UpdateAsync(user);
-        if (!updateResult.Succeeded) return BadRequest("Issue creating new clan");
-
-        return _mapper.Map<ClanDTO>(newClan);
+        // var userId = User.GetUserId();
+        // var user = await _userManager.FindByIdAsync(userId);
+        // if (user == null) return BadRequest("Invalid login credentials");
+        //
+        // var currentClan = await _unitOfWork.ClanRepository.GetByName(clan.Name);
+        // if (currentClan != null) return Conflict("This clan name is already in use");
+        //
+        // var newClan = _mapper.Map<Clan>(clan);
+        // user.UserClans.Add(newClan);
+        //
+        // var updateResult = await _userManager.UpdateAsync(user);
+        // if (!updateResult.Succeeded) return BadRequest("Issue creating new clan");
+        //
+        // return _mapper.Map<ClanDTO>(newClan);
+        return BadRequest();
     }
 }

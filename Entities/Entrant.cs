@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace RaffleApi.Entities;
 
 public class Entrant
@@ -8,4 +10,6 @@ public class Entrant
     public string Gamertag { get; set; }
 
     public string NormalizedGamertag { get => Gamertag.ToUpper(); set => Gamertag.ToUpper(); }
+
+    public ICollection<RaffleEntry> Entries { get; set; } = new Collection<RaffleEntry>();
 }

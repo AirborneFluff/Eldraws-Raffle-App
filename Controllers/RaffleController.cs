@@ -33,61 +33,45 @@ public class RaffleController : BaseApiController
     public async Task<ActionResult> CreateNewRaffle([FromBody] NewRaffleDTO raffleDto)
     {
         var userId = User.GetUserId();
-        if (userId == null) return BadRequest();
-        
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null) return BadRequest();
+
+        var clan = await _unitOfWork.ClanRepository.GetById(raffleDto.ClanId);
+        if (clan == null) return NotFound("No clan found by that Id");
+        if (!clan.HasMember(userId)) return Unauthorized("You cannot add a raffle for this clan");
 
         var newRaffle = _mapper.Map<Raffle>(raffleDto);
-        newRaffle.AppUserId = userId;
         
         _unitOfWork.RaffleRepository.Add(newRaffle);
-
+        
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(newRaffle));
 
         return BadRequest();
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> EditRaffle(int id, [FromBody] NewRaffleDTO raffleDto)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> UpdateRaffle(int id, [FromBody] NewRaffleDTO raffleDto)
     {
         var userId = User.GetUserId();
-        if (userId == null) return BadRequest();
-        
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null) return BadRequest();
-        
+
         var raffle = await _unitOfWork.RaffleRepository.GetById(id);
-        if (raffle == null) return NotFound();
+        if (raffle == null) return NotFound("No raffle found by that Id");
+        if (!raffle.HasMember(userId)) return Unauthorized("You cannot edit a raffle for this clan");
 
-        if (raffle.AppUserId != userId) return Unauthorized();
-
-        raffle.Title = raffleDto.Title;
-        raffle.EntryCost = raffleDto.EntryCost;
-        raffle.ClanId = raffleDto.ClanId;
-        raffle.OpenDate = (DateTime) raffleDto.OpenDate;
-        raffle.CloseDate = (DateTime) raffleDto.CloseDate;
-        raffle.DrawDate = (DateTime) raffleDto.DrawDate;
+        _mapper.Map(raffleDto, raffle);
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
         return BadRequest();
     }
 
-    [HttpPost("{raffleId}/entries")]
+    [HttpPost("{raffleId:int}/entries")]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto)
     {
         var userId = User.GetUserId();
-        if (userId == null) return BadRequest();
-        
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null) return BadRequest();
-        
+
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
         if (raffle == null) return NotFound("Raffle not found");
-
-        if (raffle.AppUserId != userId) return Unauthorized("You cannot add entries to this raffle");
-
+        if (!raffle.HasMember(userId)) return Unauthorized("You cannot edit a raffle for this clan");
+        
         var newEntry = _mapper.Map<RaffleEntry>(entryDto);
         raffle.Entries.Add(newEntry);
         

@@ -20,17 +20,54 @@ public sealed class DataContext : IdentityDbContext <AppUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<Raffle>()
-            .HasOne(r => r.AppUser)
-            .WithMany(au => au.Raffles);
-
-        modelBuilder.Entity<Entrant>()
-            .HasIndex(e => e.NormalizedGamertag)
-            .IsUnique();
         
-        modelBuilder.Entity<Raffle>()
-            .HasOne(r => r.Clan)
-            .WithMany(c => c.Raffles);
+        // ---------- Clan Members ----------
+        modelBuilder.Entity<ClanMember>()
+            .HasOne(cm => cm.Clan)
+            .WithMany(c => c.Members)
+            .HasForeignKey(cm => cm.ClanId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<ClanMember>()
+            .HasOne(cm => cm.Member)
+            .WithMany(m => m.Clans)
+            .HasForeignKey(cm => cm.MemberId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // ---------- Clan ----------
+        modelBuilder.Entity<Clan>()
+            .HasMany(c => c.Raffles)
+            .WithOne(r => r.Clan)
+            .HasForeignKey(r => r.ClanId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Clan>()
+            .HasMany(c => c.Entrants)
+            .WithOne(e => e.Clan)
+            .HasForeignKey(e => e.ClanId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // ---------- Raffle Entry ----------
+        modelBuilder.Entity<RaffleEntry>()
+            .HasKey(re => new {re.RaffleId, re.EntrantId});
+        
+        modelBuilder.Entity<RaffleEntry>()
+            .HasOne(re => re.Raffle)
+            .WithMany(r => r.Entries)
+            .HasForeignKey(re => re.RaffleId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<RaffleEntry>()
+            .HasOne(re => re.Entrant)
+            .WithMany(e => e.Entries)
+            .HasForeignKey(re => re.EntrantId)
+            .OnDelete(DeleteBehavior.NoAction);
+        
+        // ---------- Raffle Prizes ----------
+        modelBuilder.Entity<RafflePrize>()
+            .HasOne(rp => rp.Raffle)
+            .WithMany(r => r.Prizes)
+            .HasForeignKey(rp => rp.RaffleId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

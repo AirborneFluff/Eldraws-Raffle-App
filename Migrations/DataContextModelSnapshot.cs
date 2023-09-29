@@ -228,18 +228,37 @@ namespace RaffleApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.ToTable("Clans");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.ClanMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClanId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("ClanMember");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
@@ -259,14 +278,11 @@ namespace RaffleApi.Migrations
 
                     b.Property<string>("NormalizedGamertag")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClanId");
-
-                    b.HasIndex("NormalizedGamertag")
-                        .IsUnique();
 
                     b.ToTable("Entrants");
                 });
@@ -278,10 +294,6 @@ namespace RaffleApi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ClanId")
                         .HasColumnType("int");
@@ -313,8 +325,6 @@ namespace RaffleApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("ClanId");
 
                     b.ToTable("Raffles");
@@ -322,29 +332,21 @@ namespace RaffleApi.Migrations
 
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Donation")
+                    b.Property<int>("RaffleId")
                         .HasColumnType("int");
 
                     b.Property<int>("EntrantId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Donation")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("InputDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RaffleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("RaffleId", "EntrantId");
 
                     b.HasIndex("EntrantId");
-
-                    b.HasIndex("RaffleId");
 
                     b.ToTable("Entries");
                 });
@@ -427,17 +429,29 @@ namespace RaffleApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RaffleApi.Entities.Clan", b =>
+            modelBuilder.Entity("RaffleApi.Entities.ClanMember", b =>
                 {
-                    b.HasOne("RaffleApi.Entities.AppUser", null)
-                        .WithMany("UserClans")
-                        .HasForeignKey("AppUserId");
+                    b.HasOne("RaffleApi.Entities.Clan", "Clan")
+                        .WithMany("Members")
+                        .HasForeignKey("ClanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RaffleApi.Entities.AppUser", "Member")
+                        .WithMany("Clans")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clan");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
                 {
                     b.HasOne("RaffleApi.Entities.Clan", "Clan")
-                        .WithMany()
+                        .WithMany("Entrants")
                         .HasForeignKey("ClanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -447,19 +461,11 @@ namespace RaffleApi.Migrations
 
             modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>
                 {
-                    b.HasOne("RaffleApi.Entities.AppUser", "AppUser")
-                        .WithMany("Raffles")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RaffleApi.Entities.Clan", "Clan")
-                        .WithMany()
+                        .WithMany("Raffles")
                         .HasForeignKey("ClanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("AppUser");
 
                     b.Navigation("Clan");
                 });
@@ -467,9 +473,9 @@ namespace RaffleApi.Migrations
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
                 {
                     b.HasOne("RaffleApi.Entities.Entrant", "Entrant")
-                        .WithMany()
+                        .WithMany("Entries")
                         .HasForeignKey("EntrantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("RaffleApi.Entities.Raffle", "Raffle")
@@ -496,9 +502,21 @@ namespace RaffleApi.Migrations
 
             modelBuilder.Entity("RaffleApi.Entities.AppUser", b =>
                 {
-                    b.Navigation("Raffles");
+                    b.Navigation("Clans");
+                });
 
-                    b.Navigation("UserClans");
+            modelBuilder.Entity("RaffleApi.Entities.Clan", b =>
+                {
+                    b.Navigation("Entrants");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("Raffles");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
+                {
+                    b.Navigation("Entries");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>

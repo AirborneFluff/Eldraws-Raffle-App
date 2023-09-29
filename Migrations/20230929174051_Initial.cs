@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RaffleApi.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,17 +51,16 @@ namespace RaffleApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Entrants",
+                name: "Clans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Gamertag = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NormalizedGamertag = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Entrants", x => x.Id);
+                    table.PrimaryKey("PK_Clans", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,22 +170,50 @@ namespace RaffleApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Clans",
+                name: "ClanMember",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    MemberId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClanId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clans", x => x.Id);
+                    table.PrimaryKey("PK_ClanMember", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Clans_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_ClanMember_AspNetUsers_MemberId",
+                        column: x => x.MemberId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClanMember_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Entrants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClanId = table.Column<int>(type: "int", nullable: false),
+                    Gamertag = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NormalizedGamertag = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entrants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Entrants_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,7 +222,7 @@ namespace RaffleApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClanId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntryCost = table.Column<int>(type: "int", nullable: false),
                     DiscordMessageId = table.Column<decimal>(type: "decimal(20,0)", nullable: true),
@@ -209,9 +236,9 @@ namespace RaffleApi.Migrations
                 {
                     table.PrimaryKey("PK_Raffles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Raffles_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_Raffles_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -220,8 +247,6 @@ namespace RaffleApi.Migrations
                 name: "Entries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     RaffleId = table.Column<int>(type: "int", nullable: false),
                     EntrantId = table.Column<int>(type: "int", nullable: false),
                     Donation = table.Column<int>(type: "int", nullable: false),
@@ -229,13 +254,12 @@ namespace RaffleApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Entries", x => x.Id);
+                    table.PrimaryKey("PK_Entries", x => new { x.RaffleId, x.EntrantId });
                     table.ForeignKey(
                         name: "FK_Entries_Entrants_EntrantId",
                         column: x => x.EntrantId,
                         principalTable: "Entrants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Entries_Raffles_RaffleId",
                         column: x => x.RaffleId,
@@ -306,15 +330,19 @@ namespace RaffleApi.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clans_AppUserId",
-                table: "Clans",
-                column: "AppUserId");
+                name: "IX_ClanMember_ClanId",
+                table: "ClanMember",
+                column: "ClanId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entrants_NormalizedGamertag",
+                name: "IX_ClanMember_MemberId",
+                table: "ClanMember",
+                column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Entrants_ClanId",
                 table: "Entrants",
-                column: "NormalizedGamertag",
-                unique: true);
+                column: "ClanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entries_EntrantId",
@@ -322,19 +350,14 @@ namespace RaffleApi.Migrations
                 column: "EntrantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entries_RaffleId",
-                table: "Entries",
-                column: "RaffleId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Prizes_RaffleId",
                 table: "Prizes",
                 column: "RaffleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Raffles_AppUserId",
+                name: "IX_Raffles_ClanId",
                 table: "Raffles",
-                column: "AppUserId");
+                column: "ClanId");
         }
 
         /// <inheritdoc />
@@ -356,7 +379,7 @@ namespace RaffleApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Clans");
+                name: "ClanMember");
 
             migrationBuilder.DropTable(
                 name: "Entries");
@@ -368,13 +391,16 @@ namespace RaffleApi.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Entrants");
 
             migrationBuilder.DropTable(
                 name: "Raffles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Clans");
         }
     }
 }

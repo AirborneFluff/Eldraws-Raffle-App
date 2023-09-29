@@ -24,7 +24,8 @@ public class RaffleRepository
     public async Task<Raffle?> GetById(int id)
     {
         return await _context.Raffles
-            .Include(r => r.AppUser)
+            .Include(r => r.Clan)
+            .ThenInclude(c => c.Members)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .Include(r => r.Entries)
             .ThenInclude(e => e.Entrant)
@@ -34,7 +35,6 @@ public class RaffleRepository
     public async Task<List<Raffle>?> GetAllRaffles()
     {
         return await _context.Raffles
-            .Include(r => r.AppUser)
             .ToListAsync();
     }
 }

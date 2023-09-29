@@ -5,7 +5,5 @@ namespace RaffleApi.Entities;
 
 public sealed class AppUser : IdentityUser
 {
-    public ICollection<Clan> Clans { get; set; } = new Collection<Clan>();
-
-    public ICollection<Raffle> Raffles { get; set; } = new Collection<Raffle>();
+    public ICollection<ClanMember> Clans { get; set; } = new Collection<ClanMember>();
 }
