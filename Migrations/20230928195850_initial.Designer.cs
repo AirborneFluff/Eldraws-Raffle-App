@@ -12,8 +12,8 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230926195624_Initial")]
-    partial class Initial
+    [Migration("20230928195850_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,6 +235,7 @@ namespace RaffleApi.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -242,6 +243,130 @@ namespace RaffleApi.Migrations
                     b.HasIndex("AppUserId");
 
                     b.ToTable("Clans");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Gamertag")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedGamertag")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedGamertag")
+                        .IsUnique();
+
+                    b.ToTable("Entrants");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CloseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DiscordChannelId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscordMessageId")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<DateTime>("DrawDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntryCost")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OpenDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Raffles");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Donation")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntrantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InputDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RaffleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntrantId");
+
+                    b.HasIndex("RaffleId");
+
+                    b.ToTable("Entries");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Place")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RaffleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WinningTicketNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RaffleId");
+
+                    b.ToTable("Prizes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -302,9 +427,59 @@ namespace RaffleApi.Migrations
                         .HasForeignKey("AppUserId");
                 });
 
+            modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>
+                {
+                    b.HasOne("RaffleApi.Entities.AppUser", "AppUser")
+                        .WithMany("Raffles")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
+                {
+                    b.HasOne("RaffleApi.Entities.Entrant", "Entrant")
+                        .WithMany()
+                        .HasForeignKey("EntrantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RaffleApi.Entities.Raffle", "Raffle")
+                        .WithMany("Entries")
+                        .HasForeignKey("RaffleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Entrant");
+
+                    b.Navigation("Raffle");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
+                {
+                    b.HasOne("RaffleApi.Entities.Raffle", "Raffle")
+                        .WithMany("Prizes")
+                        .HasForeignKey("RaffleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Raffle");
+                });
+
             modelBuilder.Entity("RaffleApi.Entities.AppUser", b =>
                 {
+                    b.Navigation("Raffles");
+
                     b.Navigation("UserClans");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>
+                {
+                    b.Navigation("Entries");
+
+                    b.Navigation("Prizes");
                 });
 #pragma warning restore 612, 618
         }

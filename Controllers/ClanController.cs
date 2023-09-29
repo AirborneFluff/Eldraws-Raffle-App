@@ -9,9 +9,7 @@ using RaffleApi.Extensions;
 
 namespace RaffleApi.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public sealed class ClanController : ControllerBase
+public sealed class ClanController : BaseApiController
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;

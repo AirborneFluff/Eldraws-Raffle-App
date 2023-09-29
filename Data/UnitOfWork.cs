@@ -12,8 +12,9 @@ public sealed class UnitOfWork
         _context = context;
     }
 
-    // Implement an interface and setup a repository like this
+    
     public ClanRepository ClanRepository => new ClanRepository(_context);
+    public RaffleRepository RaffleRepository => new RaffleRepository(_context);
 
     public async Task<bool> Complete()
     {
