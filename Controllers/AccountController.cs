@@ -25,6 +25,7 @@ public sealed class AccountController: BaseApiController
         _tokenService = tokenService;
     }
 
+    [AllowAnonymous]
     [HttpGet("test")]
     public async Task<ActionResult<string>> Test()
     {
@@ -36,6 +37,7 @@ public sealed class AccountController: BaseApiController
         return Ok($"Username: {result.UserName}\nToken: {testToken}");
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<AppUserDTO>> Login(LoginDTO input)
     {
@@ -56,6 +58,7 @@ public sealed class AccountController: BaseApiController
         return userResult;
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<AppUserDTO>> Register(RegisterDTO userDetails)
     {
@@ -71,12 +74,11 @@ public sealed class AccountController: BaseApiController
         return userResult;
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<AppUserDTO>> GetUserInfo()
     {
         var userId = User.GetUserId();
-        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return NotFound();
 
         return _mapper.Map<AppUserDTO>(user);

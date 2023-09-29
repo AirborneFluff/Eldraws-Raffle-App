@@ -64,6 +64,7 @@ public class RaffleController : BaseApiController
 
         raffle.Title = raffleDto.Title;
         raffle.EntryCost = raffleDto.EntryCost;
+        raffle.ClanId = raffleDto.ClanId;
         raffle.OpenDate = (DateTime) raffleDto.OpenDate;
         raffle.CloseDate = (DateTime) raffleDto.CloseDate;
         raffle.DrawDate = (DateTime) raffleDto.DrawDate;
@@ -72,4 +73,27 @@ public class RaffleController : BaseApiController
 
         return BadRequest();
     }
+
+    [HttpPost("{raffleId}/entries")]
+    public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto)
+    {
+        var userId = User.GetUserId();
+        if (userId == null) return BadRequest();
+        
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return BadRequest();
+        
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
+        if (raffle == null) return NotFound("Raffle not found");
+
+        if (raffle.AppUserId != userId) return Unauthorized("You cannot add entries to this raffle");
+
+        var newEntry = _mapper.Map<RaffleEntry>(entryDto);
+        raffle.Entries.Add(newEntry);
+        
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
+
+        return BadRequest();
+    }
+    
 }

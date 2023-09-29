@@ -22,12 +22,11 @@ public sealed class ClanController : BaseApiController
         _unitOfWork = unitOfWork;
     }
     
-    [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ClanDTO>> CreateNewClan(ClanDTO clan)
+    public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
         var userId = User.GetUserId();
-        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return BadRequest("Invalid login credentials");
 
         var currentClan = await _unitOfWork.ClanRepository.GetByName(clan.Name);

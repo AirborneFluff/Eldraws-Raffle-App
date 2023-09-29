@@ -37,21 +37,4 @@ public class RaffleRepository
             .Include(r => r.AppUser)
             .ToListAsync();
     }
-
-    public async Task<List<Entrant>> GetAllEntrants()
-    {
-        return await _context.Entrants.ToListAsync();
-    }
-    public async Task<Entrant?> GetEntrantById(int id)
-    {
-        return await _context.Entrants.FirstOrDefaultAsync(e => e.Id == id);
-    }
-    public async Task<Entrant?> GetEntrantByGamertag(string gamertag)
-    {
-        return await _context.Entrants.FirstOrDefaultAsync(e => e.NormalizedGamertag == gamertag.ToUpper());
-    }
-    public void AddNewEntrant(Entrant entrant)
-    {
-        _context.Entrants.Add(entrant);
-    }
 }

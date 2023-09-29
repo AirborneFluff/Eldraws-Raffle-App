@@ -28,5 +28,9 @@ public sealed class DataContext : IdentityDbContext <AppUser>
         modelBuilder.Entity<Entrant>()
             .HasIndex(e => e.NormalizedGamertag)
             .IsUnique();
+        
+        modelBuilder.Entity<Raffle>()
+            .HasOne(r => r.Clan)
+            .WithMany(c => c.Raffles);
     }
 }

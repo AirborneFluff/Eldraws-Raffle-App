@@ -9,9 +9,17 @@ public sealed class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<AppUser, AppUserDTO>();
-        CreateMap<ClanDTO, Clan>();
+        
+        CreateMap<NewClanDTO, Clan>();
         CreateMap<Clan, ClanDTO>();
+        
         CreateMap<NewRaffleDTO, Raffle>();
         CreateMap<Raffle, RaffleDTO>();
+
+        CreateMap<NewEntrantDTO, Entrant>();
+        CreateMap<Entrant, EntrantDTO>();
+        
+        CreateMap<NewRaffleEntryDTO, RaffleEntry>();
+        CreateMap<RaffleEntry, RaffleEntryDTO>();
     }
 }
