@@ -26,6 +26,7 @@ public class RaffleRepository
         return await _context.Raffles
             .Include(r => r.Clan)
             .ThenInclude(c => c.Members)
+            .Include(r => r.Host)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .Include(r => r.Entries)
             .ThenInclude(e => e.Entrant)
