@@ -11,4 +11,5 @@ public sealed class ClanDTO
     public MemberDTO Owner { get; set; }
     public IEnumerable<MemberDTO> Members { get; set; }
     public IEnumerable<EntrantInfoDTO> Entrants { get; set; }
+    public IEnumerable<RaffleDTO> Raffles { get; set; }
 }
