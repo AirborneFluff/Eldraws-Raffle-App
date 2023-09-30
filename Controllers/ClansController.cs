@@ -10,13 +10,17 @@ using RaffleApi.Extensions;
 
 namespace RaffleApi.Controllers;
 
-public sealed class ClanController : BaseApiController
+[ApiController]
+[Route("api/[controller]")]
+[ServiceFilter(typeof(ValidateUser))]
+[Authorize]
+public sealed class ClansController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
     private readonly UserManager<AppUser> _userManager;
 
-    public ClanController(IMapper mapper, UnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public ClansController(IMapper mapper, UnitOfWork unitOfWork, UserManager<AppUser> userManager)
     {
         _mapper = mapper;
         _userManager = userManager;
@@ -24,28 +28,60 @@ public sealed class ClanController : BaseApiController
     }
     
     [HttpPost]
-    [ServiceFilter(typeof(ValidateUser))]
     public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
-        var userId = User.GetUserId();
-        
+        var user = HttpContext.GetUser();
         var newClan = _mapper.Map<Clan>(clan);
-        
-        newClan.OwnerId = userId;
+        newClan.OwnerId = user.Id;
         
         _unitOfWork.ClanRepository.Add(newClan);
         if (!await _unitOfWork.Complete()) return BadRequest("Issue creating new clan");
 
         var clanMember = new ClanMember
         {
-            MemberId = userId,
+            MemberId = user.Id,
             ClanId = newClan.Id
         };
+        
         newClan.Members.Add(clanMember);
         
-        if (!await _unitOfWork.Complete()) return BadRequest("Issue adding member to clan");
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(newClan));
         
-        return Ok(_mapper.Map<ClanDTO>(newClan));
+        return BadRequest("Issue adding member to clan");
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClans()
+    {
+        var user = HttpContext.GetUser();
+        var clans = await _unitOfWork.ClanRepository.GetAllForUser(user.Id);
+        if (clans.Count == 0) return NotFound("You are not a member of any clans");
+
+        var clansResult = clans.Select(clan => _mapper.Map<ClanInfoDTO>(clan));
+        
+        return Ok(clansResult);
+    }
+    
+    [HttpGet("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanMember))]
+    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClans(int clanId)
+    {
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound("No clan found by that Id");
+        
+        return Ok(_mapper.Map<ClanDTO>(clan));
+    }
+    
+    [HttpDelete("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
+    public async Task<ActionResult<ClanDTO>> DeleteClan(int clanId)
+    {
+        var clan = HttpContext.GetClan();
+        
+        _unitOfWork.ClanRepository.Remove(clan);
+        if (await _unitOfWork.Complete()) return Ok();
+        
+        return BadRequest("Issue deleting clan");
     }
     
     [HttpPost("{clanId:int}/members/{memberId}")]
@@ -53,7 +89,6 @@ public sealed class ClanController : BaseApiController
     public async Task<ActionResult<ClanDTO>> AddMember(string memberId, int clanId)
     {
         var clan = HttpContext.GetClan();
-        
         if (clan!.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
             return Conflict("This user is already a member of this clan");
 
@@ -77,9 +112,9 @@ public sealed class ClanController : BaseApiController
     public async Task<ActionResult<ClanDTO>> RemoveMember(string memberId, int clanId)
     {
         var clan = HttpContext.GetClan();
+        var user = HttpContext.GetUser();
         
-        var userId = User.GetUserId();
-        if (memberId == userId) return BadRequest("You cannot remove yourself from the clan");
+        if (memberId == user.Id) return BadRequest("You cannot remove yourself from the clan");
 
         var clanMember = clan.Members.FirstOrDefault(m => m.MemberId == memberId);
         if (clanMember == null) return NotFound("That user is not a member of this clan");

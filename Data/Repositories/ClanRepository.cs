@@ -16,9 +16,23 @@ public sealed class ClanRepository
         _context.Clans.Add(clan);
     }
 
+    public void Remove(Clan clan)
+    {
+        _context.Clans.Remove(clan);
+    }
+
+    public Task<List<Clan>> GetAllForUser(string userId)
+    {
+        return _context.Clans
+            .Include(c => c.Members)
+            .Where(c => c.Members.FirstOrDefault(m => m.MemberId == userId) != null)
+            .ToListAsync();
+    }
+
     public Task<Clan?> GetById(int id)
     {
         return _context.Clans
+            .Include(c => c.Owner)
             .Include(c => c.Members)
             .Include(c => c.Entrants)
             .FirstOrDefaultAsync(clan => clan.Id == id);
