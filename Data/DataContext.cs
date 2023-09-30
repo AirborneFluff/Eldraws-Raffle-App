@@ -78,6 +78,9 @@ public sealed class DataContext : IdentityDbContext <AppUser>
         
         // ---------- Raffle Prizes ----------
         modelBuilder.Entity<RafflePrize>()
+            .HasKey(rp => new { rp.Place, rp.RaffleId });
+        
+        modelBuilder.Entity<RafflePrize>()
             .HasOne(rp => rp.Raffle)
             .WithMany(r => r.Prizes)
             .HasForeignKey(rp => rp.RaffleId)

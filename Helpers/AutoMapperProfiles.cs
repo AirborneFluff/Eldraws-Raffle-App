@@ -39,5 +39,8 @@ public sealed class AutoMapperProfiles : Profile
         CreateMap<NewRaffleEntryDTO, RaffleEntry>();
         CreateMap<RaffleEntry, RaffleEntryDTO>();
         CreateMap<RaffleEntry, RaffleEntryInfoDTO>();
+
+        CreateMap<NewRafflePrizeDTO, RafflePrize>();
+        CreateMap<RafflePrize, RafflePrizeInfoDTO>();
     }
 }

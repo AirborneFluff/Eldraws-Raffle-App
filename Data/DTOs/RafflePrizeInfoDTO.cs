@@ -1,10 +1,7 @@
-namespace RaffleApi.Entities;
+﻿namespace RaffleApi.Data.DTOs;
 
-public class RafflePrize
+public class RafflePrizeInfoDTO
 {
-    public int RaffleId { get; set; }
-    public Raffle? Raffle { get; set; }
-
     public int Place { get; set; }
     public string? Description { get; set; }
     public int? WinningTicketNumber { get; set; }
