@@ -18,7 +18,7 @@ public sealed class Clan
 
     public bool HasMember(string userId)
     {
-        var clanMember = Members?.FirstOrDefault(cm => cm.MemberId == userId);
+        var clanMember = Members.FirstOrDefault(cm => cm.MemberId == userId);
         return clanMember != null;
     }
 }
