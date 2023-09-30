@@ -21,5 +21,5 @@ public sealed class RaffleDTO
     public DateTime DrawDate { get; set; }
 
     public IEnumerable<RaffleEntryInfoDTO>? Entries { get; set; }
-    public IEnumerable<RafflePrize>? Prizes { get; set; }
+    public IEnumerable<RafflePrizeInfoDTO>? Prizes { get; set; }
 }

@@ -19,4 +19,12 @@ public static class HttpContextExtensions
 
         return user;
     }
+    
+    public static Raffle GetRaffle(this Microsoft.AspNetCore.Http.HttpContext context)
+    {
+        if (context.Items["raffle"] is not Raffle raffle)
+            throw new Exception("Raffle doesn't exist");
+
+        return raffle;
+    }
 }

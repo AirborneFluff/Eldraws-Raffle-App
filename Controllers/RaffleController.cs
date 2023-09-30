@@ -44,10 +44,10 @@ public sealed class RaffleController : ControllerBase
     }
 
     [HttpPut("{raffleId:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
     public async Task<ActionResult> UpdateRaffle(int raffleId, [FromBody] NewRaffleDTO raffleDto, int clanId)
     {
-        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
-        if (raffle == null) return NotFound("No raffle found by that Id");
+        var raffle = HttpContext.GetRaffle();
 
         _mapper.Map(raffleDto, raffle);
 
@@ -57,12 +57,11 @@ public sealed class RaffleController : ControllerBase
     }
 
     [HttpPost("{raffleId:int}/entries")]
+    [ServiceFilter(typeof(ValidateRaffle))]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
     {
         var clan = HttpContext.GetClan();
-        
-        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
-        if (raffle == null) return NotFound("Raffle not found");
+        var raffle = HttpContext.GetRaffle();
 
         var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entryDto.EntrantId);
         if (entrant == null) return NotFound("No entrant found by that Id in this clan");
@@ -76,15 +75,30 @@ public sealed class RaffleController : ControllerBase
     }
 
     [HttpDelete("{raffleId:int}/entries/{entryId:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
     public async Task<ActionResult> RemoveEntry(int raffleId, int entryId, int clanId)
     {
-        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
-        if (raffle == null) return NotFound("Raffle not found");
-
+        var raffle = HttpContext.GetRaffle();
+        
         var entry = raffle.Entries.FirstOrDefault(e => e.Id == entryId);
         if (entry == null) return NotFound("No entry found by that Id");
-        
+
         raffle.Entries.Remove(entry);
+
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
+
+        return BadRequest();
+    }
+
+    [HttpPost("{raffleId:int}/prizes")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRafflePrizeDTO prizeDto, int clanId)
+    {
+        var clan = HttpContext.GetClan();
+        var raffle = HttpContext.GetRaffle();
+        
+        var newPrize = _mapper.Map<RafflePrize>(prizeDto);
+        raffle.Prizes.Add(newPrize);
         
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 

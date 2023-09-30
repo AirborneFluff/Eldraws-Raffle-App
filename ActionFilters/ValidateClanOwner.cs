@@ -16,10 +16,12 @@ public sealed class ValidateClanOwner : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var clanId = (int)context.ActionArguments["clanId"]!;
+        var clanId = (int?) context.ActionArguments["clanId"];
+        if (clanId == null) throw new Exception("ClanId not provided for validation");
+        
         var userId = context.HttpContext.User.GetUserId();
 
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        var clan = await _unitOfWork.ClanRepository.GetById((int) clanId);
         if (clan == null)
         {
             context.Result = new NotFoundObjectResult("No clan found by that Id");

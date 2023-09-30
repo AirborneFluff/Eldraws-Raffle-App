@@ -26,6 +26,7 @@ public static class ApplicationServiceExtensions
         builder.Services.AddScoped<ValidateClanOwner>();
         builder.Services.AddScoped<ValidateClanMember>();
         builder.Services.AddScoped<ValidateUser>();
+        builder.Services.AddScoped<ValidateRaffle>();
         return;
     }
 }
