@@ -65,6 +65,9 @@ public sealed class DataContext : IdentityDbContext <AppUser>
         
         // ---------- Raffle Entry ----------
         modelBuilder.Entity<RaffleEntry>()
+            .Property(ExpressionHelper.GetMember<RaffleEntry, string>("_tickets"));
+        
+        modelBuilder.Entity<RaffleEntry>()
             .HasOne(re => re.Raffle)
             .WithMany(r => r.Entries)
             .HasForeignKey(re => re.RaffleId)

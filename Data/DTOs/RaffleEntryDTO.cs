@@ -14,6 +14,5 @@ public class RaffleEntryDTO
     public int Donation { get; set; }
     public DateTime InputDate { get; set; } = DateTime.UtcNow;
 
-    [NotMapped]
     public Tuple<int, int>? Tickets { get; set; }
 }

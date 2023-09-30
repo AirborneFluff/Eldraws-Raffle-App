@@ -12,4 +12,19 @@ public class RaffleEntry
 
     public int Donation { get; set; }
     public DateTime InputDate { get; set; } = DateTime.UtcNow;
+    
+    
+    [Column("Tickets")]
+    private string _tickets
+    {
+        get => $"{Tickets.Item1} - {Tickets.Item2}";
+        set
+        {
+            var split = value.Split(" - ");
+            Tickets = new Tuple<int, int>(int.Parse(split[0]), int.Parse(split[1]));
+        }
+    }
+
+    [NotMapped]
+    public Tuple<int, int> Tickets { get; set; }
 }

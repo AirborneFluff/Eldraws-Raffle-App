@@ -2,9 +2,8 @@
 
 namespace RaffleApi.Data.DTOs;
 
-public class NewRafflePrizeDTO
+public class UpdateRafflePrizeDTO
 {
-    public int Place { get; set; }
     [Required]
     public string Description { get; set; }
 }

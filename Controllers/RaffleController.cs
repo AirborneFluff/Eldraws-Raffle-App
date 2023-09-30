@@ -67,8 +67,10 @@ public sealed class RaffleController : ControllerBase
         if (entrant == null) return NotFound("No entrant found by that Id in this clan");
         
         var newEntry = _mapper.Map<RaffleEntry>(entryDto);
-        raffle.Entries.Add(newEntry);
+        newEntry.Tickets = raffle.GetTickets(newEntry.Donation);
         
+        raffle.Entries.Add(newEntry);
+
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
         return BadRequest();
@@ -92,13 +94,44 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/prizes")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRafflePrizeDTO prizeDto, int clanId)
+    public async Task<ActionResult> AddPrize(int raffleId, [FromBody] NewRafflePrizeDTO prizeDto, int clanId)
     {
-        var clan = HttpContext.GetClan();
         var raffle = HttpContext.GetRaffle();
         
         var newPrize = _mapper.Map<RafflePrize>(prizeDto);
         raffle.Prizes.Add(newPrize);
+        
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
+
+        return BadRequest();
+    }
+
+    [HttpDelete("{raffleId:int}/prizes/{prizePlace:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> RemovePrize(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+
+        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
+        if (prize == null) return NotFound("No prize with that placement");
+
+        raffle.Prizes.Remove(prize);
+        
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
+
+        return BadRequest();
+    }
+
+    [HttpPut("{raffleId:int}/prizes/{prizePlace:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> UpdatePrize(int raffleId, int clanId, int prizePlace, [FromBody] UpdateRafflePrizeDTO prizeDto)
+    {
+        var raffle = HttpContext.GetRaffle();
+
+        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
+        if (prize == null) return NotFound("No prize with that placement");
+
+        prize.Description = prizeDto.Description;
         
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 

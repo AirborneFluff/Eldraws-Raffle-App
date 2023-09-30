@@ -5,7 +5,7 @@ namespace RaffleApi.Helpers;
 
 public static class ExpressionHelper
 {
-    public static Expression GetMember<TEntity, TResult>(String memberName)
+    public static Expression<Func<TEntity, TResult>> GetMember<TEntity, TResult>(String memberName)
     {
         ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "p");
         MemberExpression member = Expression.MakeMemberAccess(parameter, typeof(TEntity).GetMember(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Single());
