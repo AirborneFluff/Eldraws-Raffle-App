@@ -47,6 +47,15 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .HasForeignKey(e => e.ClanId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<Clan>()
+            .HasOne(c => c.Owner)
+            .WithMany(o => o.OwnedClans)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Clan>()
+            .HasIndex(c => c.NormalizedName)
+            .IsUnique();
+        
         // ---------- Raffle Entry ----------
         modelBuilder.Entity<RaffleEntry>()
             .HasKey(re => new {re.RaffleId, re.EntrantId});
@@ -69,5 +78,12 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .WithMany(r => r.Prizes)
             .HasForeignKey(rp => rp.RaffleId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        // ---------- Raffle Prizes ----------
+        modelBuilder.Entity<Entrant>()
+            .HasIndex(e => new { e.ClanId, e.NormalizedGamertag })
+            .IsUnique();
+
+
     }
 }

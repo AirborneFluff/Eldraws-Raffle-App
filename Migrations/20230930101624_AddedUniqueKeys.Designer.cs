@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230930101624_AddedUniqueKeys")]
+    partial class AddedUniqueKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,16 +239,10 @@ namespace RaffleApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique();
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Clans");
                 });
@@ -443,17 +440,6 @@ namespace RaffleApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RaffleApi.Entities.Clan", b =>
-                {
-                    b.HasOne("RaffleApi.Entities.AppUser", "Owner")
-                        .WithMany("OwnedClans")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-                });
-
             modelBuilder.Entity("RaffleApi.Entities.ClanMember", b =>
                 {
                     b.HasOne("RaffleApi.Entities.Clan", "Clan")
@@ -528,8 +514,6 @@ namespace RaffleApi.Migrations
             modelBuilder.Entity("RaffleApi.Entities.AppUser", b =>
                 {
                     b.Navigation("Clans");
-
-                    b.Navigation("OwnedClans");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Clan", b =>

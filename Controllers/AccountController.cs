@@ -81,6 +81,6 @@ public sealed class AccountController: BaseApiController
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return NotFound();
 
-        return _mapper.Map<AppUserDTO>(user);
+        return Ok(_mapper.Map<AppUserDTO>(user));
     }
 }
