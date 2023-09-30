@@ -25,7 +25,8 @@ public class ValidateUser : IAsyncActionFilter
             context.Result = new BadRequestObjectResult("Issue validating your account");
             return;
         }
-
+        
+        context.HttpContext.Items.Add("user", user);
         await next.Invoke();
     }
 }
