@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using RaffleApi.ActionFilters;
 using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
@@ -23,12 +24,10 @@ public sealed class ClanController : BaseApiController
     }
     
     [HttpPost]
+    [ServiceFilter(typeof(ValidateUser))]
     public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
         var userId = User.GetUserId();
-        
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest("Issue validating your account");
         
         var newClan = _mapper.Map<Clan>(clan);
         
@@ -50,19 +49,12 @@ public sealed class ClanController : BaseApiController
     }
     
     [HttpPost("{clanId:int}/members/{memberId}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> AddMember(string memberId, int clanId)
     {
-        var userId = User.GetUserId();
+        var clan = HttpContext.GetClan();
         
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest("Issue validating your account");
-
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
-        if (clan == null) return NotFound("No clan found by that Id");
-
-        if (clan.OwnerId != userId) return Unauthorized("Only the clan owner can add members");
-
-        if (clan.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
+        if (clan!.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
             return Conflict("This user is already a member of this clan");
 
         var member = await _userManager.FindByIdAsync(memberId);
@@ -81,18 +73,13 @@ public sealed class ClanController : BaseApiController
     }
     
     [HttpDelete("{clanId:int}/members/{memberId}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> RemoveMember(string memberId, int clanId)
     {
+        var clan = HttpContext.GetClan();
+        
         var userId = User.GetUserId();
         if (memberId == userId) return BadRequest("You cannot remove yourself from the clan");
-        
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest("Issue validating your account");
-
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
-        if (clan == null) return NotFound("No clan found by that Id");
-
-        if (clan.OwnerId != userId) return Unauthorized("Only the clan owner can remove members");
 
         var clanMember = clan.Members.FirstOrDefault(m => m.MemberId == memberId);
         if (clanMember == null) return NotFound("That user is not a member of this clan");
@@ -105,20 +92,13 @@ public sealed class ClanController : BaseApiController
     }
     
     [HttpPost("{clanId:int}/entrants")]
+    [ServiceFilter(typeof(ValidateClanMember))]
     public async Task<ActionResult<ClanDTO>> AddEntrant([FromBody] NewEntrantDTO entrantDto, int clanId)
     {
-        var userId = User.GetUserId();
-        
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest("Issue validating your account");
-
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
-        if (clan == null) return NotFound("No clan found by that Id");
-
-        if (!clan.HasMember(userId)) return Unauthorized("Only the clan members can add entrants");
+        var clan = HttpContext.GetClan();
 
         var entrant = clan.Entrants.FirstOrDefault(e => e.NormalizedGamertag == entrantDto.Gamertag.ToUpper());
-        if (entrant != null) return Conflict(_mapper.Map<ClanDTO>(clan));
+        if (entrant != null) return Conflict(_mapper.Map<EntrantInfoDTO>(entrant));
 
         entrant = new Entrant
         {
@@ -127,7 +107,7 @@ public sealed class ClanController : BaseApiController
         };
         
         clan.Entrants.Add(entrant);
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<EntrantInfoDTO>(entrant));
         
         return BadRequest();
     }

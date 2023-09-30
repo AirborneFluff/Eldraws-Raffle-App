@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RaffleApi.ActionFilters;
 using RaffleApi.Data;
 using RaffleApi.Helpers;
 
@@ -17,6 +18,14 @@ public static class ApplicationServiceExtensions
             options.UseSqlServer(connStr);
         });
 
+        return;
+    }
+    
+    public static void AddActionFilters(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<ValidateClanOwner>();
+        builder.Services.AddScoped<ValidateClanMember>();
+        builder.Services.AddScoped<ValidateUser>();
         return;
     }
 }
