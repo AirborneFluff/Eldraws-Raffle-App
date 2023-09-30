@@ -56,10 +56,14 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .HasIndex(c => c.NormalizedName)
             .IsUnique();
         
-        // ---------- Raffle Entry ----------
-        modelBuilder.Entity<RaffleEntry>()
-            .HasKey(re => new {re.RaffleId, re.EntrantId});
+        // ---------- Raffle ----------
+        modelBuilder.Entity<Raffle>()
+            .HasOne(r => r.Host)
+            .WithMany(h => h.HostedRaffles)
+            .HasForeignKey(r => r.HostId)
+            .OnDelete(DeleteBehavior.NoAction);
         
+        // ---------- Raffle Entry ----------
         modelBuilder.Entity<RaffleEntry>()
             .HasOne(re => re.Raffle)
             .WithMany(r => r.Entries)

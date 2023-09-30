@@ -27,16 +27,17 @@ public sealed class AutoMapperProfiles : Profile
             
         CreateMap<NewClanDTO, Clan>();
         CreateMap<Clan, ClanDTO>();
-            // .ForMember(dest => dest.Owner, opt =>
-            //     opt.MapFrom(src => src.Owner));
+        CreateMap<Clan, ClanInfoDTO>();
         
         CreateMap<NewRaffleDTO, Raffle>();
         CreateMap<Raffle, RaffleDTO>();
 
         CreateMap<NewEntrantDTO, Entrant>();
         CreateMap<Entrant, EntrantDTO>();
+        CreateMap<Entrant, EntrantInfoDTO>();
         
         CreateMap<NewRaffleEntryDTO, RaffleEntry>();
         CreateMap<RaffleEntry, RaffleEntryDTO>();
+        CreateMap<RaffleEntry, RaffleEntryInfoDTO>();
     }
 }

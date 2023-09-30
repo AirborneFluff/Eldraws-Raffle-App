@@ -9,6 +9,6 @@ public sealed class ClanDTO
     public string Name { get; set; }
 
     public MemberDTO Owner { get; set; }
-
     public IEnumerable<MemberDTO> Members { get; set; }
+    public IEnumerable<EntrantInfoDTO> Entrants { get; set; }
 }

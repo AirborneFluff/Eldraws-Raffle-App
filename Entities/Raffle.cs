@@ -9,6 +9,9 @@ public class Raffle
     public int ClanId { get; set; }
     public Clan? Clan { get; set; }
 
+    public string HostId { get; set; }
+    public AppUser? Host { get; set; }
+
     public string Title { get; set; }
     public int EntryCost { get; set; }
     public ulong? DiscordMessageId { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230930120628_FixedForeignKeyContrainted")]
+    partial class FixedForeignKeyContrainted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -352,29 +355,21 @@ namespace RaffleApi.Migrations
 
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Donation")
+                    b.Property<int>("RaffleId")
                         .HasColumnType("int");
 
                     b.Property<int>("EntrantId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Donation")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("InputDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RaffleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("RaffleId", "EntrantId");
 
                     b.HasIndex("EntrantId");
-
-                    b.HasIndex("RaffleId");
 
                     b.ToTable("Entries");
                 });

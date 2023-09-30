@@ -28,7 +28,7 @@ public sealed class ClanController : BaseApiController
         var userId = User.GetUserId();
         
         var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return BadRequest();
+        if (user == null) return BadRequest("Issue validating your account");
         
         var newClan = _mapper.Map<Clan>(clan);
         
@@ -99,6 +99,34 @@ public sealed class ClanController : BaseApiController
         
         clan.Members.Remove(clanMember);
         
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
+        
+        return BadRequest();
+    }
+    
+    [HttpPost("{clanId:int}/entrants")]
+    public async Task<ActionResult<ClanDTO>> AddEntrant([FromBody] NewEntrantDTO entrantDto, int clanId)
+    {
+        var userId = User.GetUserId();
+        
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return BadRequest("Issue validating your account");
+
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound("No clan found by that Id");
+
+        if (!clan.HasMember(userId)) return Unauthorized("Only the clan members can add entrants");
+
+        var entrant = clan.Entrants.FirstOrDefault(e => e.NormalizedGamertag == entrantDto.Gamertag.ToUpper());
+        if (entrant != null) return Conflict(_mapper.Map<ClanDTO>(clan));
+
+        entrant = new Entrant
+        {
+            ClanId = clanId,
+            Gamertag = entrantDto.Gamertag
+        };
+        
+        clan.Entrants.Add(entrant);
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
         
         return BadRequest();

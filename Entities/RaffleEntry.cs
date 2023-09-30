@@ -4,6 +4,7 @@ namespace RaffleApi.Entities;
 
 public class RaffleEntry
 {
+    public int Id { get; set; }
     public int RaffleId { get; set; }
     public Raffle? Raffle { get; set; }
     public int EntrantId { get; set; }
