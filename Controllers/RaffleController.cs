@@ -13,7 +13,7 @@ using RaffleApi.Services;
 namespace RaffleApi.Controllers;
 
 [ApiController]
-[Route("api/clan/{clanId:int}/raffles")]
+[Route("api/clans/{clanId:int}/raffles")]
 [ServiceFilter(typeof(ValidateClanMember))]
 [Authorize]
 public sealed class RaffleController : ControllerBase
