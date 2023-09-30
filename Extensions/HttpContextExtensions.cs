@@ -6,8 +6,7 @@ public static class HttpContextExtensions
 {
     public static Clan GetClan(this Microsoft.AspNetCore.Http.HttpContext context)
     {
-        var clan = context.Items["clan"] as Clan;
-        if (clan == null)
+        if (context.Items["clan"] is not Clan clan)
             throw new Exception("Clan does not exist in this context");
 
         return clan;
@@ -15,8 +14,7 @@ public static class HttpContextExtensions
     
     public static AppUser GetUser(this Microsoft.AspNetCore.Http.HttpContext context)
     {
-        var user = context.Items["user"] as AppUser;
-        if (user == null)
+        if (context.Items["user"] is not AppUser user)
             throw new Exception("User doesn't exist");
 
         return user;
