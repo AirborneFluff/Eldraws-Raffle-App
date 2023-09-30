@@ -26,15 +26,13 @@ public sealed class AccountController: BaseApiController
     }
 
     [AllowAnonymous]
-    [HttpGet("test")]
-    public async Task<ActionResult<string>> Test()
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAllUsers()
     {
-        var result = await _userManager.Users.FirstOrDefaultAsync();
-        if (result == null) return NotFound("No users in the database");
-
-        var testToken = await _tokenService.CreateToken(new AppUser());
-
-        return Ok($"Username: {result.UserName}\nToken: {testToken}");
+        var result = await _userManager.Users
+            .Select(user => _mapper.Map<MemberDTO>(user))
+            .ToListAsync();
+        return Ok(result);
     }
 
     [AllowAnonymous]
