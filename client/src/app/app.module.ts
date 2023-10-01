@@ -11,13 +11,13 @@ import { FeaturesModule } from "./features/features.module";
   declarations: [
     AppComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    CoreModule,
-    SharedModule,
-    FeaturesModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        CoreModule,
+        SharedModule,
+        FeaturesModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
