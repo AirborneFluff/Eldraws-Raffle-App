@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,8 @@ export class LoginComponent {
 
   userName = new FormControl('', Validators.required)
   password = new FormControl('', Validators.required)
+
+  invalidLogin$ = new Subject<boolean>();
 
   constructor(private fb: FormBuilder, private account: AccountService) {
     this.initializeForm();
@@ -28,8 +31,15 @@ export class LoginComponent {
     console.log(this.loginForm.value)
     if (this.loginForm.invalid) return;
 
-    this.account.login(this.loginForm.value).subscribe(user => {
-        console.log(user);
-      })
+    this.account.login(this.loginForm.value)
+      .subscribe({
+        next: () => {
+          this.invalidLogin$.next(false);
+        },
+        error: () => {
+          this.invalidLogin$.next(true);
+        }
+      }
+    )
   }
 }

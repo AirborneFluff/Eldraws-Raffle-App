@@ -10,8 +10,11 @@
         <app-text-input [formControl]="password" [password]="true" label="Password"/>
       </app-form-field>
 
+      <app-form-error *ngIf="invalidLogin$ | async">Invalid Username or Password</app-form-error>
       <app-form-actions>
         <app-form-button (onClick)="login()">Login</app-form-button>
+        <app-form-link link="register">Register</app-form-link>
+
       </app-form-actions>
     </form>
   </app-form-dialog>

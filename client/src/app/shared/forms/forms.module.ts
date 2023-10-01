@@ -7,6 +7,9 @@ import { FormFieldComponent } from './form-field/form-field.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { FormButtonComponent } from './form-button/form-button.component';
 import { FormActionsComponent } from './form-actions/form-actions.component';
+import { FormErrorComponent } from './form-error/form-error.component';
+import { FormLinkComponent } from './form-link/form-link.component';
+import { RouterLink } from '@angular/router';
 
 
 
@@ -17,11 +20,14 @@ import { FormActionsComponent } from './form-actions/form-actions.component';
     FormFieldComponent,
     FormDialogComponent,
     FormButtonComponent,
-    FormActionsComponent
+    FormActionsComponent,
+    FormErrorComponent,
+    FormLinkComponent
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   exports: [
     TextInputComponent,
@@ -29,7 +35,9 @@ import { FormActionsComponent } from './form-actions/form-actions.component';
     FormFieldComponent,
     FormDialogComponent,
     FormButtonComponent,
-    FormActionsComponent
+    FormActionsComponent,
+    FormErrorComponent,
+    FormLinkComponent
   ]
 })
 export class FormsModule { }
