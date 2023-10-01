@@ -9,7 +9,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AccountService {
   baseUrl = environment.apiUrl + 'account/';
-  currentUser$ = new ReplaySubject<AppUser | null>()
+
+  private currentUserSource$ = new ReplaySubject<AppUser | null>();
+  currentUser$ = this.currentUserSource$.asObservable();
   constructor(private http: HttpClient) { }
 
   login(details: LoginDetails) {
@@ -24,7 +26,7 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
-    this.currentUser$.next(null);
+    this.currentUserSource$.next(null);
   }
 
   register(details: RegisterDetails) {
@@ -39,6 +41,6 @@ export class AccountService {
 
   private setCurrentUser(user: AppUser) {
     localStorage.setItem('user', JSON.stringify(user));
-    this.currentUser$.next(user);
+    this.currentUserSource$.next(user);
   }
 }
