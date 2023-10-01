@@ -51,13 +51,13 @@ public sealed class ClansController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClans()
+    public async Task<ActionResult<IEnumerable<ClanDTO>>> GetClans()
     {
         var user = HttpContext.GetUser();
         var clans = await _unitOfWork.ClanRepository.GetAllForUser(user.Id);
         if (clans.Count == 0) return NotFound("You are not a member of any clans");
 
-        var clansResult = clans.Select(clan => _mapper.Map<ClanInfoDTO>(clan));
+        var clansResult = clans.Select(clan => _mapper.Map<ClanDTO>(clan));
         
         return Ok(clansResult);
     }
