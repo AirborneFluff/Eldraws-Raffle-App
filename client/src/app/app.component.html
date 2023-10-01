@@ -1,3 +1,5 @@
 <ng-container *ngIf="!(account.currentUser$ | async)">
   <app-login></app-login>
 </ng-container>
+
+<button (click)="account.logout()">Logout</button>
