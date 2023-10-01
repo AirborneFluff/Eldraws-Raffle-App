@@ -1,6 +1,7 @@
 <ng-container *ngIf="account.currentUser$ | async; else login">
-  <button (click)="account.logout()">Logout</button>
-  <router-outlet/>
+  <app-frame>
+    <router-outlet/>
+  </app-frame>
 </ng-container>
 
 <ng-template #login>
