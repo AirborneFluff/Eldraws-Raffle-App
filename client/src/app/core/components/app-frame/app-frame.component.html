@@ -1,8 +1,8 @@
 <header class="sticky bg-gray-100 w-full flex py-2 justify-between items-center px-2 sm:px-6">
-  <h2 class="text-3xl font-light">{{document.title}}</h2>
+  <h2 class="text-3xl font-light">{{title.getTitle()}}</h2>
 
   <div *ngIf="(account.currentUser$ | async) as user" class="text-right">
-    <div class="text-sm">Hello, {{user.userName}}</div>
+    <div class="text-sm">Hello, {{user['userName']}}</div>
     <a class="text-md cursor-pointer hover:text-primary-700" (click)="account.logout()">Logout</a>
   </div>
 </header>
