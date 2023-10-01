@@ -1,0 +1,51 @@
+<ng-container *ngIf="!textarea">
+  <div class="relative flex bg-white">
+    <input
+      [formControl]="formControl"
+      [ngClass]="{
+        'border-red-500 focus:ring-1 focus:ring-red-500': requiredError$ | async,
+        'focus:border-transparent focus:ring-2 focus:ring-primary-600': !(requiredError$ | async)
+      }"
+      [type]="textType"
+      id="floating_outlined"
+      class="text-grey-700 peer w-full flex-1 appearance-none rounded-lg border border-gray-300 bg-inherit px-4 py-2 text-base placeholder-gray-400 shadow-sm focus:outline-none"
+      placeholder=" " />
+
+    <ng-container *ngIf="requiredError$ | async">
+<!--      <mat-icon class="absolute right-2 top-2 text-red-500">error_outline</mat-icon>-->
+    </ng-container>
+
+    <label
+      [ngClass]="{ '!text-red-500': requiredError$ | async }"
+      for="floating_outlined"
+      class="absolute left-2 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-inherit px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-primary-600">
+      {{ label }}{{ isRequired ? '*' : '' }}</label
+    >
+  </div>
+</ng-container>
+<ng-container *ngIf="textarea">
+  <div class="relative flex bg-white">
+    <textarea
+      [formControl]="formControl"
+      [ngClass]="{
+        'border-red-500 focus:ring-1 focus:ring-red-500': requiredError$ | async,
+        'focus:border-transparent focus:ring-2 focus:ring-primary-600': !(requiredError$ | async)
+      }"
+      id="floating_outlined_area"
+      class="peer min-h-[3rem] w-full flex-1 appearance-none rounded-lg border border-gray-300 bg-inherit px-4 py-2 text-base text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none"
+      placeholder=" "
+      rows="5"
+      cols="40"></textarea>
+
+    <ng-container *ngIf="requiredError$ | async">
+<!--      <mat-icon class="absolute right-2 top-2 text-red-500">error_outline</mat-icon>-->
+    </ng-container>
+
+    <label
+      [ngClass]="{ '!text-red-500': requiredError$ | async }"
+      for="floating_outlined_area"
+      class="absolute left-2 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-inherit px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-primary-600">
+      {{ label }}{{ isRequired ? '*' : '' }}</label
+    >
+  </div>
+</ng-container>

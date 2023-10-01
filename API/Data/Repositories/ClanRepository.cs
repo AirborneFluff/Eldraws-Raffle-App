@@ -24,7 +24,10 @@ public sealed class ClanRepository
     public Task<List<Clan>> GetAllForUser(string userId)
     {
         return _context.Clans
+            .Include(c => c.Owner)
             .Include(c => c.Members)
+            .Include(c => c.Entrants)
+            .Include(c => c.Raffles)
             .Where(c => c.Members.FirstOrDefault(m => m.MemberId == userId) != null)
             .ToListAsync();
     }
@@ -35,6 +38,7 @@ public sealed class ClanRepository
             .Include(c => c.Owner)
             .Include(c => c.Members)
             .Include(c => c.Entrants)
+            .Include(c => c.Raffles)
             .FirstOrDefaultAsync(clan => clan.Id == id);
     }
 

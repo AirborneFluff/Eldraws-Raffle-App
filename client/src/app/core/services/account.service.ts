@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { map, ReplaySubject } from 'rxjs';
-import { AppUser, LoginDetails, RegisterDetails } from '../../data';
+import { AppUser, LoginDetails, RegisterDetails } from '../../data/data-models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -9,8 +9,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AccountService {
   baseUrl = environment.apiUrl + 'account/';
-  currentUser$ = new ReplaySubject<AppUser | null>()
-  constructor(private http: HttpClient) { }
+
+  private currentUserSource$ = new ReplaySubject<AppUser | null>();
+  currentUser$ = this.currentUserSource$.asObservable();
+  constructor(private http: HttpClient) {
+    const val = localStorage.getItem('user');
+    if (!val) return;
+    const user: AppUser = JSON.parse(val);
+
+    this.setCurrentUser(user);
+  }
 
   login(details: LoginDetails) {
     return this.http.post<AppUser>(this.baseUrl + 'login', details).pipe(
@@ -24,7 +32,7 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
-    this.currentUser$.next(null);
+    this.currentUserSource$.next(null);
   }
 
   register(details: RegisterDetails) {
@@ -39,6 +47,6 @@ export class AccountService {
 
   private setCurrentUser(user: AppUser) {
     localStorage.setItem('user', JSON.stringify(user));
-    this.currentUser$.next(user);
+    this.currentUserSource$.next(user);
   }
 }
