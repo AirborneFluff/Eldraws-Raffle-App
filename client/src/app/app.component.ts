@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AccountService } from "./core/services/account.service";
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'client';
+  username: string = '';
+  password: string = '';
+
+  constructor(public account: AccountService) {
+  }
+
+  login() {
+    this.account.login({
+      userName : this.username,
+      password : this.password
+    }).subscribe()
+  }
+
 }
