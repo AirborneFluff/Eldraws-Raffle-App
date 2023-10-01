@@ -1,8 +1,11 @@
-<ng-container *ngIf="account.currentUser$ | async; else login">
-  <button (click)="account.logout()">Logout</button>
-  <router-outlet/>
-</ng-container>
+<div id="app-theme" class="dark">
+  <ng-container *ngIf="account.currentUser$ | async; else login">
+    <app-frame>
+      <router-outlet/>
+    </app-frame>
+  </ng-container>
 
-<ng-template #login>
-  <app-login></app-login>
-</ng-template>
+  <ng-template #login>
+    <app-login></app-login>
+  </ng-template>
+</div>

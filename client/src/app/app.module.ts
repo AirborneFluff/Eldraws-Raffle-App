@@ -8,6 +8,8 @@ import { SharedModule } from "./shared/shared.module";
 import { FeaturesModule } from "./features/features.module";
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { CustomTitleStrategy } from './core/misc/title-strategy';
+import { TitleStrategy } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,12 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    },],
+    },
+    {
+      provide: TitleStrategy,
+      useClass: CustomTitleStrategy
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -9,8 +9,11 @@ const routes: Routes = [
     runGuardsAndResolvers: "always",
     canActivate: [authGuard],
     children: [
-      { path: "", component: ClansListComponent },
-      { path: "clans", component: ClansListComponent }
+      { path: "",
+        redirectTo: 'clans',
+        pathMatch: 'full'
+      },
+      { title: "Clans", path: "clans", component: ClansListComponent }
     ]
   }
 ];
