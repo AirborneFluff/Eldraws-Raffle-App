@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230930124648_AddedUniqueIdForRaffleEntries")]
+    partial class AddedUniqueIdForRaffleEntries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,10 +373,6 @@ namespace RaffleApi.Migrations
                     b.Property<int>("RaffleId")
                         .HasColumnType("int");
 
-                    b.Property<string>("_tickets")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Tickets");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EntrantId");
@@ -385,19 +384,25 @@ namespace RaffleApi.Migrations
 
             modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Place")
                         .HasColumnType("int");
 
                     b.Property<int>("RaffleId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("WinningTicketNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("Place", "RaffleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RaffleId");
 

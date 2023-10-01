@@ -24,7 +24,9 @@ public class RaffleRepository
     public async Task<Raffle?> GetById(int id)
     {
         return await _context.Raffles
-            .Include(r => r.AppUser)
+            .Include(r => r.Clan)
+            .ThenInclude(c => c.Members)
+            .Include(r => r.Host)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .Include(r => r.Entries)
             .ThenInclude(e => e.Entrant)
@@ -34,24 +36,6 @@ public class RaffleRepository
     public async Task<List<Raffle>?> GetAllRaffles()
     {
         return await _context.Raffles
-            .Include(r => r.AppUser)
             .ToListAsync();
-    }
-
-    public async Task<List<Entrant>> GetAllEntrants()
-    {
-        return await _context.Entrants.ToListAsync();
-    }
-    public async Task<Entrant?> GetEntrantById(int id)
-    {
-        return await _context.Entrants.FirstOrDefaultAsync(e => e.Id == id);
-    }
-    public async Task<Entrant?> GetEntrantByGamertag(string gamertag)
-    {
-        return await _context.Entrants.FirstOrDefaultAsync(e => e.NormalizedGamertag == gamertag.ToUpper());
-    }
-    public void AddNewEntrant(Entrant entrant)
-    {
-        _context.Entrants.Add(entrant);
     }
 }

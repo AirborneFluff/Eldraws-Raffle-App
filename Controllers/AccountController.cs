@@ -5,12 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using RaffleApi.Data.DTOs;
 using AutoMapper;
+using RaffleApi.ActionFilters;
 using RaffleApi.Services;
 using RaffleApi.Extensions;
 
 namespace RaffleApi.Controllers;
 
-public sealed class AccountController: BaseApiController
+[ApiController]
+[Route("api/[controller]")]
+public sealed class AccountController: ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
@@ -25,18 +28,18 @@ public sealed class AccountController: BaseApiController
         _tokenService = tokenService;
     }
 
-    [HttpGet("test")]
-    public async Task<ActionResult<string>> Test()
+    [HttpGet("all")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAllUsers()
     {
-        var result = await _userManager.Users.FirstOrDefaultAsync();
-        if (result == null) return NotFound("No users in the database");
-
-        var testToken = await _tokenService.CreateToken(new AppUser());
-
-        return Ok($"Username: {result.UserName}\nToken: {testToken}");
+        var result = await _userManager.Users
+            .Select(user => _mapper.Map<MemberDTO>(user))
+            .ToListAsync();
+        return Ok(result);
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Login(LoginDTO input)
     {
         if (input.UserName == null) return BadRequest("Please provide a Username");
@@ -57,6 +60,7 @@ public sealed class AccountController: BaseApiController
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Register(RegisterDTO userDetails)
     {
         var newUser = new AppUser();
@@ -70,15 +74,12 @@ public sealed class AccountController: BaseApiController
 
         return userResult;
     }
-
-    [Authorize]
+    
     [HttpGet]
-    public async Task<ActionResult<AppUserDTO>> GetUserInfo()
+    [Authorize]
+    [ServiceFilter(typeof(ValidateUser))]
+    public ActionResult<AppUserDTO> GetUserInfo()
     {
-        var userId = User.GetUserId();
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return NotFound();
-
-        return _mapper.Map<AppUserDTO>(user);
+        return Ok(_mapper.Map<AppUserDTO>(HttpContext.GetUser()));
     }
 }

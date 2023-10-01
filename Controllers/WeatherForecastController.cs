@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RaffleApi.Controllers;
 
-public sealed class WeatherForecastController : BaseApiController
+public sealed class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {

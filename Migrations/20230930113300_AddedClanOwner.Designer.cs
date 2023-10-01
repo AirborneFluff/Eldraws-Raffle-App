@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230930113300_AddedClanOwner")]
+    partial class AddedClanOwner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,10 +333,6 @@ namespace RaffleApi.Migrations
                     b.Property<int>("EntryCost")
                         .HasColumnType("int");
 
-                    b.Property<string>("HostId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("OpenDate")
                         .HasColumnType("datetime2");
 
@@ -345,12 +344,31 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("ClanId");
 
-                    b.HasIndex("HostId");
-
                     b.ToTable("Raffles");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
+                {
+                    b.Property<int>("RaffleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntrantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Donation")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InputDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RaffleId", "EntrantId");
+
+                    b.HasIndex("EntrantId");
+
+                    b.ToTable("Entries");
+                });
+
+            modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -358,46 +376,19 @@ namespace RaffleApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Donation")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EntrantId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("InputDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RaffleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("_tickets")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Tickets");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EntrantId");
-
-                    b.HasIndex("RaffleId");
-
-                    b.ToTable("Entries");
-                });
-
-            modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
-                {
                     b.Property<int>("Place")
                         .HasColumnType("int");
 
                     b.Property<int>("RaffleId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("WinningTicketNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("Place", "RaffleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RaffleId");
 
@@ -504,15 +495,7 @@ namespace RaffleApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RaffleApi.Entities.AppUser", "Host")
-                        .WithMany("HostedRaffles")
-                        .HasForeignKey("HostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Clan");
-
-                    b.Navigation("Host");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
@@ -548,8 +531,6 @@ namespace RaffleApi.Migrations
             modelBuilder.Entity("RaffleApi.Entities.AppUser", b =>
                 {
                     b.Navigation("Clans");
-
-                    b.Navigation("HostedRaffles");
 
                     b.Navigation("OwnedClans");
                 });
