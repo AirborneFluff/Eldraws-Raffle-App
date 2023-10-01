@@ -28,7 +28,6 @@ export class LoginComponent {
   }
 
   login() {
-    console.log(this.loginForm.value)
     if (this.loginForm.invalid) return;
 
     this.account.login(this.loginForm.value)
