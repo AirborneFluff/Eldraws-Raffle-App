@@ -9,11 +9,9 @@ public static class ClaimsPrincipleExtensions
         return user.FindFirst(ClaimTypes.Name)?.Value;
     }
 
-    public static string? GetUserId(this ClaimsPrincipal user)
+    public static string GetUserId(this ClaimsPrincipal user)
     {
         var guidString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (guidString == null) return null;
-
-        return guidString;
+        return guidString ?? "";
     }
 }

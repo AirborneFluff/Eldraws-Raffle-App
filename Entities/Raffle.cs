@@ -1,10 +1,16 @@
+using System.Collections.ObjectModel;
+
 namespace RaffleApi.Entities;
 
 public class Raffle
 {
     public int Id { get; set; }
-    public string AppUserId { get; set; }
-    public AppUser? AppUser { get; set; }
+
+    public int ClanId { get; set; }
+    public Clan? Clan { get; set; }
+
+    public string HostId { get; set; }
+    public AppUser? Host { get; set; }
 
     public string Title { get; set; }
     public int EntryCost { get; set; }
@@ -16,6 +22,12 @@ public class Raffle
     public DateTime CloseDate { get; set; }
     public DateTime DrawDate { get; set; }
 
-    public IEnumerable<RaffleEntry>? Entries { get; set; }
-    public IEnumerable<RafflePrize>? Prizes { get; set; }
+    public ICollection<RaffleEntry> Entries { get; set; } = new Collection<RaffleEntry>();
+    public ICollection<RafflePrize> Prizes { get; set; } = new Collection<RafflePrize>();
+
+    public bool HasMember(string userId)
+    {
+        if (Clan == null) return false;
+        return Clan.HasMember(userId);;
+    } 
 }

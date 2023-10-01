@@ -7,27 +7,24 @@ public class RaffleEntry
     public int Id { get; set; }
     public int RaffleId { get; set; }
     public Raffle? Raffle { get; set; }
-        
     public int EntrantId { get; set; }
     public Entrant? Entrant { get; set; }
 
     public int Donation { get; set; }
-
+    public DateTime InputDate { get; set; } = DateTime.UtcNow;
+    
+    
     [Column("Tickets")]
-    private string? _tickets
+    private string _tickets
     {
-        get
-        {
-            return $"{Tickets?.Item1} - {Tickets?.Item2}";
-        }
+        get => $"{Tickets.Item1} - {Tickets.Item2}";
         set
         {
             var split = value.Split(" - ");
-            Tickets = new Tuple<int, int>(Int32.Parse(split[0]), Int32.Parse(split[1]));
+            Tickets = new Tuple<int, int>(int.Parse(split[0]), int.Parse(split[1]));
         }
     }
-    public DateTime InputDate { get; set; } = DateTime.UtcNow;
 
     [NotMapped]
-    public Tuple<int, int>? Tickets { get; set; }
+    public Tuple<int, int> Tickets { get; set; }
 }
