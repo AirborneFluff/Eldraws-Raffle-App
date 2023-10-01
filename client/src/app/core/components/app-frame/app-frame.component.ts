@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-frame',
@@ -7,4 +8,6 @@ import { Component } from '@angular/core';
 })
 export class AppFrameComponent {
 
+  constructor(public account: AccountService) {
+  }
 }
