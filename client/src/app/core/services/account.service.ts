@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { map, ReplaySubject } from 'rxjs';
-import { AppUser, LoginDetails, RegisterDetails } from '../../data';
+import { AppUser, LoginDetails, RegisterDetails } from '../../data/data-models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
