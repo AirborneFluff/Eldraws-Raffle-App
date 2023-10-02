@@ -1,0 +1,34 @@
+<div class="flex text-grey-700 dark:text-gray-300 bg-white dark:bg-gray-800">
+  <span
+    [ngClass]=
+      "{'border-red-500' : ((requiredError$ | async) || !dateValid),
+        'ring-red-500 ring-1' : ((requiredError$ | async) || !dateValid) && inputFocussed,
+        'border-transparent outline-none ring-2 ring-cerulean-600' : !requiredError && dateValid && inputFocussed}"
+    class="inline-flex items-center rounded-l-md border-b border-l border-t border-gray-300 bg-inherit px-3 text-sm shadow-sm">
+    {{ timezoneAbbreviation$ | async }}
+  </span>
+  <div class="relative w-full bg-inherit">
+    <input
+      (focus)="inputFocussed = true"
+      (blur)="inputFocussed = false"
+      [(ngModel)]="inputValue"
+      [ngClass]=
+        "{'border-red-500' : ((requiredError$ | async) || !dateValid),
+          'ring-red-500 ring-1' : ((requiredError$ | async) || !dateValid) && inputFocussed,
+          'border-transparent ring-cerulean-600 ring-2' : !requiredError && dateValid && inputFocussed}"
+      id="floating_outlined"
+      type="datetime-local"
+      class="peer w-full flex-1 appearance-none rounded-r-lg border border-gray-300 bg-inherit px-4 py-2 text-base placeholder-gray-400 shadow-sm focus:outline-none" />
+
+<!--    <mat-icon-->
+<!--      [ngClass]="{'text-red-500' : (requiredError$ | async) || !dateValid}"-->
+<!--      class="absolute right-2 top-2 pointer-events-none bg-inherit !text-xl">-->
+<!--      calendar_month</mat-icon>-->
+
+    <label
+      [ngClass]="{'!text-red-500' : requiredError || !dateValid}"
+      for="floating_outlined"
+      class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-inherit px-2 peer-focus:text-cerulean-600 peer-focus:dark:text-cerulean-500 left-2">
+      {{label}}{{isRequired ? '*' : ''}}</label>
+  </div>
+</div>
