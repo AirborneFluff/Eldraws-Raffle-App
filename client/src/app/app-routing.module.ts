@@ -15,6 +15,7 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       { title: "Clans", path: "clans", component: ClanListComponent },
+      { title: "Clans", path: "clans/:clanId", component: ClanListComponent },
       { title: "Create Clan", path: "clans/create", component: CreateClanComponent },
       { title: "Raffle", path: "raffles/:raffleId", component: ClanListComponent },
       { title: "Create Raffle", path: "raffles/create", component: ClanListComponent }

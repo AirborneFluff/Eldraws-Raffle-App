@@ -33,7 +33,7 @@ export class CreateClanComponent {
       .subscribe({
           next: newClan => {
             this.invalidForm$.next(false);
-            this.router.navigateByUrl('/raffles/' + newClan.id, { state: newClan });
+            this.router.navigateByUrl('/clans/' + newClan.id, { state: newClan });
           },
           error: () => {
             this.invalidForm$.next(true);
