@@ -21,7 +21,7 @@ export class CreateClanComponent {
 
   initializeForm() {
     this.clanForm = new FormGroup<any>({
-      userName: this.name
+      name: this.name
     })
   }
 
@@ -41,5 +41,4 @@ export class CreateClanComponent {
         }
       )
   }
-
 }
