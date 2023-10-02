@@ -10,18 +10,20 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { CustomTitleStrategy } from './core/misc/title-strategy';
 import { TitleStrategy } from '@angular/router';
+import { ClansModule } from './features/clans/clans.module';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        CoreModule,
-        SharedModule,
-        FeaturesModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    CoreModule,
+    SharedModule,
+    FeaturesModule,
+    ClansModule
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
