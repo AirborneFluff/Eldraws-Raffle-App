@@ -9,4 +9,10 @@ export class ClanRepository extends BaseRepository {
   public getAll(): Observable<Clan[]> {
     return this.http.get<Clan[]>(this.baseUrl);
   }
+
+  public addNew(clanName: string): Observable<Clan> {
+    return this.http.post<Clan>(this.baseUrl, {
+      name: clanName
+    })
+  }
 }

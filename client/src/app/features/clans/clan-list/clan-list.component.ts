@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import { Observable } from 'rxjs';
-import { Clan } from '../../../data/models/clan';
+import { Clan } from '../../../data/data-models';
 
 @Component({
   selector: 'clan-list',
