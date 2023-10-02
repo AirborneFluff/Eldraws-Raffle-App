@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ClansListComponent } from './features/clans/clans-list/clans-list.component';
+import { ClanListComponent } from './features/clans/clan-list/clan-list.component';
 import { authGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
@@ -13,7 +13,9 @@ const routes: Routes = [
         redirectTo: 'clans',
         pathMatch: 'full'
       },
-      { title: "Clans", path: "clans", component: ClansListComponent }
+      { title: "Clans", path: "clans", component: ClanListComponent },
+      { title: "Raffle", path: "raffles/:raffleId", component: ClanListComponent },
+      { title: "Create Raffle", path: "raffles/create", component: ClanListComponent }
     ]
   }
 ];

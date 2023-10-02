@@ -1,0 +1,10 @@
+<ng-container *ngIf="clan">
+  <div class="dark:bg-primary-950 bg-white shadow-md rounded-lg px-2 sm:px-4 py-2 mb-1 border border-gray-200 dark:border-primary-950 mx-1 sm:mx-4 text-gray-700 dark:text-gray-100 flex justify-between items-center">
+    <div class="pointer-events-none">
+      <h1 class="font-display leading-none text-2xl">{{clan.name}}</h1>
+      <h2 class="font-light leading-tight">{{clan.owner.userName}}</h2>
+    </div>
+    <app-form-link *ngIf="clan.raffles" [link]="'raffles/' + clan.raffles[0].id">Goto Raffle</app-form-link>
+    <app-form-link *ngIf="!clan.raffles" [link]="'raffles/create'">Create Raffle</app-form-link>
+  </div>
+</ng-container>

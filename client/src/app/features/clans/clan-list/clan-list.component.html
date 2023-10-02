@@ -1,0 +1,5 @@
+<div class="pt-4">
+  <div *ngFor="let clan of (clans$ | async)" class="container max-w-screen-lg mx-auto mt-2">
+    <clan-list-item [clan]="clan"></clan-list-item>
+  </div>
+</div>

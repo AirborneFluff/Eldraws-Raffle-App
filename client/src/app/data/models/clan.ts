@@ -6,5 +6,5 @@ export interface Clan {
   owner: Member,
   members: Member[],
   entrants: Entrant[],
-  raffles: Raffle
+  raffles: Raffle[]
 }
