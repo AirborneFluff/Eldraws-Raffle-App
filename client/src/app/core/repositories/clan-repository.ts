@@ -6,4 +6,7 @@ export class ClanRepository extends BaseRepository {
   public getById(id: number): Observable<Clan> {
     return this.http.get<Clan>(this.baseUrl + id);
   }
+  public getAll(): Observable<Clan[]> {
+    return this.http.get<Clan[]>(this.baseUrl);
+  }
 }

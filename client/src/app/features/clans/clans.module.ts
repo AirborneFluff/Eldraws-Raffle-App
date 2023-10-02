@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ClansListComponent } from './clans-list/clans-list.component';
+import { ClanListComponent } from './clan-list/clan-list.component';
+import { ClanListItemComponent } from './clan-list-item/clan-list-item.component';
+import { FormsModule } from '../../shared/forms/forms.module';
 
 
 
 @NgModule({
   declarations: [
-    ClansListComponent
+    ClanListComponent,
+    ClanListItemComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   exports: [
-    ClansListComponent
+    ClanListComponent,
+    ClanListItemComponent,
   ]
 })
 export class ClansModule { }
