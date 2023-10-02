@@ -9,7 +9,16 @@ import { Theme } from './core/theming/theme';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  currentTheme!: Theme;
   constructor(public account: AccountService, private theme: ThemingService) {
-    theme.setTheme(Theme.Dark)
+    this.theme.theme$.subscribe(x => this.currentTheme = x);
+  }
+
+  toggle() {
+    if (this.currentTheme == Theme.Dark) {
+      this.theme.setTheme(Theme.Light);
+      return;
+    }
+    this.theme.setTheme(Theme.Dark)
   }
 }

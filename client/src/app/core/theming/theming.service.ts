@@ -8,13 +8,13 @@ import { Meta } from '@angular/platform-browser';
 })
 export class ThemingService implements OnDestroy {
   private readonly themeClass = {
-    [Theme.Light]: 'light-theme',
-    [Theme.Dark]: 'dark-theme'
+    [Theme.Light]: 'light',
+    [Theme.Dark]: 'dark'
   }
 
   private readonly htmlBackgroundClass = {
-    [Theme.Light]: 'bg-primary-50',
-    [Theme.Dark]: 'bg-primary-950'
+    [Theme.Light]: 'bg-primary-0',
+    [Theme.Dark]: 'bg-primary-1000'
   }
 
   private readonly _subscriptions = new Subscription();
@@ -85,7 +85,7 @@ export class ThemingService implements OnDestroy {
   private setHTMLBackground(theme: Theme) {
     const html = document.getElementsByTagName('html')[0];
     const bgClass = this.htmlBackgroundClass[theme]
-    html.classList.remove(...Object.values(bgClass));
+    html.classList.remove(...Object.values(this.htmlBackgroundClass));
     html.classList.add(bgClass);
   }
 }

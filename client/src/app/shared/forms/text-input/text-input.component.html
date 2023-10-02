@@ -1,5 +1,5 @@
 <ng-container *ngIf="!textarea">
-  <div class="relative flex bg-white">
+  <div class="relative flex bg-white dark:bg-primary-950">
     <input
       [formControl]="formControl"
       [ngClass]="{
@@ -8,7 +8,7 @@
       }"
       [type]="textType"
       id="floating_outlined"
-      class="text-grey-700 peer w-full flex-1 appearance-none rounded-lg border border-gray-300 bg-inherit px-4 py-2 text-base placeholder-gray-400 shadow-sm focus:outline-none"
+      class="text-grey-700 dark:text-primary-50 peer w-full flex-1 appearance-none rounded-lg border border-gray-300 bg-inherit px-4 py-2 text-base placeholder-gray-400 shadow-sm focus:outline-none"
       placeholder=" " />
 
     <ng-container *ngIf="requiredError$ | async">
@@ -18,7 +18,7 @@
     <label
       [ngClass]="{ '!text-red-500': requiredError$ | async }"
       for="floating_outlined"
-      class="absolute left-2 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-inherit px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-primary-600">
+      class="absolute left-2 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-inherit px-2 text-sm text-gray-500 dark:text-gray-400 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-primary-600 dark:peer-focus:text-primary-100">
       {{ label }}{{ isRequired ? '*' : '' }}</label
     >
   </div>
