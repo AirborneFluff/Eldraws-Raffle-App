@@ -4,7 +4,7 @@
       <h1 class="font-display leading-none text-2xl">{{clan.name}}</h1>
       <h2 class="font-light leading-tight">{{clan.owner.userName}}</h2>
     </div>
-    <app-form-link *ngIf="clan.raffles" [link]="'raffles/' + clan.raffles[0].id">Goto Raffle</app-form-link>
-    <app-form-link *ngIf="!clan.raffles" [link]="'raffles/create'">Create Raffle</app-form-link>
+    <app-form-link *ngIf="clan.raffles.length" [link]="'/raffles/' + clan.raffles[0]?.id">Goto Raffle</app-form-link>
+    <app-form-link *ngIf="!clan.raffles.length" [link]="'/raffles/create'">Create Raffle</app-form-link>
   </div>
 </ng-container>

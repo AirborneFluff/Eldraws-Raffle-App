@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
 import { Subject } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class LoginComponent {
 
   invalidLogin$ = new Subject<boolean>();
 
-  constructor(private fb: FormBuilder, private account: AccountService) {
+  constructor(private account: AccountService) {
     this.initializeForm();
   }
 

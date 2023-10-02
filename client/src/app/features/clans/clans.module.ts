@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ClanListComponent } from './clan-list/clan-list.component';
 import { ClanListItemComponent } from './clan-list-item/clan-list-item.component';
 import { FormsModule } from '../../shared/forms/forms.module';
+import { CreateClanComponent } from './create-clan/create-clan.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -10,14 +12,17 @@ import { FormsModule } from '../../shared/forms/forms.module';
   declarations: [
     ClanListComponent,
     ClanListItemComponent,
+    CreateClanComponent,
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     ClanListComponent,
     ClanListItemComponent,
+    CreateClanComponent,
   ]
 })
 export class ClansModule { }
