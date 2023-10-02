@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormsModule } from "../../shared/forms/forms.module";
+import { RaffleFormsModule } from "../../shared/forms/raffle-forms.module";
 
 @NgModule({
   declarations: [
@@ -14,7 +14,7 @@ import { FormsModule } from "../../shared/forms/forms.module";
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    RaffleFormsModule
   ]
 })
 export class LoginModule { }
