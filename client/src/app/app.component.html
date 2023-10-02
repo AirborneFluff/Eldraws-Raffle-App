@@ -1,11 +1,11 @@
-<div id="app-theme" class="dark">
-  <ng-container *ngIf="account.currentUser$ | async; else login">
-    <app-frame>
-      <router-outlet/>
-    </app-frame>
-  </ng-container>
+<ng-container *ngIf="account.currentUser$ | async; else login">
+  <app-frame>
+    <router-outlet/>
+  </app-frame>
+</ng-container>
 
-  <ng-template #login>
-    <app-login></app-login>
-  </ng-template>
-</div>
+<ng-template #login>
+  <app-login></app-login>
+</ng-template>
+
+<button (click)="toggle()">Toggle Theme</button>
