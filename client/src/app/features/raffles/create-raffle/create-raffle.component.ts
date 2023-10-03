@@ -50,7 +50,7 @@ export class CreateRaffleComponent {
       .subscribe({
           next: newRaffle => {
             this.invalidForm$.next(false);
-            this.router.navigateByUrl('/raffles/' + newRaffle.id, { state: newRaffle });
+            this.router.navigateByUrl('/clans/' + 1 + '/raffles/' + newRaffle.id, { state: newRaffle });
             console.log(newRaffle);
           },
           error: () => {

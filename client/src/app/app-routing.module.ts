@@ -4,6 +4,7 @@ import { ClanListComponent } from './features/clans/clan-list/clan-list.componen
 import { authGuard } from './core/guards/auth.guard';
 import { CreateClanComponent } from './features/clans/create-clan/create-clan.component';
 import { CreateRaffleComponent } from './features/raffles/create-raffle/create-raffle.component';
+import { RaffleDetailsComponent } from './features/raffles/raffle-details/raffle-details.component';
 
 const routes: Routes = [
   {
@@ -18,7 +19,7 @@ const routes: Routes = [
       { title: "Clans", path: "clans", component: ClanListComponent },
       { title: "Clans", path: "clans/:clanId", component: ClanListComponent },
       { title: "Create Clan", path: "clans/create", component: CreateClanComponent },
-      { title: "Raffle", path: "raffles/:raffleId", component: CreateRaffleComponent },
+      { title: "Raffle", path: "clans/:clanId/raffles/:raffleId", component: RaffleDetailsComponent },
       { title: "Create Raffle", path: "raffles/create", component: CreateRaffleComponent }
     ]
   }

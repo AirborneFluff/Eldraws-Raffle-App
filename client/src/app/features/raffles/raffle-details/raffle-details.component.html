@@ -1,0 +1,24 @@
+<div class="container max-w-screen-md mx-auto sm:pt-4">
+  <div class="dark:bg-primary-950 bg-white shadow-md rounded-lg px-2 sm:px-4 py-2 mb-1 border border-gray-200 dark:border-primary-950 sm:mx-4 text-gray-700 dark:text-gray-100">
+    <ng-container *ngIf="(raffle$ | async) as raffle">
+      <div class="pointer-events-none flex justify-center align-middle my-6">
+        <h1 class="font-display leading-none text-2xl">{{raffle.title}}</h1>
+      </div>
+
+      <div class="flex justify-between sm:justify-around">
+        <div class="mx-2">
+          <p class="font-bold text-sm">Entry Cost</p>
+          <p class="font-extralight text-2xl leading-tight font-display">{{raffle.entryCost}}</p>
+        </div>
+        <div>
+          <p class="font-bold text-sm">Tickets</p>
+          <p class="font-extralight text-2xl leading-tight font-display">190</p>
+        </div>
+        <div>
+          <p class="font-bold text-sm">Donations</p>
+          <p class="font-extralight text-2xl leading-tight font-display">950k</p>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

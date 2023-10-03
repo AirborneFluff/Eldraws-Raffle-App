@@ -27,6 +27,15 @@ public sealed class RaffleController : ControllerBase
         this._mapper = mapper;
     }
 
+    [HttpGet("{raffleId:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> CreateNewRaffle(int raffleId, int clanId)
+    {
+        var raffle = HttpContext.GetRaffle();
+
+        return Ok(_mapper.Map<RaffleDTO>(raffle));
+    }
+
     [HttpPost]
     public async Task<ActionResult> CreateNewRaffle([FromBody] NewRaffleDTO raffleDto, int clanId)
     {
@@ -35,9 +44,9 @@ public sealed class RaffleController : ControllerBase
         var newRaffle = _mapper.Map<Raffle>(raffleDto);
         newRaffle.HostId = userId;
         newRaffle.ClanId = clanId;
-        
+
         _unitOfWork.RaffleRepository.Add(newRaffle);
-        
+
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(newRaffle));
 
         return BadRequest("Issue creating raffle");
