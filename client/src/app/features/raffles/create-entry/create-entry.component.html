@@ -1,0 +1,18 @@
+<div class="dark:bg-primary-950 bg-white shadow-md rounded-lg mb-1 border border-gray-200 dark:border-primary-950 sm:mx-4 text-gray-700 dark:text-gray-100">
+  <mat-form-field  appearance="outline">
+    <input class="form-control"
+           id="gamertagInput"
+           matInput placeholder="Gamertag"
+           aria-label="Gamertag"
+           [matAutocomplete]="auto"
+           [formControl]="gamertag">
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      <mat-option *ngFor="let entrant of filteredEntrants$ | async" [value]="entrant.gamertag">
+        <span>{{entrant.gamertag}}</span>
+      </mat-option>
+    </mat-autocomplete>
+<!--    <mat-error *ngIf="entryForm.controls['gamertag'].hasError('required')">-->
+<!--      A gamertag is <strong>required</strong>-->
+<!--    </mat-error>-->
+  </mat-form-field>
+</div>
