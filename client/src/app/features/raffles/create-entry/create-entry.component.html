@@ -1,6 +1,6 @@
-<div class="dark:bg-primary-950 bg-white shadow-md rounded-lg mb-1 border border-gray-200 dark:border-primary-950 sm:mx-4 text-gray-700 dark:text-gray-100">
-  <div class="flex justify-between p-6">
-    <div class="basis-1/3">
+<div class="dark:bg-primary-950 bg-white shadow-md rounded-lg p-6 mb-1 border border-gray-200 dark:border-primary-950 sm:mx-4 text-gray-700 dark:text-gray-100">
+  <div class="flex justify-around flex-wrap">
+    <div class="mx-2">
       <mat-form-field  appearance="outline">
         <input class="form-control"
                id="gamertagInput"
@@ -13,20 +13,22 @@
             <span>{{entrant.gamertag}}</span>
           </mat-option>
         </mat-autocomplete>
-        <!--    <mat-error *ngIf="entryForm.controls['gamertag'].hasError('required')">-->
-        <!--      A gamertag is <strong>required</strong>-->
-        <!--    </mat-error>-->
+        <mat-error *ngIf="gamertag.hasError('required')">
+          A gamertag is <strong>required</strong>
+        </mat-error>
       </mat-form-field>
     </div>
 
-    <div class="basis-1/3">
+    <div class="mx-2">
       <mat-form-field appearance="outline">
-        <input matInput placeholder="Donation">
+        <input matInput placeholder="Donation" [formControl]="donation">
+        <mat-error *ngIf="donation.hasError('required') || donation.hasError('min')">
+          A donation is <strong>required</strong>
+        </mat-error>
       </mat-form-field>
     </div>
-
-    <div class="basis-1/3">
-      <button mat-button color="#f1f2f3" (click)="submit()">Primary</button>
-    </div>
+  </div>
+  <div class="flex justify-center">
+    <app-form-button type="primary" (click)="submit()">Add Entry</app-form-button>
   </div>
 </div>

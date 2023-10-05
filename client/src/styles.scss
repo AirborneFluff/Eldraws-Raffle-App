@@ -11,8 +11,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 //.mat-mdc-form-field-bottom-align::before {
 //  display: none !important;
 //}
-//
-//.mat-mdc-form-field-infix {
-//  padding-block: 0.5rem !important;
-//  min-height: unset !important;
-//}
+
+.mat-mdc-form-field-infix {
+  padding-block: 0.5rem !important;
+  min-height: unset !important;
+}

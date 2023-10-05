@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   combineLatest,
@@ -6,15 +6,15 @@ import {
   of,
   shareReplay,
   Subject,
-  switchMap,
+  switchMap, tap,
   withLatestFrom
 } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Router } from '@angular/router';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { Raffle } from '../../../data/models/raffle';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
+import { RaffleStream } from '../../../core/streams/raffle-stream';
+import { Entrant } from '../../../data/models/entrant';
 
 @Component({
   selector: 'app-create-entry',
@@ -22,16 +22,16 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
   styleUrls: ['./create-entry.component.scss']
 })
 export class CreateEntryComponent {
-  @Output() raffle = new EventEmitter<Raffle>();
-
   entryForm!: FormGroup;
+  entrantUpdateSource$ = new Subject<Entrant>();
+
   entrants$ = this.clanId.pipe(
-    notNullOrUndefined(),
-    switchMap(id => this.api.Clans.getById(id).pipe(
-      map(clan => clan.entrants))), shareReplay(1))
+      notNullOrUndefined(),
+      switchMap((id) => this.api.Clans.getById(id).pipe(
+        map(clan => clan.entrants))), shareReplay(1))
 
   gamertag = new FormControl('', Validators.required)
-  donation = new FormControl(5000, Validators.required)
+  donation = new FormControl(5000, [Validators.required, Validators.min(0)])
 
   filteredEntrants$ = combineLatest([
     this.entrants$,
@@ -40,10 +40,7 @@ export class CreateEntryComponent {
     return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter))
   }))
 
-
-  invalidForm$ = new Subject<boolean>();
-
-  constructor(private api: ApiService, private router: Router, private clanId: ClanIdStream, private raffleId: RaffleIdStream) {
+  constructor(private api: ApiService, private clanId: ClanIdStream, private raffleId: RaffleIdStream, private raffleUpdates: RaffleStream) {
     this.initializeForm();
   }
 
@@ -67,7 +64,7 @@ export class CreateEntryComponent {
       map(arr => arr.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase())),
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
       switchMap(([ent, clanId]) => {
-        if (!ent) return this.api.Clans.addEntrant(clanId, gamertag);
+        if (!ent) return this.api.Clans.addEntrant(clanId, gamertag).pipe(tap(entrant => this.addEntrantToList(entrant)));
         return of(ent)
       }))
       .pipe(
@@ -78,6 +75,12 @@ export class CreateEntryComponent {
             donation: donation
           })
         })
-      ).subscribe(x => console.log(x))
+      ).subscribe(x => {
+        this.raffleUpdates.next(x);
+    })
+  }
+
+  addEntrantToList(entrant: Entrant) {
+    this.entrantUpdateSource$.next(entrant)
   }
 }
