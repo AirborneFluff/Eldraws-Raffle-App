@@ -9,6 +9,7 @@ import { CoreModule } from '../../core/core.module';
 import { CreateEntryComponent } from './create-entry/create-entry.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -25,7 +26,8 @@ import { MatInputModule } from '@angular/material/input';
     RaffleFormsModule,
     CoreModule,
     MatAutocompleteModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule
   ]
 })
 export class RafflesModule { }

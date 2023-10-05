@@ -1,8 +1,7 @@
 import { BaseRepository } from './base-repository';
 import { Observable } from 'rxjs';
 import { Raffle, NewRaffle } from '../../data/data-models';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { NewRaffleEntry } from '../../data/models/new-entry';
 
 export class RaffleRepository extends BaseRepository {
 
@@ -14,5 +13,9 @@ export class RaffleRepository extends BaseRepository {
     }
     public addNew(clanId: number, newRaffle: NewRaffle): Observable<Raffle> {
         return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles`, newRaffle)
+    }
+
+    public addEntry(clanId: number, raffleId: number, entry: NewRaffleEntry) {
+      return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/entries`, entry);
     }
 }
