@@ -37,6 +37,6 @@ export class RaffleDetailsComponent {
     return raffle.entries.reduce((max, entry) => {
       const item2 = entry.tickets?.item2 ?? 0; // Use 0 as a default value if Item2 is missing
       return item2 > max ? item2 : max;
-    }, -Infinity);
+    }, 0);
   }
 }

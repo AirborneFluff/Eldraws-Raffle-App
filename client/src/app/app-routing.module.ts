@@ -20,7 +20,7 @@ const routes: Routes = [
       { title: "Clans", path: "clans/:clanId", component: ClanListComponent },
       { title: "Create Clan", path: "clans/create", component: CreateClanComponent },
       { title: "Raffle", path: "clans/:clanId/raffles/:raffleId", component: RaffleDetailsComponent },
-      { title: "Create Raffle", path: "raffles/create", component: CreateRaffleComponent }
+      { title: "Create Raffle", path: "clans/:clanId/new-raffle", component: CreateRaffleComponent }
     ]
   }
 ];
