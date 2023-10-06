@@ -4,7 +4,7 @@ import {
   combineLatest,
   map,
   of, scan,
-  shareReplay, startWith,
+  startWith,
   Subject,
   switchMap, tap,
   withLatestFrom

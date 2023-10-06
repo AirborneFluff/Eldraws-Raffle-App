@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import {
-  combineLatest, map, of,
+  combineLatest, of,
   switchMap
 } from 'rxjs';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
