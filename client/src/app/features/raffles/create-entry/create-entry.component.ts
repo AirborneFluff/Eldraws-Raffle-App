@@ -3,8 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   combineLatest,
   map,
-  of,
-  shareReplay,
+  of, scan,
+  shareReplay, startWith,
   Subject,
   switchMap, tap,
   withLatestFrom
@@ -23,12 +23,18 @@ import { Entrant } from '../../../data/models/entrant';
 })
 export class CreateEntryComponent {
   entryForm!: FormGroup;
-  entrantUpdateSource$ = new Subject<Entrant>();
+  entrantAdditionsSource$ = new Subject<Entrant>();
 
-  entrants$ = this.clanId.pipe(
+  entrants$ = combineLatest([
+    this.entrantAdditionsSource$.pipe(
+      scan((all: Entrant[], current) => [...all, current], []),
+      startWith([])
+    ),
+    this.clanId.pipe(
       notNullOrUndefined(),
       switchMap((id) => this.api.Clans.getById(id).pipe(
-        map(clan => clan.entrants))), shareReplay(1))
+        map(clan => clan.entrants))))
+    ]).pipe(map(([arr1, arr2]) => [...arr1, ...arr2]))
 
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl(5000, [Validators.required, Validators.min(0)])
@@ -81,6 +87,6 @@ export class CreateEntryComponent {
   }
 
   addEntrantToList(entrant: Entrant) {
-    this.entrantUpdateSource$.next(entrant)
+    this.entrantAdditionsSource$.next(entrant)
   }
 }
