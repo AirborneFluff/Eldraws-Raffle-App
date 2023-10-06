@@ -11,6 +11,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { CustomTitleStrategy } from './core/misc/title-strategy';
 import { TitleStrategy } from '@angular/router';
 import { ClansModule } from './features/clans/clans.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ClansModule } from './features/clans/clans.module';
     CoreModule,
     SharedModule,
     FeaturesModule,
-    ClansModule
+    ClansModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {
