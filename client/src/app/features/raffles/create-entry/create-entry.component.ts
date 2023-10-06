@@ -37,7 +37,7 @@ export class CreateEntryComponent {
     ]).pipe(map(([arr1, arr2]) => [...arr1, ...arr2]))
 
   gamertag = new FormControl('', Validators.required)
-  donation = new FormControl(5000, [Validators.required, Validators.min(0)])
+  donation = new FormControl(null, [Validators.required, Validators.min(0)])
 
   filteredEntrants$ = combineLatest([
     this.entrants$,
@@ -51,6 +51,9 @@ export class CreateEntryComponent {
   }
 
   initializeForm() {
+    this.gamertag.reset();
+    this.donation.reset();
+
     this.entryForm = new FormGroup<any>({
       gamertag: this.gamertag,
       donation: this.donation
@@ -83,6 +86,7 @@ export class CreateEntryComponent {
         })
       ).subscribe(x => {
         this.raffleUpdates.next(x);
+        this.initializeForm();
     })
   }
 
