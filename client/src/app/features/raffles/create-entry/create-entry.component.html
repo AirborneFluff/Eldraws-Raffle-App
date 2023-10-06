@@ -29,6 +29,6 @@
     </div>
   </div>
   <div class="flex justify-center">
-    <app-form-button type="primary" (click)="submit()">Add Entry</app-form-button>
+    <app-form-button type="primary" (click)="submit()" [disabled]="entryForm.invalid">Add Entry</app-form-button>
   </div>
 </div>
