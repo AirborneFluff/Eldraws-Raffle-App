@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Raffle } from '../../../data/models/raffle';
 
 @Component({
   selector: 'app-raffle-list',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./raffle-list.component.scss']
 })
 export class RaffleListComponent {
-
+  @Input() raffles: Raffle[] = [];
 }
