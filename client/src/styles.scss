@@ -16,3 +16,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding-block: 0.5rem !important;
   min-height: unset !important;
 }
+.mat-option-center .mdc-list-item__primary-text {
+  margin-left: auto !important;
+}
