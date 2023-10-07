@@ -10,6 +10,7 @@ import { CreateEntryComponent } from './create-entry/create-entry.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 
@@ -27,7 +28,8 @@ import { MatButtonModule } from '@angular/material/button';
     CoreModule,
     MatAutocompleteModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
   ]
 })
 export class RafflesModule { }

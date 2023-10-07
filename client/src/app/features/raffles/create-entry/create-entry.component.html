@@ -9,6 +9,9 @@
                [matAutocomplete]="auto"
                [formControl]="gamertag">
         <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngIf="entrantsLoading" class="mat-option-center">
+              <mat-spinner diameter="24"></mat-spinner>
+          </mat-option>
           <mat-option *ngFor="let entrant of filteredEntrants$ | async" [value]="entrant.gamertag">
             <span>{{entrant.gamertag}}</span>
           </mat-option>

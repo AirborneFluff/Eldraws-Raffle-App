@@ -24,6 +24,7 @@ import { Entrant } from '../../../data/models/entrant';
 export class CreateEntryComponent {
   entryForm!: FormGroup;
   entrantAdditionsSource$ = new Subject<Entrant>();
+  entrantsLoading = true;
 
   entrants$ = combineLatest([
     this.entrantAdditionsSource$.pipe(
@@ -33,16 +34,18 @@ export class CreateEntryComponent {
     this.clanId.pipe(
       notNullOrUndefined(),
       switchMap((id) => this.api.Clans.getById(id).pipe(
+        tap(() => this.entrantsLoading = false),
         map(clan => clan.entrants))))
     ]).pipe(map(([arr1, arr2]) => [...arr1, ...arr2]))
 
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl(null, [Validators.required, Validators.min(0)])
 
+
   filteredEntrants$ = combineLatest([
     this.entrants$,
-    this.gamertag.valueChanges.pipe(notNullOrUndefined())
-  ]).pipe(map(([entrants, filter]) => {
+    this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
+  ]).pipe(map(([entrants, filter = '']) => {
     return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter))
   }))
 
