@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class AccountService {
   baseUrl = environment.apiUrl + 'account/';
 
-  private currentUserSource$ = new ReplaySubject<AppUser | null>();
+  private currentUserSource$ = new ReplaySubject<AppUser | null>(1);
   currentUser$ = this.currentUserSource$.asObservable();
   constructor(private http: HttpClient) {
     const val = localStorage.getItem('user');
