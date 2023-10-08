@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 export class LoginComponent {
   loginForm!: FormGroup;
 
-  userName = new FormControl('', Validators.required)
+  userName = new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()]+$/)])
   password = new FormControl('', Validators.required)
 
   invalidLogin$ = new Subject<boolean>();
@@ -40,5 +40,20 @@ export class LoginComponent {
         }
       }
     )
+  }
+
+  register() {
+    if (this.loginForm.invalid) return;
+
+    this.account.register(this.loginForm.value)
+      .subscribe({
+          next: () => {
+            this.invalidLogin$.next(false);
+          },
+          error: () => {
+            this.invalidLogin$.next(true);
+          }
+        }
+      )
   }
 }
