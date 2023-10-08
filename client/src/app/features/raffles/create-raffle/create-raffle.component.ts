@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, switchMap } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { Router } from '@angular/router';
 import { NewRaffle } from '../../../data/models/new-raffle';
+import { ClanIdStream } from '../../../core/streams/clan-id-stream';
+import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -29,7 +31,7 @@ export class CreateRaffleComponent {
 
   invalidForm$ = new Subject<boolean>();
 
-  constructor(private api: ApiService, private router: Router) {
+  constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream) {
     this.initializeForm();
   }
 
@@ -46,17 +48,18 @@ export class CreateRaffleComponent {
   submit() {
     if (this.raffleForm.invalid) return;
 
-    this.api.Raffles.addNew(1, this.raffleForm.value as NewRaffle)
-      .subscribe({
-          next: newRaffle => {
-            this.invalidForm$.next(false);
-            this.router.navigateByUrl('/clans/' + 1 + '/raffles/' + newRaffle.id, { state: newRaffle });
-            console.log(newRaffle);
-          },
-          error: () => {
-            this.invalidForm$.next(true);
-          }
+    this.clanId$.pipe(
+      notNullOrUndefined(),
+      switchMap(clanId => this.api.Raffles.addNew(clanId, this.raffleForm.value as NewRaffle))
+    ).subscribe({
+        next: newRaffle => {
+          this.invalidForm$.next(false);
+          this.router.navigateByUrl('/clans/' + newRaffle.clan.id + '/raffles/' + newRaffle.id, { state: newRaffle });
+        },
+        error: () => {
+          this.invalidForm$.next(true);
         }
-      )
+      }
+    )
   }
 }
