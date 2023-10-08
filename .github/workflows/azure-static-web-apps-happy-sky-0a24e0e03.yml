@@ -19,6 +19,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/client"
-          config_file_location: "/dist/client/assets"
+          config_file_location: "/client/src/assets"
           api_location: ""
           output_location: "/dist/client"
