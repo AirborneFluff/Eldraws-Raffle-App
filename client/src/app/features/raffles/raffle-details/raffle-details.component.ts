@@ -28,9 +28,8 @@ export class RaffleDetailsComponent {
 
   editable$ = this.raffle$.pipe(
     map(raffle => {
-      if (typeof raffle.closeDate !== 'string') return;
-      const date = Date.parse(raffle.closeDate);
-      return date > new Date().getTime();
+      const date = new Date(raffle.closeDate);
+      return date.getTime() > new Date().getTime();
     })
   )
 
