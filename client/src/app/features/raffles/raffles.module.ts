@@ -11,7 +11,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ClansModule } from '../clans/clans.module';
+import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.component';
+import { RaffleListComponent } from './raffle-list/raffle-list.component';
 
 
 
@@ -21,6 +22,8 @@ import { ClansModule } from '../clans/clans.module';
     RaffleDetailsComponent,
     EntryListComponent,
     CreateEntryComponent,
+    RaffleListItemComponent,
+    RaffleListComponent
   ],
   imports: [
     CommonModule,
@@ -30,8 +33,11 @@ import { ClansModule } from '../clans/clans.module';
     MatAutocompleteModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
-    ClansModule
+    MatProgressSpinnerModule
+  ],
+  exports: [
+    RaffleListItemComponent,
+    RaffleListComponent
   ]
 })
 export class RafflesModule { }

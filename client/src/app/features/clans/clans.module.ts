@@ -8,8 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ClanDetailsComponent } from './clan-details/clan-details.component';
 import { CoreModule } from '../../core/core.module';
 import { RouterLink } from '@angular/router';
-import { RaffleListComponent } from './raffle-list/raffle-list.component';
-import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.component';
+import { RafflesModule } from '../raffles/raffles.module';
 
 
 
@@ -18,9 +17,7 @@ import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.com
     ClanListComponent,
     ClanListItemComponent,
     CreateClanComponent,
-    ClanDetailsComponent,
-    RaffleListComponent,
-    RaffleListItemComponent
+    ClanDetailsComponent
   ],
   imports: [
     CommonModule,
@@ -28,6 +25,7 @@ import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.com
     ReactiveFormsModule,
     CoreModule,
     RouterLink,
+    RafflesModule
   ],
   exports: [
     ClanListComponent,

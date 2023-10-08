@@ -6,7 +6,6 @@ import { CreateClanComponent } from './features/clans/create-clan/create-clan.co
 import { CreateRaffleComponent } from './features/raffles/create-raffle/create-raffle.component';
 import { RaffleDetailsComponent } from './features/raffles/raffle-details/raffle-details.component';
 import { ClanDetailsComponent } from './features/clans/clan-details/clan-details.component';
-import { RaffleListComponent } from './features/clans/raffle-list/raffle-list.component';
 
 const routes: Routes = [
   {
