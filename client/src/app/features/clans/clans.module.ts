@@ -9,6 +9,7 @@ import { ClanDetailsComponent } from './clan-details/clan-details.component';
 import { CoreModule } from '../../core/core.module';
 import { RouterLink } from '@angular/router';
 import { RafflesModule } from '../raffles/raffles.module';
+import { CreateClanButtonComponent } from './create-clan-button/create-clan-button.component';
 
 
 
@@ -17,7 +18,8 @@ import { RafflesModule } from '../raffles/raffles.module';
     ClanListComponent,
     ClanListItemComponent,
     CreateClanComponent,
-    ClanDetailsComponent
+    ClanDetailsComponent,
+    CreateClanButtonComponent
   ],
   imports: [
     CommonModule,
