@@ -10,8 +10,6 @@
     <a class="text-md cursor-pointer hover:text-primary-700" (click)="account.logout()">Logout</a>
   </div>
 </header>
-<main class="w-screen">
-  <div class="mx-auto">
-    <ng-content/>
-  </div>
+<main class="container max-w-screen-lg mx-auto w-screen">
+  <ng-content/>
 </main>

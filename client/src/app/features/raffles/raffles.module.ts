@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.component';
 import { RaffleListComponent } from './raffle-list/raffle-list.component';
 import { RouterLink } from '@angular/router';
+import { CreateRaffleButtonComponent } from './create-raffle-button/create-raffle-button.component';
 
 
 
@@ -24,7 +25,8 @@ import { RouterLink } from '@angular/router';
     EntryListComponent,
     CreateEntryComponent,
     RaffleListItemComponent,
-    RaffleListComponent
+    RaffleListComponent,
+    CreateRaffleButtonComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +41,8 @@ import { RouterLink } from '@angular/router';
   ],
   exports: [
     RaffleListItemComponent,
-    RaffleListComponent
+    RaffleListComponent,
+    CreateRaffleButtonComponent
   ]
 })
 export class RafflesModule { }

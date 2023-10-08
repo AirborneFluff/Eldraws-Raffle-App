@@ -5,6 +5,7 @@ import { AppFrameComponent } from './components/app-frame/app-frame.component';
 import { ShortNumberPipe } from './pipes/short-number';
 import { ReversePipe } from './pipes/reverse';
 import { TimeUntilPipe } from './pipes/time-until.pipe';
+import { ComponentFrameComponent } from './components/component-frame/component-frame.component';
 
 
 
@@ -13,7 +14,8 @@ import { TimeUntilPipe } from './pipes/time-until.pipe';
     AppFrameComponent,
     ShortNumberPipe,
     ReversePipe,
-    TimeUntilPipe
+    TimeUntilPipe,
+    ComponentFrameComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import { TimeUntilPipe } from './pipes/time-until.pipe';
     AppFrameComponent,
     ShortNumberPipe,
     ReversePipe,
-    TimeUntilPipe
+    TimeUntilPipe,
+    ComponentFrameComponent
   ]
 })
 export class CoreModule { }
