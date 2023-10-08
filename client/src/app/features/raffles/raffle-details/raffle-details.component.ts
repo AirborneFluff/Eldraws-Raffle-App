@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import {
-  combineLatest, of,
+  combineLatest, map, of,
   switchMap
 } from 'rxjs';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
@@ -25,6 +25,14 @@ export class RaffleDetailsComponent {
         if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
         return of(raffle);
       }))
+
+  editable$ = this.raffle$.pipe(
+    map(raffle => {
+      if (typeof raffle.closeDate !== 'string') return;
+      const date = Date.parse(raffle.closeDate);
+      return date > new Date().getTime();
+    })
+  )
 
   constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream) {
   }

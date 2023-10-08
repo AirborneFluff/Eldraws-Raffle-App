@@ -8,4 +8,5 @@ import { Raffle } from '../../../data/models/raffle';
 })
 export class RaffleListComponent {
   @Input() raffles: Raffle[] = [];
+  @Input() title: 'Open Raffles' | 'Closed Raffles' = 'Open Raffles';
 }

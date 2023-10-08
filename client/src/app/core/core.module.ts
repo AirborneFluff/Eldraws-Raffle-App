@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppFrameComponent } from './components/app-frame/app-frame.component';
 import { ShortNumberPipe } from './pipes/short-number';
 import { ReversePipe } from './pipes/reverse';
+import { TimeUntilPipe } from './pipes/time-until.pipe';
 
 
 
@@ -11,7 +12,8 @@ import { ReversePipe } from './pipes/reverse';
   declarations: [
     AppFrameComponent,
     ShortNumberPipe,
-    ReversePipe
+    ReversePipe,
+    TimeUntilPipe
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import { ReversePipe } from './pipes/reverse';
   exports: [
     AppFrameComponent,
     ShortNumberPipe,
-    ReversePipe
+    ReversePipe,
+    TimeUntilPipe
   ]
 })
 export class CoreModule { }
