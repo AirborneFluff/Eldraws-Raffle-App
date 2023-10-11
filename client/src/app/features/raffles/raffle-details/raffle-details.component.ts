@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import {
   combineLatest, map, of,
-  switchMap
+  switchMap, tap
 } from 'rxjs';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RaffleStream } from '../../../core/streams/raffle-stream';
 import { Raffle } from '../../../data/models/raffle';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-raffle-details',
@@ -24,7 +25,8 @@ export class RaffleDetailsComponent {
       switchMap(([raffleId, clanId, raffle]) => {
         if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
         return of(raffle);
-      }))
+      }),
+      tap(raffle => this.title.setTitle(raffle.title)))
 
   editable$ = this.raffle$.pipe(
     map(raffle => {
@@ -33,7 +35,7 @@ export class RaffleDetailsComponent {
     })
   )
 
-  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream) {
+  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: Title) {
   }
 
   getDonations(raffle: Raffle): number {
