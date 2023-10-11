@@ -1,5 +1,5 @@
-<component-frame *ngFor="let clan of (clans$ | async)">
+<ng-container *ngFor="let clan of (clans$ | async)">
   <clan-list-item [clan]="clan"/>
-</component-frame>
+</ng-container>
 
 <app-create-clan-button/>
