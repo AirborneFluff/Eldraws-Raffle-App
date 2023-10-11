@@ -1,27 +1,25 @@
-<div class="max-w-md mx-auto sm:mt-24">
-  <app-form-dialog>
-    <app-form-header>New Raffle</app-form-header>
+<app-form-dialog>
+  <app-form-header>New Raffle</app-form-header>
 
-    <form [formGroup]="raffleForm">
-      <app-form-field>
-        <app-text-input [formControl]="name" label="Raffle Title"/>
-      </app-form-field>
-      <app-form-field>
-        <app-text-input [formControl]="entryCost" label="Entry Cost"/>
-      </app-form-field>
-      <app-form-field>
-        <app-form-date-input [formControl]="openDate" label="Open Date"/>
-      </app-form-field>
-      <app-form-field>
-        <app-form-date-input [formControl]="closeDate" label="Close Date"/>
-      </app-form-field>
-      <app-form-field>
-        <app-form-date-input [formControl]="drawDate" label="Draw Date"/>
-      </app-form-field>
+  <form [formGroup]="raffleForm">
+    <app-form-field>
+      <app-text-input [formControl]="name" label="Raffle Title"/>
+    </app-form-field>
+    <app-form-field>
+      <app-text-input [formControl]="entryCost" label="Entry Cost"/>
+    </app-form-field>
+    <app-form-field>
+      <app-form-date-input [formControl]="openDate" label="Open Date"/>
+    </app-form-field>
+    <app-form-field>
+      <app-form-date-input [formControl]="closeDate" label="Close Date"/>
+    </app-form-field>
+    <app-form-field>
+      <app-form-date-input [formControl]="drawDate" label="Draw Date"/>
+    </app-form-field>
 
-      <app-form-actions>
-        <app-form-button [disabled]="name.invalid" (onClick)="submit()">Create</app-form-button>
-      </app-form-actions>
-    </form>
-  </app-form-dialog>
-</div>
+    <app-form-actions>
+      <app-form-button [disabled]="name.invalid" (onClick)="submit()">Create</app-form-button>
+    </app-form-actions>
+  </form>
+</app-form-dialog>

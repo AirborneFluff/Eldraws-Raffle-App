@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
+import { CreateClanComponent } from '../create-clan/create-clan.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'clan-list',
@@ -9,6 +11,10 @@ import { ApiService } from '../../../core/services/api.service';
 export class ClanListComponent {
   clans$ = this.api.Clans.getAll();
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private dialog: MatDialog) {
+  }
+
+  openCreateClan() {
+    this.dialog.open(CreateClanComponent)
   }
 }

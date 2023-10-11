@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-clan',
@@ -15,7 +16,7 @@ export class CreateClanComponent {
   name = new FormControl('', Validators.required)
   invalidForm$ = new Subject<boolean>();
 
-  constructor(private api: ApiService, private router: Router) {
+  constructor(private api: ApiService, private router: Router, public dialogRef: MatDialogRef<CreateClanComponent>) {
     this.initializeForm();
   }
 
@@ -34,6 +35,7 @@ export class CreateClanComponent {
           next: newClan => {
             this.invalidForm$.next(false);
             this.router.navigateByUrl('/clans/' + newClan.id, { state: newClan });
+            this.dialogRef.close();
           },
           error: () => {
             this.invalidForm$.next(true);
