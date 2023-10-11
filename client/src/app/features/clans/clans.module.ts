@@ -10,6 +10,7 @@ import { CoreModule } from '../../core/core.module';
 import { RouterLink } from '@angular/router';
 import { RafflesModule } from '../raffles/raffles.module';
 import { CreateClanButtonComponent } from './create-clan-button/create-clan-button.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -27,7 +28,8 @@ import { CreateClanButtonComponent } from './create-clan-button/create-clan-butt
     ReactiveFormsModule,
     CoreModule,
     RouterLink,
-    RafflesModule
+    RafflesModule,
+    MatDialogModule
   ],
   exports: [
     ClanListComponent,

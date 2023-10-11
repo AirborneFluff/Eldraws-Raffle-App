@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { NewRaffle } from '../../../data/models/new-raffle';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -31,7 +32,7 @@ export class CreateRaffleComponent {
 
   invalidForm$ = new Subject<boolean>();
 
-  constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream) {
+  constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream, public dialogRef: MatDialogRef<CreateRaffleComponent>) {
     this.initializeForm();
   }
 
@@ -55,6 +56,7 @@ export class CreateRaffleComponent {
         next: newRaffle => {
           this.invalidForm$.next(false);
           this.router.navigateByUrl('/clans/' + newRaffle.clan.id + '/raffles/' + newRaffle.id, { state: newRaffle });
+          this.dialogRef.close();
         },
         error: () => {
           this.invalidForm$.next(true);
