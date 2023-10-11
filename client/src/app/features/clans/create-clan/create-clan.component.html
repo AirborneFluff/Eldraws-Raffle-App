@@ -8,6 +8,7 @@
 
     <app-form-error *ngIf="invalidForm$ | async">There was an issue creating the clan</app-form-error>
     <app-form-actions>
+      <app-form-button type="secondary" (onClick)="dialogRef.close()">Cancel</app-form-button>
       <app-form-button [disabled]="name.invalid" (onClick)="submit()">Create</app-form-button>
     </app-form-actions>
   </form>
