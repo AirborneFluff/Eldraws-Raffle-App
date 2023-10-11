@@ -11,6 +11,23 @@
             <p class="font-extralight text-2xl leading-tight font-display">{{clan.raffles.length}}</p>
         </div>
     </div>
+
+    <h1 class="text-6xl">Fix auto update on clan change with clan stream</h1>
+
+    <div class="pt-10 max-w-xs">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>manage_accounts</mat-icon>
+          </mat-panel-title>
+          <mat-panel-description>
+            Members
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+      <clan-member-list [members]="clan.members"/>
+      <add-clan-member-button *ngIf="isOwner$ | async"/>
+      </mat-expansion-panel>
+    </div>
   </component-frame>
   <create-raffle-button (click)="openCreateRaffle()"/>
   <app-raffle-list [raffles]="clan.raffles"></app-raffle-list>

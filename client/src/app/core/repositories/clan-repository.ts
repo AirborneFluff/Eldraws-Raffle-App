@@ -22,4 +22,8 @@ export class ClanRepository extends BaseRepository {
       gamertag: gamertag
     })
   }
+
+  public addMember(clanId: number, memberId: string) {
+    return this.http.post<Clan>(this.baseUrl + `${clanId}/members/${memberId}`, {})
+  }
 }
