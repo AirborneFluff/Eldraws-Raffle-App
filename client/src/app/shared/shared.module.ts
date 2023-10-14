@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from "@angular/forms";
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig } from '@angular/material/dialog';
+import { DialogModule } from './dialog/dialog.module';
 
 
 
@@ -11,7 +12,8 @@ import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig } from '@angular/material/d
     CommonModule
   ],
   exports: [
-    FormsModule
+    FormsModule,
+    DialogModule
   ],
   providers: [
     {
