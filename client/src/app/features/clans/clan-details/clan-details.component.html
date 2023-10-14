@@ -22,7 +22,7 @@
             Members
           </mat-panel-description>
         </mat-expansion-panel-header>
-      <clan-member-list [members]="clan.members"/>
+      <clan-member-list [members]="clan.members" [owner]="clan.owner" [isOwner]="isOwner$ | async"/>
       <add-clan-member-button *ngIf="isOwner$ | async"/>
       </mat-expansion-panel>
     </div>

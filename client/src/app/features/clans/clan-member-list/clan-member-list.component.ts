@@ -15,10 +15,14 @@ import { ClanStream } from '../../../core/streams/clan-stream';
 })
 export class ClanMemberListComponent {
   @Input() members: Member[] = [];
+  @Input() owner!: Member;
+  @Input() isOwner: boolean | null = false;
 
   constructor(public dialog: MatDialog, private api: ApiService, private clanId$: ClanIdStream, private clan$: ClanStream) {}
 
   openConfirmDialog(member: Member) {
+    if (!this.isOwner) return;
+
     this.dialog.open(ConfirmDialogComponent, {
       data : {
         title: 'Are you sure?',
