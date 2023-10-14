@@ -37,6 +37,7 @@ public sealed class ClanRepository
         return _context.Clans
             .Include(c => c.Owner)
             .Include(c => c.Members)
+            .ThenInclude(m => m.Member)
             .Include(c => c.Entrants)
             .Include(c => c.Raffles)
             .FirstOrDefaultAsync(clan => clan.Id == id);

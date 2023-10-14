@@ -4,6 +4,9 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { Location } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-frame',
@@ -12,7 +15,13 @@ import { Location } from '@angular/common';
 })
 export class AppFrameComponent {
 
-  constructor(public account: AccountService, public title: Title, private route: ActivatedRoute, private router: Router, private location: Location) {
+  constructor(public account: AccountService,
+              public title: Title,
+              private route: ActivatedRoute,
+              private router: Router,
+              private location: Location,
+              private dialog: MatDialog,
+              private clipboard: ClipboardService) {
   }
 
   baseRoute$ = this.router.events.pipe(
@@ -25,5 +34,23 @@ export class AppFrameComponent {
   back() {
     this.location.back();
     //this.router.navigate(['./'], {relativeTo: this.route})
+  }
+
+  showMemberId() {
+    let id: any;
+    this.account.currentUser$.subscribe(user => id = user?.id);
+
+    if (!id) return;
+
+    this.dialog.open(ConfirmDialogComponent, {
+      data : {
+        title: 'Member Id',
+        message: `Your unique Member Id is: <br> ${id}`,
+        btnOkText: 'Copy',
+        btnCancelText: 'Close'
+      }
+    }).afterClosed().subscribe(value => {
+      if (value) this.clipboard.copy(id);
+    })
   }
 }

@@ -11,6 +11,14 @@ import { RouterLink } from '@angular/router';
 import { RafflesModule } from '../raffles/raffles.module';
 import { CreateClanButtonComponent } from './create-clan-button/create-clan-button.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { ClanMemberListComponent } from './clan-member-list/clan-member-list.component';
+import { AddClanMemberButtonComponent } from './add-clan-member-button/add-clan-member-button.component';
+import { AddClanMemberComponent } from './add-clan-member/add-clan-member.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 
@@ -20,7 +28,10 @@ import { MatDialogModule } from '@angular/material/dialog';
     ClanListItemComponent,
     CreateClanComponent,
     ClanDetailsComponent,
-    CreateClanButtonComponent
+    CreateClanButtonComponent,
+    ClanMemberListComponent,
+    AddClanMemberButtonComponent,
+    AddClanMemberComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +40,12 @@ import { MatDialogModule } from '@angular/material/dialog';
     CoreModule,
     RouterLink,
     RafflesModule,
-    MatDialogModule
+    MatDialogModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   exports: [
     ClanListComponent,

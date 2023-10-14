@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
-import { switchMap, tap } from 'rxjs';
+import { switchMap, tap, combineLatest, map, of } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateRaffleComponent } from '../../raffles/create-raffle/create-raffle.component';
 import { Title } from '@angular/platform-browser';
+import { AccountService } from '../../../core/services/account.service';
+import { ClanStream } from '../../../core/streams/clan-stream';
 
 @Component({
   selector: 'app-clan-details',
@@ -13,13 +15,27 @@ import { Title } from '@angular/platform-browser';
   styleUrls: ['./clan-details.component.scss']
 })
 export class ClanDetailsComponent {
-  constructor(private clanId$: ClanIdStream, private api: ApiService, private dialog: MatDialog, private title: Title) {
+  constructor(private clanId$: ClanIdStream, private api: ApiService, private dialog: MatDialog, private title: Title, private account: AccountService, private clanUpdates$: ClanStream) {
   }
 
-  clan$ = this.clanId$.pipe(
-    notNullOrUndefined(),
-    switchMap(clanId => this.api.Clans.getById(clanId)),
+  clan$ = combineLatest([
+    this.clanId$.pipe(notNullOrUndefined()),
+    this.clanUpdates$])
+    .pipe(
+      switchMap(([clanId, clan]) => {
+        if (!clan) return this.api.Clans.getById(clanId);
+        return of(clan);
+      }),
     tap(clan => this.title.setTitle(clan.name))
+  )
+
+  isOwner$ = combineLatest([
+    this.clan$,
+    this.account.currentUser$
+  ]).pipe(
+    map(([clan, user]) => {
+      return clan.owner.id === user?.id
+    })
   )
 
   openCreateRaffle() {

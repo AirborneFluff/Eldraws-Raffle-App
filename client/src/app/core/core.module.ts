@@ -6,6 +6,7 @@ import { ShortNumberPipe } from './pipes/short-number';
 import { ReversePipe } from './pipes/reverse';
 import { TimeUntilPipe } from './pipes/time-until.pipe';
 import { ComponentFrameComponent } from './components/component-frame/component-frame.component';
+import { ClipboardModule } from 'ngx-clipboard';
 
 
 
@@ -19,7 +20,8 @@ import { ComponentFrameComponent } from './components/component-frame/component-
   ],
   imports: [
     CommonModule,
-    HttpClientModule
+    HttpClientModule,
+    ClipboardModule
   ],
   exports: [
     AppFrameComponent,
