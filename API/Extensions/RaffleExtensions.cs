@@ -8,7 +8,7 @@ public static class RaffleExtensions
     {
         var requiredTickets = (int) Math.Floor((decimal) donation / raffle.EntryCost);
         if (requiredTickets == 0) return new Tuple<int, int>(0, 0);
-        if (raffle.Entries.Count == 0) return new Tuple<int, int>(1, requiredTickets + 1);
+        if (raffle.Entries.Count == 0) return new Tuple<int, int>(1, requiredTickets);
 
         var lastTicket = raffle.Entries.Max(e => e.Tickets.Item2);
         return new Tuple<int, int>(lastTicket + 1, lastTicket + requiredTickets);
