@@ -1,3 +1,6 @@
-<div class="w-full pointer-events-none mb-2 py-1" *ngFor="let member of members">
-  <p>{{member.userName}}</p>
+<div class="w-full mb-2 py-1 flex justify-between align-middle" *ngFor="let member of members">
+  <span class="pointer-events-none">{{member.userName}}</span>
+  <div class="text-gray-400 hover:text-red-600 cursor-pointer transition hover:duration-500" (click)="openConfirmDialog(member)">
+    <mat-icon>remove_circle_outline</mat-icon>
+  </div>
 </div>

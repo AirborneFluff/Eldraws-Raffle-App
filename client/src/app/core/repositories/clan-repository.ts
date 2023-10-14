@@ -26,4 +26,8 @@ export class ClanRepository extends BaseRepository {
   public addMember(clanId: number, memberId: string) {
     return this.http.post<Clan>(this.baseUrl + `${clanId}/members/${memberId}`, {})
   }
+
+  public removeMember(clanId: number, memberId: string) {
+    return this.http.delete<Clan>(this.baseUrl + `${clanId}/members/${memberId}`, {})
+  }
 }

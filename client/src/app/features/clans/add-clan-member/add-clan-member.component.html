@@ -1,10 +1,9 @@
 <h1 mat-dialog-title>Add Member</h1>
 <div mat-dialog-content>
-  <div class="pt-8">
-    <app-form-field>
-      <app-text-input [formControl]="memberId" label="Member Id"></app-text-input>
-    </app-form-field>
-  </div>
+  <p class="mb-6">Ask the member for their unique Member Id</p>
+  <app-form-field>
+    <app-text-input [formControl]="memberId" label="Member Id"></app-text-input>
+  </app-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>
