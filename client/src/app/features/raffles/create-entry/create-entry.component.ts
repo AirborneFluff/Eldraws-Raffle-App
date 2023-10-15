@@ -4,7 +4,7 @@ import {
   BehaviorSubject,
   combineLatest,
   map,
-  of, scan,
+  of, scan, shareReplay,
   startWith,
   Subject, Subscription,
   switchMap, tap,
@@ -38,7 +38,9 @@ export class CreateEntryComponent implements OnDestroy {
       switchMap((id) => this.api.Clans.getById(id).pipe(
         tap(() => this.entrantsLoading = false),
         map(clan => clan.entrants))))
-    ]).pipe(map(([arr1, arr2]) => [...arr1, ...arr2]))
+    ]).pipe(
+      map(([arr1, arr2]) => [...arr1, ...arr2]),
+      shareReplay({refCount: true, bufferSize: 1}))
 
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl(null, [Validators.required, Validators.min(0)])

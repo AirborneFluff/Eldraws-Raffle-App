@@ -15,9 +15,7 @@ export class RaffleListComponent {
   }
   @Input() closed: boolean = false;
 
-  constructor() {
-    this.currentRaffles$.subscribe();
-  }
+  constructor() {}
 
   oldRaffles$ = this.rafflesSource$.pipe(
     map(raffles => {

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subject, switchMap } from 'rxjs';
+import { Subject, Subscription, switchMap } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { Router } from '@angular/router';
 import { NewRaffle } from '../../../data/models/new-raffle';
@@ -22,7 +22,7 @@ INITIAL_DRAW_DATE.setTime(INITIAL_CLOSE_DATE.getTime() + 3600000);
   templateUrl: './create-raffle.component.html',
   styleUrls: ['./create-raffle.component.scss']
 })
-export class CreateRaffleComponent {
+export class CreateRaffleComponent implements OnDestroy {
   raffleForm!: FormGroup;
 
   name = new FormControl('', Validators.required)
@@ -33,8 +33,14 @@ export class CreateRaffleComponent {
 
   invalidForm$ = new Subject<boolean>();
 
+  subscription = new Subscription();
+
   constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream, public dialogRef: MatDialogRef<CreateRaffleComponent>) {
     this.initializeForm();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   initializeForm() {
@@ -52,7 +58,7 @@ export class CreateRaffleComponent {
     const raffle: NewRaffle = this.raffleForm.value;
     raffle.entryCost = parseNumericSuffix(raffle.entryCost.toString());
 
-    this.clanId$.pipe(
+    const subscription = this.clanId$.pipe(
       notNullOrUndefined(),
       switchMap(clanId => this.api.Raffles.addNew(clanId, raffle))
     ).subscribe({
@@ -66,5 +72,7 @@ export class CreateRaffleComponent {
         }
       }
     )
+
+    this.subscription.add(subscription);
   }
 }
