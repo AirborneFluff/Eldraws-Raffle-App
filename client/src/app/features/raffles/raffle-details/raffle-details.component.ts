@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import {
-  combineLatest, map, of,
+  combineLatest, map, of, shareReplay,
   switchMap, tap
 } from 'rxjs';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
@@ -26,7 +26,8 @@ export class RaffleDetailsComponent implements OnDestroy {
         if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
         return of(raffle);
       }),
-      tap(raffle => this.title.setTitle(raffle.title)))
+      tap(raffle => this.title.setTitle(raffle.title)),
+      shareReplay({refCount: true, bufferSize: 1}))
 
   editable$ = this.raffle$.pipe(
     map(raffle => {

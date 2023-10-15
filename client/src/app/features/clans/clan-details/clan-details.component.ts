@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
-import { switchMap, tap, combineLatest, map, of } from 'rxjs';
+import { switchMap, tap, combineLatest, map, of, shareReplay } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateRaffleComponent } from '../../raffles/create-raffle/create-raffle.component';
@@ -30,8 +30,8 @@ export class ClanDetailsComponent implements OnDestroy {
         if (!clan) return this.api.Clans.getById(clanId);
         return of(clan);
       }),
-    tap(clan => this.title.setTitle(clan.name))
-  )
+    tap(clan => this.title.setTitle(clan.name)),
+    shareReplay({refCount: true, bufferSize: 1}))
 
   isOwner$ = combineLatest([
     this.clan$,
@@ -39,8 +39,7 @@ export class ClanDetailsComponent implements OnDestroy {
   ]).pipe(
     map(([clan, user]) => {
       return clan.owner.id === user?.id
-    })
-  )
+    }))
 
   openCreateRaffle() {
     this.dialog.open(CreateRaffleComponent);
