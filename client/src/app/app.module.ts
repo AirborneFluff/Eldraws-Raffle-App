@@ -8,8 +8,6 @@ import { SharedModule } from "./shared/shared.module";
 import { FeaturesModule } from "./features/features.module";
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-import { CustomTitleStrategy } from './core/misc/title-strategy';
-import { TitleStrategy } from '@angular/router';
 import { ClansModule } from './features/clans/clans.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -31,10 +29,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    },
-    {
-      provide: TitleStrategy,
-      useClass: CustomTitleStrategy
     }
   ],
   bootstrap: [AppComponent]

@@ -5,9 +5,9 @@ import { switchMap, tap, combineLatest, map, of, shareReplay } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateRaffleComponent } from '../../raffles/create-raffle/create-raffle.component';
-import { Title } from '@angular/platform-browser';
 import { AccountService } from '../../../core/services/account.service';
 import { ClanStream } from '../../../core/streams/clan-stream';
+import { PageTitleService } from '../../../core/services/page-title.service';
 
 @Component({
   selector: 'app-clan-details',
@@ -15,7 +15,8 @@ import { ClanStream } from '../../../core/streams/clan-stream';
   styleUrls: ['./clan-details.component.scss']
 })
 export class ClanDetailsComponent implements OnDestroy {
-  constructor(private clanId$: ClanIdStream, private api: ApiService, private dialog: MatDialog, private title: Title, private account: AccountService, private clanUpdates$: ClanStream) {
+  constructor(private clanId$: ClanIdStream, private api: ApiService, private dialog: MatDialog, private title: PageTitleService, private account: AccountService, private clanUpdates$: ClanStream) {
+    title.busy();
   }
 
   ngOnDestroy(): void {

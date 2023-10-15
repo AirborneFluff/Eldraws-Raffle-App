@@ -3,7 +3,13 @@
     <div class="flex items-center">
       <a [ngClass]="{'hidden' : baseRoute$ | async}"
          (click)="back()" class="mr-2 sm:mr-6 px-2 cursor-pointer font-semibold text-xl leading-none"><</a>
-      <h2 class="text-3xl font-light leading-none">{{title.getTitle()}}</h2>
+
+      <ng-container *ngIf="!(title.loading$ | async) else titleLoading">
+        <h2 class="text-3xl font-light leading-none">{{title.getTitle()}}</h2>
+      </ng-container>
+      <ng-template #titleLoading>
+        <h2 class="text-3xl font-light leading-none placeholder-text">...</h2>
+      </ng-template>
     </div>
 
     <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
