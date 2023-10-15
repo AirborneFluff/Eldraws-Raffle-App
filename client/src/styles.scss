@@ -36,6 +36,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   animation: placeholder-glow 2s ease-in-out infinite;
 }
 
+.placeholder-text {
+  cursor: wait;
+  opacity: .75;
+
+  -webkit-animation: placeholder-glow 1s ease-in-out infinite;
+  animation: placeholder-glow 1s ease-in-out infinite;
+}
+
 .placeholder-1 {
   max-width: 4rem;
 }
