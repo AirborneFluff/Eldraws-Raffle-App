@@ -7,6 +7,7 @@ import { NewRaffle } from '../../../data/models/new-raffle';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialogRef } from '@angular/material/dialog';
+import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -48,10 +49,12 @@ export class CreateRaffleComponent {
 
   submit() {
     if (this.raffleForm.invalid) return;
+    const raffle: NewRaffle = this.raffleForm.value;
+    raffle.entryCost = parseNumericSuffix(raffle.entryCost.toString());
 
     this.clanId$.pipe(
       notNullOrUndefined(),
-      switchMap(clanId => this.api.Raffles.addNew(clanId, this.raffleForm.value as NewRaffle))
+      switchMap(clanId => this.api.Raffles.addNew(clanId, raffle))
     ).subscribe({
         next: newRaffle => {
           this.invalidForm$.next(false);
