@@ -15,6 +15,7 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import { RaffleStream } from '../../../core/streams/raffle-stream';
 import { Entrant } from '../../../data/models/entrant';
+import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
 
 @Component({
   selector: 'app-create-entry',
@@ -40,7 +41,6 @@ export class CreateEntryComponent {
 
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl(null, [Validators.required, Validators.min(0)])
-
 
   filteredEntrants$ = combineLatest([
     this.entrants$,
@@ -84,7 +84,7 @@ export class CreateEntryComponent {
         switchMap(([entrant, clanId, raffleId]) => {
           return this.api.Raffles.addEntry(clanId, raffleId, {
             entrantId: entrant.id,
-            donation: donation
+            donation: parseNumericSuffix(donation)
           })
         })
       ).subscribe(x => {
