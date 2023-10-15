@@ -7,6 +7,9 @@ import { ReversePipe } from './pipes/reverse';
 import { TimeUntilPipe } from './pipes/time-until.pipe';
 import { ComponentFrameComponent } from './components/component-frame/component-frame.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 
 
@@ -21,7 +24,10 @@ import { ClipboardModule } from 'ngx-clipboard';
   imports: [
     CommonModule,
     HttpClientModule,
-    ClipboardModule
+    ClipboardModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule
   ],
   exports: [
     AppFrameComponent,
