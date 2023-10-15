@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 import {
   combineLatest, map, of,
@@ -16,7 +16,7 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './raffle-details.component.html',
   styleUrls: ['./raffle-details.component.scss']
 })
-export class RaffleDetailsComponent {
+export class RaffleDetailsComponent implements OnDestroy {
   raffle$ = combineLatest([
         this.raffleId$.pipe(notNullOrUndefined()),
         this.clanId$.pipe(notNullOrUndefined()),
@@ -36,6 +36,10 @@ export class RaffleDetailsComponent {
   )
 
   constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: Title) {
+  }
+
+  ngOnDestroy() {
+    this.raffleUpdates$.next(undefined);
   }
 
   getDonations(raffle: Raffle): number {
