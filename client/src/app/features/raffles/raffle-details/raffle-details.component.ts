@@ -9,7 +9,7 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RaffleStream } from '../../../core/streams/raffle-stream';
 import { Raffle } from '../../../data/models/raffle';
-import { Title } from '@angular/platform-browser';
+import { PageTitleService } from '../../../core/services/page-title.service';
 
 @Component({
   selector: 'app-raffle-details',
@@ -36,7 +36,8 @@ export class RaffleDetailsComponent implements OnDestroy {
     })
   )
 
-  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: Title) {
+  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: PageTitleService) {
+    title.busy();
   }
 
   ngOnDestroy() {

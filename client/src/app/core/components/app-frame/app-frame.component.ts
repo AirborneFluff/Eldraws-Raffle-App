@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../../services/account.service';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { ClipboardService } from 'ngx-clipboard';
+import { PageTitleService } from '../../services/page-title.service';
 
 @Component({
   selector: 'app-frame',
@@ -16,7 +16,7 @@ import { ClipboardService } from 'ngx-clipboard';
 export class AppFrameComponent {
 
   constructor(public account: AccountService,
-              public title: Title,
+              public title: PageTitleService,
               private route: ActivatedRoute,
               private router: Router,
               private location: Location,
@@ -33,7 +33,7 @@ export class AppFrameComponent {
 
   back() {
     this.location.back();
-    //this.router.navigate(['./'], {relativeTo: this.route})
+    this.title.setTitle('');
   }
 
   showMemberId() {
