@@ -1,15 +1,17 @@
-<header class="sticky bg-primary-500 dark:bg-primary-700 w-full flex py-2 justify-between items-center px-2 sm:px-6 text-gray-100 dark:text-primary-0">
-  <div class="flex items-center">
-    <a [ngClass]="{'invisible' : baseRoute$ | async}"
-      (click)="back()" class="mr-2 sm:mr-6 px-2 cursor-pointer font-semibold text-xl leading-none"><</a>
-    <h2 class="text-3xl font-light leading-none">{{title.getTitle()}}</h2>
-  </div>
+<header class="sticky bg-primary-500 w-full py-2 px-2 text-gray-100">
+  <div class="max-w-screen-lg sm:px-6 flex justify-between items-center mx-auto">
+    <div class="flex items-center">
+      <a [ngClass]="{'hidden' : baseRoute$ | async}"
+         (click)="back()" class="mr-2 sm:mr-6 px-2 cursor-pointer font-semibold text-xl leading-none"><</a>
+      <h2 class="text-3xl font-light leading-none">{{title.getTitle()}}</h2>
+    </div>
 
-  <div *ngIf="(account.currentUser$ | async) as user" class="text-right">
-    <div class="text-sm">Hello, {{user['userName']}}</div>
-    <div class="flex gap-4">
-      <a class="text-md cursor-pointer hover:text-primary-700" (click)="showMemberId()">MemberId</a>
-      <a class="text-md cursor-pointer hover:text-primary-700" (click)="account.logout()">Logout</a>
+    <div *ngIf="(account.currentUser$ | async) as user" class="text-right">
+      <div class="text-sm">Hello, {{user['userName']}}</div>
+      <div class="flex gap-4">
+        <a class="text-md cursor-pointer hover:text-primary-700" (click)="showMemberId()">MemberId</a>
+        <a class="text-md cursor-pointer hover:text-primary-700" (click)="account.logout()">Logout</a>
+      </div>
     </div>
   </div>
 </header>
