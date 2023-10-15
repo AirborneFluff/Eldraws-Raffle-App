@@ -17,7 +17,7 @@ export abstract class ModelStream<T> extends InjectableStream<T | undefined> {
     this.modelSource$ = source;
   }
 
-  next(value: T) {
+  next(value: T | undefined) {
     this.modelSource$.next(value);
   }
 }

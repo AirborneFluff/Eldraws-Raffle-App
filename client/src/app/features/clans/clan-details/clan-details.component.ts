@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
 import { switchMap, tap, combineLatest, map, of } from 'rxjs';
@@ -14,8 +14,12 @@ import { ClanStream } from '../../../core/streams/clan-stream';
   templateUrl: './clan-details.component.html',
   styleUrls: ['./clan-details.component.scss']
 })
-export class ClanDetailsComponent {
+export class ClanDetailsComponent implements OnDestroy {
   constructor(private clanId$: ClanIdStream, private api: ApiService, private dialog: MatDialog, private title: Title, private account: AccountService, private clanUpdates$: ClanStream) {
+  }
+
+  ngOnDestroy(): void {
+    this.clanUpdates$.next(undefined);
   }
 
   clan$ = combineLatest([
