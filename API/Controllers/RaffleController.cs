@@ -95,6 +95,7 @@ public sealed class RaffleController : ControllerBase
         if (entry == null) return NotFound("No entry found by that Id");
 
         raffle.Entries.Remove(entry);
+        raffle.RedistributeTickets();
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 

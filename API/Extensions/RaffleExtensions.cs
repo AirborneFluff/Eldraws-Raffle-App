@@ -13,4 +13,15 @@ public static class RaffleExtensions
         var lastTicket = raffle.Entries.Max(e => e.Tickets.Item2);
         return new Tuple<int, int>(lastTicket + 1, lastTicket + requiredTickets);
     }
+
+    public static void RedistributeTickets(this Raffle raffle)
+    {
+        var count = 1;
+        foreach (var entry in raffle.Entries)
+        {
+            var ticketCount = entry.Donation / raffle.EntryCost;
+            entry.Tickets = new Tuple<int, int>(count, count + ticketCount - 1);
+            count += ticketCount;
+        }
+    }
 }

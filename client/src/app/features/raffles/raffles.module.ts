@@ -15,6 +15,7 @@ import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.com
 import { RaffleListComponent } from './raffle-list/raffle-list.component';
 import { RouterLink } from '@angular/router';
 import { CreateRaffleButtonComponent } from './create-raffle-button/create-raffle-button.component';
+import { MatIconModule } from '@angular/material/icon';
 
 
 
@@ -37,7 +38,8 @@ import { CreateRaffleButtonComponent } from './create-raffle-button/create-raffl
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    RouterLink
+    RouterLink,
+    MatIconModule
   ],
   exports: [
     RaffleListItemComponent,
