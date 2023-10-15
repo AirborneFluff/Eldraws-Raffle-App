@@ -7,7 +7,7 @@ import {
   of, scan, shareReplay,
   startWith,
   Subject, Subscription,
-  switchMap, tap,
+  switchMap, take, tap,
   withLatestFrom
 } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
@@ -90,7 +90,7 @@ export class CreateEntryComponent implements OnDestroy {
       switchMap(([ent, clanId]) => {
         if (!ent) return this.api.Clans.addEntrant(clanId, gamertag).pipe(tap(entrant => this.addEntrantToList(entrant)));
         return of(ent)
-      }))
+      }), take(1))
       .pipe(
         withLatestFrom(this.clanId.pipe(notNullOrUndefined()), this.raffleId.pipe(notNullOrUndefined())),
         switchMap(([entrant, clanId, raffleId]) => {
