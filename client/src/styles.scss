@@ -19,3 +19,44 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-option-center .mdc-list-item__primary-text {
   margin-left: auto !important;
 }
+.placeholder,
+.placeholder-1,
+.placeholder-2,
+.placeholder-3,
+.placeholder-4,
+.placeholder-5,
+.placeholder-6 {
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait;
+  background-color: currentColor;
+  opacity: .5;
+
+  -webkit-animation: placeholder-glow 2s ease-in-out infinite;
+  animation: placeholder-glow 2s ease-in-out infinite;
+}
+
+.placeholder-1 {
+  max-width: 4rem;
+}
+.placeholder-2 {
+  max-width: 6rem;
+}
+.placeholder-3 {
+  max-width: 8rem;
+}
+.placeholder-4 {
+  max-width: 12rem;
+}
+.placeholder-5 {
+  max-width: 16rem;
+}
+.placeholder-6 {
+  max-width: 20rem;
+}
+
+@keyframes placeholder-glow {
+  50% {
+    opacity: .2;
+  }
+}

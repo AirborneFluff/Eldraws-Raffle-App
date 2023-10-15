@@ -1,8 +1,8 @@
 <component-frame>
   <div class="p-6">
-    <div class="flex justify-around flex-wrap">
-      <div class="mx-2">
-        <mat-form-field  appearance="outline">
+    <div class="flex justify-around flex-wrap gap-x-8 mb-4">
+      <div class="flex-grow">
+        <mat-form-field appearance="outline" class="w-full">
           <input class="form-control"
                  id="gamertagInput"
                  matInput placeholder="Gamertag"
@@ -23,8 +23,8 @@
         </mat-form-field>
       </div>
 
-      <div class="mx-2">
-        <mat-form-field appearance="outline">
+      <div class="flex-grow">
+        <mat-form-field appearance="outline" class="w-full">
           <input matInput placeholder="Donation" [formControl]="donation">
           <mat-error *ngIf="donation.hasError('required') || donation.hasError('min')">
             A donation is <strong>required</strong>
@@ -32,8 +32,16 @@
         </mat-form-field>
       </div>
     </div>
-    <div class="flex justify-center">
-      <app-form-button type="primary" (click)="submit()" [disabled]="entryForm.invalid">Add Entry</app-form-button>
-    </div>
+    <ng-container *ngIf="!(submitted$ | async) else submitted">
+      <button mat-raised-button class="w-full" (click)="submit()" [disabled]="entryForm.invalid">Add Entry</button>
+    </ng-container>
   </div>
 </component-frame>
+
+
+
+<ng-template #submitted>
+  <button mat-raised-button disabled class="w-full">
+    <mat-spinner diameter="24"></mat-spinner>
+  </button>
+</ng-template>

@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
+  BehaviorSubject,
   combineLatest,
   map,
   of, scan,
   startWith,
-  Subject,
+  Subject, Subscription,
   switchMap, tap,
   withLatestFrom
 } from 'rxjs';
@@ -22,7 +23,7 @@ import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
   templateUrl: './create-entry.component.html',
   styleUrls: ['./create-entry.component.scss']
 })
-export class CreateEntryComponent {
+export class CreateEntryComponent implements OnDestroy {
   entryForm!: FormGroup;
   entrantAdditionsSource$ = new Subject<Entrant>();
   entrantsLoading = true;
@@ -49,8 +50,15 @@ export class CreateEntryComponent {
     return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter))
   }))
 
+  submitted$ = new BehaviorSubject<boolean>(false);
+  entrySubmission = new Subscription();
+
   constructor(private api: ApiService, private clanId: ClanIdStream, private raffleId: RaffleIdStream, private raffleUpdates: RaffleStream) {
     this.initializeForm();
+  }
+
+  ngOnDestroy() {
+    this.entrySubmission.unsubscribe();
   }
 
   initializeForm() {
@@ -72,7 +80,9 @@ export class CreateEntryComponent {
     const donation = this.donation.value;
     if (!donation) return;
 
-    this.entrants$.pipe(
+    this.submitted$.next(true);
+
+    const subscription = this.entrants$.pipe(
       map(arr => arr.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase())),
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
       switchMap(([ent, clanId]) => {
@@ -89,8 +99,11 @@ export class CreateEntryComponent {
         })
       ).subscribe(x => {
         this.raffleUpdates.next(x);
+        this.submitted$.next(false);
         this.initializeForm();
     })
+
+    this.entrySubmission.add(subscription);
   }
 
   addEntrantToList(entrant: Entrant) {

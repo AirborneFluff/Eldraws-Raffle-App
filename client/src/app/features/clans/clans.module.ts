@@ -19,6 +19,7 @@ import { AddClanMemberComponent } from './add-clan-member/add-clan-member.compon
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-placeholder.component';
 
 
 
@@ -31,7 +32,8 @@ import { MatInputModule } from '@angular/material/input';
     CreateClanButtonComponent,
     ClanMemberListComponent,
     AddClanMemberButtonComponent,
-    AddClanMemberComponent
+    AddClanMemberComponent,
+    ClanListPlaceholderComponent
   ],
   imports: [
     CommonModule,
