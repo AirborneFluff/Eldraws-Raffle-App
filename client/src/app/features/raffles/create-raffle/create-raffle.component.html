@@ -25,8 +25,8 @@
     </app-form-field>
 
     <app-form-actions>
-      <app-form-button type="secondary" (onClick)="dialogRef.close()">Cancel</app-form-button>
       <app-form-button [disabled]="name.invalid" (onClick)="submit()">Create</app-form-button>
+      <app-form-button type="secondary" (onClick)="dialogRef.close()">Cancel</app-form-button>
     </app-form-actions>
   </form>
 </app-form-dialog>
