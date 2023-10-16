@@ -2,12 +2,18 @@
   <app-form-header>New Raffle</app-form-header>
 
   <form [formGroup]="raffleForm">
-    <app-form-field>
-      <app-text-input [formControl]="name" label="Raffle Title"/>
-    </app-form-field>
-    <app-form-field>
-      <app-text-input [formControl]="entryCost" label="Entry Cost"/>
-    </app-form-field>
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Title</mat-label>
+      <input matInput [formControl]="name" placeholder="Raffle Title">
+      <mat-error *ngIf="name.hasError('required')">Required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Title</mat-label>
+      <input matInput [formControl]="entryCost" placeholder="5000">
+      <mat-error *ngIf="entryCost.hasError('required')">Required</mat-error>
+    </mat-form-field>
+
     <app-form-field>
       <app-form-date-input [formControl]="openDate" label="Open Date"/>
     </app-form-field>
