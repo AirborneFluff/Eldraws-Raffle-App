@@ -23,17 +23,15 @@ public sealed class RaffleController : ControllerBase
 
     public RaffleController(IMapper mapper, UnitOfWork unitOfWork)
     {
-        this._unitOfWork = unitOfWork;
-        this._mapper = mapper;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [HttpGet("{raffleId:int}")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> CreateNewRaffle(int raffleId, int clanId)
+    public async Task<ActionResult> GetRaffle(int raffleId, int clanId)
     {
-        var raffle = HttpContext.GetRaffle();
-
-        return Ok(_mapper.Map<RaffleDTO>(raffle));
+        return Ok(_mapper.Map<RaffleDTO>(HttpContext.GetRaffle()));
     }
 
     [HttpPost]
