@@ -51,25 +51,22 @@ public sealed class ClansController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClanDTO>>> GetClans()
+    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetUserClans()
     {
         var user = HttpContext.GetUser();
         var clans = await _unitOfWork.ClanRepository.GetAllForUser(user.Id);
-        if (clans.Count == 0) return NotFound("You are not a member of any clans");
+        if (clans.Count == 0) return Ok(Enumerable.Empty<ClanInfoDTO>());
 
-        var clansResult = clans.Select(clan => _mapper.Map<ClanDTO>(clan));
+        var clansResult = clans.Select(clan => _mapper.Map<ClanInfoDTO>(clan));
         
         return Ok(clansResult);
     }
     
     [HttpGet("{clanId:int}")]
     [ServiceFilter(typeof(ValidateClanMember))]
-    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClans(int clanId)
+    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClan(int clanId)
     {
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
-        if (clan == null) return NotFound("No clan found by that Id");
-        
-        return Ok(_mapper.Map<ClanDTO>(clan));
+        return Ok(_mapper.Map<ClanDTO>(HttpContext.GetClan()));
     }
     
     [HttpDelete("{clanId:int}")]
@@ -89,7 +86,7 @@ public sealed class ClansController : ControllerBase
     public async Task<ActionResult<ClanDTO>> AddMember(string memberId, int clanId)
     {
         var clan = HttpContext.GetClan();
-        if (clan!.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
+        if (clan.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
             return Conflict("This user is already a member of this clan");
 
         var member = await _userManager.FindByIdAsync(memberId);
