@@ -49,7 +49,7 @@ export class CreateEntryComponent implements OnDestroy {
     this.entrants$,
     this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
   ]).pipe(map(([entrants, filter = '']) => {
-    return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter))
+    return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
   }))
 
   submitted$ = new BehaviorSubject<boolean>(false);
