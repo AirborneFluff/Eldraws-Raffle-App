@@ -7,18 +7,19 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-
-//.mat-mdc-form-field-bottom-align::before {
-//  display: none !important;
-//}
-
-.mat-mdc-form-field-infix {
-  padding-block: 0.5rem !important;
-  min-height: unset !important;
+.mdc-notched-outline__leading {
+  border-top-left-radius: 0.5rem !important;
+  border-bottom-left-radius: 0.5rem !important;
 }
-.mat-option-center .mdc-list-item__primary-text {
-  margin-left: auto !important;
+.mdc-notched-outline__trailing {
+  border-top-right-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
 }
+
+.mdc-notched-outline__notch {
+  border-right: none !important;
+}
+
 .placeholder,
 .placeholder-1,
 .placeholder-2,
