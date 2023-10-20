@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,10 @@ export class LoginComponent {
 
   invalidLogin$ = new Subject<boolean>();
 
-  constructor(private account: AccountService) {
+  constructor(private account: AccountService, router: Router) {
+    this.account.currentUser$.subscribe(user => {
+      if (!!user) router.navigate(['clans']);
+    });
     this.initializeForm();
   }
 
