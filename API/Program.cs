@@ -1,11 +1,11 @@
 using RaffleApi.Data;
 using RaffleApi.Entities;
-using RaffleApi.Helpers;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Newtonsoft.Json;
 using RaffleApi.Services;
 using RaffleApi.Extensions;
@@ -19,6 +19,15 @@ builder.Services.AddControllers()
         options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
         options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
     });
+
+builder.Services.AddRateLimiter(_ => _
+    .AddFixedWindowLimiter(policyName: "registration", options =>
+    {
+        options.PermitLimit = 1;
+        options.Window = TimeSpan.FromSeconds(10);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 6;
+    }));
 
 builder.Services.AddIdentityCore<AppUser>(opt =>
     {
@@ -54,6 +63,8 @@ builder.AddApplicationsServices();
 builder.AddActionFilters();
 
 var app = builder.Build();
+
+app.UseRateLimiter();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
