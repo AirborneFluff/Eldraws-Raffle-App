@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { map, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { AppUser, LoginDetails, RegisterDetails } from '../../data/data-models';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +11,10 @@ import { HttpClient } from '@angular/common/http';
 export class AccountService {
   baseUrl = environment.apiUrl + 'account/';
 
-  private currentUserSource$ = new ReplaySubject<AppUser | null>(1);
+  private currentUserSource$ = new BehaviorSubject<AppUser | null>(null);
   currentUser$ = this.currentUserSource$.asObservable();
-  constructor(private http: HttpClient) {
+
+  constructor(private http: HttpClient, private router: Router) {
     const val = localStorage.getItem('user');
     if (!val) return;
     const user: AppUser = JSON.parse(val);
@@ -33,6 +35,8 @@ export class AccountService {
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource$.next(null);
+
+    this.router.navigate(['login']);
   }
 
   register(details: RegisterDetails) {

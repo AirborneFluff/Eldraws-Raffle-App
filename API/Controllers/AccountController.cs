@@ -67,7 +67,11 @@ public sealed class AccountController: ControllerBase
         newUser.UserName = userDetails.UserName;
 
         var result = await _userManager.CreateAsync(newUser, userDetails.Password);
-        if (!result.Succeeded) return BadRequest("Couldn't add user");
+        if (!result.Succeeded)
+        {
+            var errorMsg = result.Errors.FirstOrDefault()?.Description;
+            return BadRequest(errorMsg ?? "Issue creating user");
+        }
 
         var userResult = _mapper.Map<AppUserDTO>(newUser);
         userResult.Token = await _tokenService.CreateToken(newUser);

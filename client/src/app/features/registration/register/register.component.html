@@ -1,1 +1,49 @@
-<p>register-form works!</p>
+<div class="max-w-md mx-auto mt-24">
+  <app-form-dialog>
+    <app-form-header>Register</app-form-header>
+
+    <form [formGroup]="registerForm">
+      <mat-form-field class="w-full mb-2">
+        <mat-label>Username</mat-label>
+        <input type="text" matInput [formControl]="userName"
+               placeholder="Username">
+        <mat-error *ngIf="userName.hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="userName.hasError('pattern')">
+          Only letters, numbers and the following characters: <strong>-._@+</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full mb-2">
+        <mat-label>Password</mat-label>
+        <input type="password" matInput [formControl]="password"
+               placeholder="Password">
+        <mat-error *ngIf="password.hasError('minlength')">
+          Password must contain at least <strong>6 characters</strong>
+        </mat-error>
+        <mat-error *ngIf="password.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full mb-2">
+        <mat-label>Confirm Password</mat-label>
+        <input type="password" matInput [formControl]="confirmPassword"
+               placeholder="Confirm Password">
+        <mat-error *ngIf="confirmPassword.hasError('isMatching')">
+          Passwords do not match
+        </mat-error>
+      </mat-form-field>
+
+      <mat-error *ngIf="registrationError$ | async as error">
+        {{error}}
+      </mat-error>
+
+      <app-form-actions>
+        <app-form-button [disabled]="registerForm.invalid" (onClick)="register()">Submit</app-form-button>
+        <app-form-link [link]="'/login'">Back</app-form-link>
+      </app-form-actions>
+    </form>
+  </app-form-dialog>
+</div>

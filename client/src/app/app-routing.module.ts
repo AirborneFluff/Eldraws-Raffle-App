@@ -6,17 +6,18 @@ import { CreateClanComponent } from './features/clans/create-clan/create-clan.co
 import { CreateRaffleComponent } from './features/raffles/create-raffle/create-raffle.component';
 import { RaffleDetailsComponent } from './features/raffles/raffle-details/raffle-details.component';
 import { ClanDetailsComponent } from './features/clans/clan-details/clan-details.component';
+import { LoginComponent } from './features/login/login/login.component';
+import { RegisterComponent } from './features/registration/register/register.component';
 
 const routes: Routes = [
+  { path: "", redirectTo: "login", pathMatch: 'full' },
+  { title: "Login", path: "login", component: LoginComponent },
+  { title: "Register", path: "register", component: RegisterComponent },
   {
     path: "",
     runGuardsAndResolvers: "always",
     canActivate: [authGuard],
     children: [
-      { path: "",
-        redirectTo: 'clans',
-        pathMatch: 'full'
-      },
       { title: "Clans", path: "clans", component: ClanListComponent },
       { title: "Create Clan", path: "clans/create", component: CreateClanComponent },
       { title: "Clans", path: "clans/:clanId", component: ClanDetailsComponent },
