@@ -66,7 +66,6 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/entries")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    [EnableRateLimiting("fixed")]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
     {
         var clan = HttpContext.GetClan();
