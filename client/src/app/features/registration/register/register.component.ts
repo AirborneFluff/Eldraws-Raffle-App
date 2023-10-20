@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { AccountService } from '../../../core/services/account.service';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -12,9 +12,11 @@ import { Subscription } from 'rxjs';
 export class RegisterComponent implements OnDestroy {
   registerForm!: FormGroup;
 
-  userName = new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)])
-  password = new FormControl('', Validators.required)
-  confirmPassword = new FormControl('', [Validators.required, this.matchValues('password')])
+  userName = new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-._@+]+$/)])
+  password = new FormControl('', [Validators.required, Validators.minLength(6)])
+  confirmPassword = new FormControl('', [Validators.required, Validators.minLength(6), this.matchValues('password')])
+
+  registrationError$ = new BehaviorSubject<string | null>(null);
 
   subscriptions = new Subscription();
 
@@ -52,7 +54,13 @@ export class RegisterComponent implements OnDestroy {
   }
 
   register() {
+    console.log(this.password.errors)
     if (this.registerForm.invalid) return;
-    this.subscriptions.add(this.account.register(this.registerForm.value).subscribe())
+    this.subscriptions.add(
+      this.account.register(this.registerForm.value).subscribe({
+        error: err => {
+          this.registrationError$.next(err.error)
+        }
+      }))
   }
 }

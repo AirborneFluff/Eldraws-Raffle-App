@@ -11,7 +11,7 @@
           Username is <strong>required</strong>
         </mat-error>
         <mat-error *ngIf="userName.hasError('pattern')">
-          Special characters or whitespace <strong>not allowed</strong>
+          Only letters, numbers and the following characters: <strong>-._@+</strong>
         </mat-error>
       </mat-form-field>
 
@@ -19,6 +19,9 @@
         <mat-label>Password</mat-label>
         <input type="password" matInput [formControl]="password"
                placeholder="Password">
+        <mat-error *ngIf="password.hasError('minlength')">
+          Password must contain at least <strong>6 characters</strong>
+        </mat-error>
         <mat-error *ngIf="password.hasError('required')">
           Password is <strong>required</strong>
         </mat-error>
@@ -32,6 +35,10 @@
           Passwords do not match
         </mat-error>
       </mat-form-field>
+
+      <mat-error *ngIf="registrationError$ | async as error">
+        {{error}}
+      </mat-error>
 
       <app-form-actions>
         <app-form-button [disabled]="registerForm.invalid" (onClick)="register()">Submit</app-form-button>
