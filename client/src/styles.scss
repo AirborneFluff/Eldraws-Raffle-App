@@ -20,6 +20,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border-right: none !important;
 }
 
+.mat-icon-fix {
+  transform: translateY(-3px);
+}
+
 .placeholder,
 .placeholder-1,
 .placeholder-2,
