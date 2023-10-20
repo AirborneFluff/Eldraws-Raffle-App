@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using RaffleApi.Data.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.RateLimiting;
 using RaffleApi.ActionFilters;
 using RaffleApi.Services;
 using RaffleApi.Extensions;
@@ -60,6 +61,7 @@ public sealed class AccountController: ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("registration")]
     [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Register(RegisterDTO userDetails)
     {

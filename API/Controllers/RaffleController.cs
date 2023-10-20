@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.ActionFilters;
 using RaffleApi.Data;
@@ -65,6 +66,7 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/entries")]
     [ServiceFilter(typeof(ValidateRaffle))]
+    [EnableRateLimiting("fixed")]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
     {
         var clan = HttpContext.GetClan();
