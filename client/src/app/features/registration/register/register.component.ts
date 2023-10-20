@@ -54,7 +54,6 @@ export class RegisterComponent implements OnDestroy {
   }
 
   register() {
-    console.log(this.password.errors)
     if (this.registerForm.invalid) return;
     this.subscriptions.add(
       this.account.register(this.registerForm.value).subscribe({
