@@ -13,7 +13,7 @@ export class LoginComponent {
   loginForm!: FormGroup;
 
   userName = new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-._@+]+$/)])
-  password = new FormControl('', Validators.required)
+  password = new FormControl('', [Validators.required, Validators.minLength(6)])
 
   invalidCredentials$ = new BehaviorSubject(false);
 
