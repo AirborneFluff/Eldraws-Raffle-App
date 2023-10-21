@@ -1,2 +1,0 @@
-              - name: Update .NET SDK
-                uses: martincostello/update-dotnet-sdk@v3.0.0
