@@ -17,6 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
+        working-directory: ./api
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
