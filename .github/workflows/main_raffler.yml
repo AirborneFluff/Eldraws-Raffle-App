@@ -24,13 +24,13 @@ jobs:
 
       - name: dotnet publish
         working-directory: ./api
-        run: dotnet publish -c Release -o ./myapp
+        run: dotnet publish -c Release -property:PublishDir=${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: ./myapp
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: windows-latest
