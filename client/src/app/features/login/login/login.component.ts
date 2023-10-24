@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
 import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,9 +17,10 @@ export class LoginComponent {
 
   invalidCredentials$ = new BehaviorSubject(false);
 
-  constructor(private account: AccountService, router: Router) {
+  constructor(private account: AccountService, router: Router, route: ActivatedRoute) {
+    const redirectParams = route.snapshot.queryParams['redirectURL'] ?? 'clans';
     this.account.currentUser$.subscribe(user => {
-      if (!!user) router.navigate(['clans']);
+      if (!!user) router.navigate([redirectParams]);
     });
     this.initializeForm();
   }
