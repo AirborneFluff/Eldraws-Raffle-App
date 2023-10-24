@@ -22,7 +22,7 @@ public class ValidateUser : IAsyncActionFilter
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            context.Result = new BadRequestObjectResult("Issue validating your account");
+            context.Result = new UnauthorizedObjectResult("Issue validating your account");
             return;
         }
         

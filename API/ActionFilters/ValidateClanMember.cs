@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using RaffleApi.Data;
 using RaffleApi.Extensions;
+using RaffleApi.Results;
 
 namespace RaffleApi.ActionFilters;
 
@@ -34,6 +35,6 @@ public class ValidateClanMember : IAsyncActionFilter
             return;
         };
 
-        context.Result = new UnauthorizedObjectResult("Only clan members are authorized to do that");
+        context.Result = new ForbiddenObjectResult("Only clan members are authorized to do that");
     }
 }
