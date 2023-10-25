@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../../services/account.service';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
-import { Location } from '@angular/common';
+import { NavigationEnd, Router } from '@angular/router';
+import {filter, map, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { ClipboardService } from 'ngx-clipboard';
 import { PageTitleService } from '../../services/page-title.service';
+import {UrlStream} from "../../streams/url-stream";
 
 @Component({
   selector: 'app-frame',
@@ -17,12 +17,13 @@ export class AppFrameComponent {
 
   constructor(public account: AccountService,
               public title: PageTitleService,
-              private route: ActivatedRoute,
               private router: Router,
-              private location: Location,
               private dialog: MatDialog,
-              private clipboard: ClipboardService) {
+              private clipboard: ClipboardService,
+              private url$: UrlStream) {
+    this.url$.subscribe();
   }
+
 
   baseRoute$ = this.router.events.pipe(
     filter(event => event instanceof NavigationEnd),
@@ -32,8 +33,11 @@ export class AppFrameComponent {
     }))
 
   back() {
-    this.location.back();
-    this.title.setTitle('');
+    this.url$.pipe(take(1)).subscribe(currentRoute => {
+      console.log(currentRoute)
+      const parentRoute = currentRoute.split('/').slice(0, -2).join('/');
+      this.router.navigateByUrl(parentRoute);
+    })
   }
 
   showMemberId() {
