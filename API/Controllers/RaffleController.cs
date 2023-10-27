@@ -140,7 +140,7 @@ public sealed class RaffleController : ControllerBase
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
 
-        prize.Description = prizeDto.Description;
+        _mapper.Map(prizeDto, prize);
         
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
