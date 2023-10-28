@@ -15,6 +15,11 @@ import { RaffleListComponent } from './raffle-list/raffle-list.component';
 import { RouterLink } from '@angular/router';
 import { CreateRaffleButtonComponent } from './create-raffle-button/create-raffle-button.component';
 import { MatIconModule } from '@angular/material/icon';
+import { PrizeListComponent } from './prize-list/prize-list.component';
+import { CreatePrizeComponent } from './create-prize/create-prize.component';
+import { CreatePrizeButtonComponent } from './create-prize-button/create-prize-button.component';
+import { SharedModule } from '../../shared/shared.module';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 
@@ -25,7 +30,10 @@ import { MatIconModule } from '@angular/material/icon';
     EntryListComponent,
     CreateEntryComponent,
     RaffleListComponent,
-    CreateRaffleButtonComponent
+    CreateRaffleButtonComponent,
+    PrizeListComponent,
+    CreatePrizeComponent,
+    CreatePrizeButtonComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +45,9 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatProgressSpinnerModule,
     RouterLink,
-    MatIconModule
+    MatIconModule,
+    SharedModule,
+    MatCheckboxModule
   ],
   exports: [
     RaffleListComponent,

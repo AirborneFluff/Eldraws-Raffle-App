@@ -1,0 +1,25 @@
+<sheet-container>
+  <sheet-header>Add Prize</sheet-header>
+  <sheet-footer>Close, Confirm...</sheet-footer>
+
+  <div>
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Position</mat-label>
+      <input matInput placeholder="2nd">
+      <mat-error>Required</mat-error>
+    </mat-form-field>
+
+    <mat-checkbox #showPercentage class="mb-4">Percentage of donation</mat-checkbox>
+
+    <mat-form-field class="w-full mb-4" *ngIf="showPercentage.checked">
+      <mat-label>Percentage</mat-label>
+      <span matSuffix>% &nbsp;</span>
+      <input matInput placeholder="35%">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Description</mat-label>
+      <input matInput placeholder="100k Gold">
+    </mat-form-field>
+  </div>
+</sheet-container>
