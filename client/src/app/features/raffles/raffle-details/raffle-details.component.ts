@@ -10,6 +10,7 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RaffleStream } from '../../../core/streams/raffle-stream';
 import { Raffle } from '../../../data/models/raffle';
 import { PageTitleService } from '../../../core/services/page-title.service';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
 @Component({
   selector: 'app-raffle-details',
@@ -17,28 +18,31 @@ import { PageTitleService } from '../../../core/services/page-title.service';
   styleUrls: ['./raffle-details.component.scss']
 })
 export class RaffleDetailsComponent implements OnDestroy {
-  raffle$ = combineLatest([
-        this.raffleId$.pipe(notNullOrUndefined()),
-        this.clanId$.pipe(notNullOrUndefined()),
-        this.raffleUpdates$])
-    .pipe(
-      switchMap(([raffleId, clanId, raffle]) => {
-        if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
-        return of(raffle);
-      }),
-      tap(raffle => this.title.setTitle(raffle.title)),
-      shareReplay({refCount: true, bufferSize: 1}))
+
+  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: PageTitleService, public raffle$: CurrentRaffleStream) {
+    title.busy();
+  }
+
+  //   combineLatest([
+  //       this.raffleId$.pipe(notNullOrUndefined()),
+  //       this.clanId$.pipe(notNullOrUndefined()),
+  //       this.raffleUpdates$])
+  //   .pipe(
+  //     switchMap(([raffleId, clanId, raffle]) => {
+  //       if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
+  //       return of(raffle);
+  //     }),
+  //     tap(raffle => this.title.setTitle(raffle.title)),
+  //     shareReplay({refCount: true, bufferSize: 1}))
+  //
 
   editable$ = this.raffle$.pipe(
+    notNullOrUndefined(),
     map(raffle => {
       const date = new Date(raffle.closeDate);
       return date.getTime() > new Date().getTime();
     })
   )
-
-  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: PageTitleService) {
-    title.busy();
-  }
 
   ngOnDestroy() {
     this.raffleUpdates$.next(undefined);

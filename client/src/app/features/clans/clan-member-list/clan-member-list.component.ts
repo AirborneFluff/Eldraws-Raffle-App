@@ -2,11 +2,13 @@ import { Component, Input } from '@angular/core';
 import { Member } from '../../../data/models/member';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
-import { of, switchMap, withLatestFrom } from 'rxjs';
+import { map, of, switchMap, withLatestFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { ClanStream } from '../../../core/streams/clan-stream';
+import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
+import { AccountService } from '../../../core/services/account.service';
 
 @Component({
   selector: 'clan-member-list',
@@ -14,15 +16,22 @@ import { ClanStream } from '../../../core/streams/clan-stream';
   styleUrls: ['./clan-member-list.component.scss']
 })
 export class ClanMemberListComponent {
-  @Input() members: Member[] = [];
-  @Input() owner!: Member;
-  @Input() isOwner: boolean | null = false;
+  constructor(public dialog: MatDialog, private api: ApiService, private clanId$: ClanIdStream, private clan$: CurrentClanStream, private account: AccountService) {}
 
-  constructor(public dialog: MatDialog, private api: ApiService, private clanId$: ClanIdStream, private clan$: ClanStream) {}
+  isOwner$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    withLatestFrom(this.account.currentUser$.pipe(notNullOrUndefined())),
+    map(([clan, user]) => {
+      return clan.owner.id == user.id
+    })
+  )
+
+  members$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    map(clan => clan.members)
+  )
 
   openConfirmDialog(member: Member) {
-    if (!this.isOwner) return;
-
     this.dialog.open(ConfirmDialogComponent, {
       data : {
         title: 'Are you sure?',
