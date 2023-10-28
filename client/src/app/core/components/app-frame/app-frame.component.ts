@@ -34,7 +34,6 @@ export class AppFrameComponent {
 
   back() {
     this.url$.pipe(take(1)).subscribe(currentRoute => {
-      console.log(currentRoute)
       const parentRoute = currentRoute.split('/').slice(0, -2).join('/');
       this.router.navigateByUrl(parentRoute);
     })
