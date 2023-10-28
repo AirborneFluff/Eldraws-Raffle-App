@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 
 @Component({
   selector: 'create-raffle-button',
@@ -7,6 +6,4 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
   styleUrls: ['./create-raffle-button.component.scss']
 })
 export class CreateRaffleButtonComponent {
-  constructor(public clanId$: ClanIdStream) {}
-
 }

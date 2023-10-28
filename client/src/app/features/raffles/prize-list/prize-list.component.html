@@ -1,0 +1,19 @@
+<component-frame *ngIf="prizes.length">
+  <div *ngFor="let prize of (prizes | reverse)"
+       class="flex min-w-0 gap-x-4 py-6 justify-between last:border-none border-b border-gray-200 dark:border-primary-850 relative text-center text-xs pointer-events-none">
+    <p class="text-sm font-semibold basis-1/3 flex items-center justify-center">
+      <span>{{prize.place | numericPosition}}</span>
+    </p>
+    <p class="truncate basis-1/3 flex items-center justify-center">{{prize.description}}</p>
+    <p class="truncate basis-1/3 flex items-center justify-center flex-col">
+      <span class="text-md font-bold">{{(prize.donationPercentage * totalDonations) | shortNumber}}</span>
+      <span class="text-sm font-light">{{prize.donationPercentage * 100}}%</span>
+    </p>
+
+<!--      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removeEntry(entry)"></div>-->
+
+<!--      <div class="hidden sm:flex align-middle mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removeEntry(entry)">-->
+<!--        <mat-icon >delete_outline</mat-icon>-->
+<!--      </div>-->
+  </div>
+</component-frame>
