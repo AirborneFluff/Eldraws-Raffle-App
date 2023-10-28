@@ -22,9 +22,10 @@
     </div>
   </component-frame>
 
-<!--  <app-create-entry *ngIf="editable$ | async"/>-->
   <app-prize-list [prizes]="raffle.prizes" [totalDonations]="getDonations(raffle)"/>
   <app-create-prize-button/>
+
+  <app-create-entry *ngIf="editable$ | async"/>
   <app-entry-list [entries]="raffle.entries"/>
 </ng-container>
 

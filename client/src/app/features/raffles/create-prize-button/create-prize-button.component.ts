@@ -9,7 +9,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 })
 export class CreatePrizeButtonComponent {
   constructor(private bottomSheet: MatBottomSheet) {
-    this.open();
   }
 
   open() {
