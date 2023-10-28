@@ -3,17 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from "@angular/forms";
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig } from '@angular/material/dialog';
 import { DialogModule } from './dialog/dialog.module';
+import { FormSheetModule } from './form-sheet/form-sheet.module';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    MatBottomSheetModule
   ],
   exports: [
     FormsModule,
-    DialogModule
+    DialogModule,
+    FormSheetModule
   ],
   providers: [
     {
