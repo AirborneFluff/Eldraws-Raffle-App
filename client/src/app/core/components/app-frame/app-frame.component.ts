@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/co
 import { ClipboardService } from 'ngx-clipboard';
 import { PageTitleService } from '../../services/page-title.service';
 import {UrlStream} from "../../streams/url-stream";
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-frame',
@@ -16,7 +17,7 @@ import {UrlStream} from "../../streams/url-stream";
 export class AppFrameComponent {
 
   constructor(public account: AccountService,
-              public title: PageTitleService,
+              public title: Title,
               private router: Router,
               private dialog: MatDialog,
               private clipboard: ClipboardService,

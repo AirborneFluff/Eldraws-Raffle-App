@@ -17,7 +17,7 @@ const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { title: "Clans", path: "clans", component: ClanListComponent },
-      { title: "Clans", path: "clans/:clanId", component: ClanDetailsComponent },
+      { title: "Raffles", path: "clans/:clanId", component: ClanDetailsComponent },
       { title: "Raffle", path: "clans/:clanId/raffles/:raffleId", component: RaffleDetailsComponent },
     ]
   }
