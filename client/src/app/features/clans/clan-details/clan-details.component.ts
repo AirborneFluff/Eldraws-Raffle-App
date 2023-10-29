@@ -16,7 +16,6 @@ import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
   styleUrls: ['./clan-details.component.scss']
 })
 export class ClanDetailsComponent {
-  constructor(private title: PageTitleService, public clan$: CurrentClanStream) {
-    title.busy();
+  constructor(public clan$: CurrentClanStream) {
   }
 }
