@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
-  distinctUntilChanged, of, shareReplay,
+  distinctUntilChanged, of,
   switchMap
 } from 'rxjs';
 import { RaffleIdStream } from './raffle-id-stream';
 import { ClanIdStream } from './clan-id-stream';
 import { ApiService } from '../services/api.service';
-import { notNullOrUndefined } from '../pipes/not-null';
 import { Raffle } from '../../data/data-models';
 import { DataModelStream } from '../observables/data-model-stream';
 
