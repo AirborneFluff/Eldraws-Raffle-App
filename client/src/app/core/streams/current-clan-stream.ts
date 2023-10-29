@@ -19,7 +19,7 @@ export class CurrentClanStream extends DataModelStream<Clan | undefined> {
       clanId$.pipe(
         distinctUntilChanged(),
         switchMap((clanId) => {
-          if (!clanId) return of();
+          if (!clanId) return of(undefined);
           return api.Clans.getById(clanId);
         })
       )

@@ -22,7 +22,7 @@ export class CurrentRaffleStream extends DataModelStream<Raffle | undefined> {
         clanId$.pipe(distinctUntilChanged())
       ]).pipe(
         switchMap(([raffleId, clanId]) => {
-          if (!raffleId || !clanId) return of();
+          if (!raffleId || !clanId) return of(undefined);
           return api.Raffles.getById(clanId, raffleId)
         })
       )
