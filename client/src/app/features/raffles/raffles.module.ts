@@ -20,6 +20,7 @@ import { CreatePrizeComponent } from './create-prize/create-prize.component';
 import { CreatePrizeButtonComponent } from './create-prize-button/create-prize-button.component';
 import { SharedModule } from '../../shared/shared.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { RaffleFormComponent } from './raffle-form/raffle-form.component';
 
 
 
@@ -33,7 +34,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     CreateRaffleButtonComponent,
     PrizeListComponent,
     CreatePrizeComponent,
-    CreatePrizeButtonComponent
+    CreatePrizeButtonComponent,
+    RaffleFormComponent
   ],
   imports: [
     CommonModule,

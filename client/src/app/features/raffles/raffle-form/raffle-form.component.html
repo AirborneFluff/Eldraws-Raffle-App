@@ -1,0 +1,49 @@
+<sheet-container>
+  <sheet-header>
+    <ng-container *ngIf="raffle$ | async as raffle else createTitle">Edit {{raffle.title}}</ng-container>
+    <ng-template #createTitle>New Raffle</ng-template>
+  </sheet-header>
+  <sheet-footer>
+    <div class="flex gap-2 justify-between flex-row-reverse">
+      <button mat-raised-button
+              color="primary"
+              class="w-full"
+              [disabled]="raffleForm.invalid"
+              (click)="updateRaffle()"
+              *ngIf="raffle$ | async">Update</button>
+      <button mat-raised-button
+              color="primary"
+              class="w-full"
+              [disabled]="raffleForm.invalid"
+              (click)="createRaffle()"
+              *ngIf="!(raffle$ | async)">Create</button>
+      <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
+    </div>
+  </sheet-footer>
+
+  <form [formGroup]="raffleForm">
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Title</mat-label>
+      <input matInput [formControl]="title" placeholder="Raffle Title">
+      <mat-error *ngIf="title.hasError('required')">The raffle must have a title</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Entry Cost</mat-label>
+      <input matInput type="number" [formControl]="entryCost" placeholder="5000">
+      <mat-error *ngIf="entryCost.hasError('greaterThan')">Value must be greater than 0</mat-error>
+      <mat-error *ngIf="entryCost.hasError('integer')">Only integer values are allowed</mat-error>
+    </mat-form-field>
+
+    <app-form-field>
+      <app-form-date-input [formControl]="openDate" label="Open Date"/>
+    </app-form-field>
+    <app-form-field>
+      <app-form-date-input [formControl]="closeDate" label="Close Date"/>
+    </app-form-field>
+    <app-form-field>
+      <app-form-date-input [formControl]="drawDate" label="Draw Date"/>
+    </app-form-field>
+  </form>
+</sheet-container>
+
