@@ -4,7 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { combineLatest, map, switchMap, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { NewRafflePrize } from '../../../data/models/new-prize';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
@@ -17,7 +17,7 @@ import { GreaterThanValidator } from '../../../core/validators/greater-than-vali
   styleUrls: ['./create-prize.component.scss']
 })
 export class CreatePrizeComponent {
-  private _usePercentage = true;
+  private _dynamicPrize = true;
 
   nextPosition$ = this.raffle$.pipe(
     notNullOrUndefined(),
@@ -29,22 +29,32 @@ export class CreatePrizeComponent {
 
   position: FormControl = new FormControl<number>(1, Validators.min(1));
   donationPercentage: FormControl = new FormControl<number | null>(0, [GreaterThanValidator(0), Validators.max(100)]);
-  description: FormControl = new FormControl<string>('');
+  description: FormControl = new FormControl<string>('', Validators.required);
 
   prizeForm: FormGroup = new FormGroup<any>({
     place: this.position,
-    donationPercentage: this.donationPercentage,
     description: this.description
   })
 
-  get usePercentage() { return this._usePercentage }
-  set usePercentage(val: boolean) {
-    this._usePercentage = val;
-    if (!val) {
-      this.donationPercentage.setValue(0);
-      this.description.setValue('');
+  dynamicPrizeForm: FormGroup = new FormGroup<any>({
+    place: this.position,
+    donationPercentage: this.donationPercentage
+  })
+
+  currentForm$ = new BehaviorSubject<FormGroup>(this.dynamicPrizeForm);
+
+  get dynamicPrize() { return this._dynamicPrize }
+  set dynamicPrize(val: boolean) {
+    this._dynamicPrize = val;
+    this.donationPercentage.reset();
+    this.description.reset();
+
+    if (val) {
+      this.currentForm$.next(this.dynamicPrizeForm)
       return;
     }
+
+    this.currentForm$.next(this.prizeForm)
   }
   constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private raffle$: CurrentRaffleStream) {
     this.nextPosition$.pipe(
@@ -55,11 +65,14 @@ export class CreatePrizeComponent {
   }
 
   submit() {
-    if (this.prizeForm.invalid) return;
-    const newPrize: NewRafflePrize = this.prizeForm.value;
+    const form = this._dynamicPrize ? this.dynamicPrizeForm : this.prizeForm;
 
-    newPrize.donationPercentage = this.donationPercentage.value / 100;
-    if (newPrize.donationPercentage) newPrize.description = '';
+    if (form.invalid) return;
+    const newPrize: NewRafflePrize = form.value;
+
+    if (this._dynamicPrize) {
+      newPrize.donationPercentage = this.donationPercentage.value / 100;
+    }
 
     combineLatest([
         this.clanId$.pipe(notNullOrUndefined()),
