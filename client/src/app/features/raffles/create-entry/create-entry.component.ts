@@ -39,7 +39,6 @@ export class CreateEntryComponent implements OnDestroy {
   entrants$ = this.clan$.pipe(
     notNullOrUndefined(),
     map(clan => clan.entrants),
-    startWith([]),
     shareReplay({refCount: true, bufferSize: 1}));
 
   selectedEntrant$ = this.gamertag.valueChanges.pipe(
@@ -82,6 +81,7 @@ export class CreateEntryComponent implements OnDestroy {
       take(1),
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
       switchMap(([entrant, clanId]) => {
+        this.submitted$.next(true);
         if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
           withLatestFrom(this.clan$.pipe(notNullOrUndefined())),
           tap(([entrant, clan]) => {
@@ -95,7 +95,6 @@ export class CreateEntryComponent implements OnDestroy {
         take(1),
         withLatestFrom(this.clanId.pipe(notNullOrUndefined()), this.raffleId.pipe(notNullOrUndefined())),
         switchMap(([entrant, clanId, raffleId]) => {
-          this.submitted$.next(true);
           return this.api.Raffles.addEntry(clanId, raffleId, {
             entrantId: entrant.id,
             donation: parseNumericSuffix(donation)
