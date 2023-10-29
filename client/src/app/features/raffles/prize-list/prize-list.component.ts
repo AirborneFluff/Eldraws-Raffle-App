@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
-import { combineLatest, map, of, startWith, switchMap, take, tap } from 'rxjs';
+import { combineLatest, map, of, startWith, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RafflePrize } from '../../../data/models/raffle-prize';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';

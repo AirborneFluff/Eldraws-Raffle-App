@@ -1,6 +1,6 @@
 import { BaseRepository } from './base-repository';
 import { map, Observable } from 'rxjs';
-import { Raffle, NewRaffle, NewRafflePrize, RafflePrize } from '../../data/data-models';
+import { Raffle, NewRaffle, NewRafflePrize } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
 
 export class RaffleRepository extends BaseRepository {

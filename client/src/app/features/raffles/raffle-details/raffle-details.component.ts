@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Raffle } from '../../../data/models/raffle';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { map, Observable, startWith, tap } from 'rxjs';
+import { map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-raffle-details',
