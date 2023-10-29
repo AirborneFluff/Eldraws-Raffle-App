@@ -38,6 +38,9 @@ import { NumericPositionPipe } from './pipes/numeric-position';
     TimeUntilPipe,
     ComponentFrameComponent,
     NumericPositionPipe
+  ],
+  providers: [
+    NumericPositionPipe
   ]
 })
 export class CoreModule { }
