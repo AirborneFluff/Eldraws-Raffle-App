@@ -14,19 +14,12 @@
           {{prize.description}}
         </ng-template>
       </p>
-      <!--    <p class="truncate basis-1/3 flex items-center justify-center">{{prize.description}}</p>-->
-      <!--    <p class="truncate basis-1/3 flex items-center justify-center flex-col">-->
-      <!--      <ng-container *ngIf="totalDonations$ | async as total">-->
-      <!--        <span class="text-md font-bold">{{(prize.donationPercentage * total) | shortNumber}}</span>-->
-      <!--        <span class="text-sm font-light">{{prize.donationPercentage * 100}}%</span>-->
-      <!--      </ng-container>-->
-      <!--    </p>-->
 
-      <!--      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removeEntry(entry)"></div>-->
+      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removePrize(prize)"></div>
 
-      <!--      <div class="hidden sm:flex align-middle mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removeEntry(entry)">-->
-      <!--        <mat-icon >delete_outline</mat-icon>-->
-      <!--      </div>-->
+      <div class="hidden sm:flex align-middle ml-auto mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removePrize(prize)">
+        <mat-icon >delete_outline</mat-icon>
+      </div>
     </div>
   </ng-container>
 

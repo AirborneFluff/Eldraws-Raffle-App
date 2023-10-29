@@ -1,6 +1,6 @@
 import { BaseRepository } from './base-repository';
 import { map, Observable } from 'rxjs';
-import { Raffle, NewRaffle, NewRafflePrize } from '../../data/data-models';
+import { Raffle, NewRaffle, NewRafflePrize, RafflePrize } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
 
 export class RaffleRepository extends BaseRepository {
@@ -33,5 +33,9 @@ export class RaffleRepository extends BaseRepository {
 
   public addPrize(clanId: number, raffleId: number, prize: NewRafflePrize) {
     return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes`, prize)
+  }
+
+  public removePrize(clanId: number, raffleId: number, prizePlace: number) {
+    return this.http.delete<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}`);
   }
 }
