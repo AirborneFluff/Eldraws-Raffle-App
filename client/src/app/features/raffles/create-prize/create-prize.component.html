@@ -1,0 +1,31 @@
+<sheet-container>
+  <sheet-header>Add Prize</sheet-header>
+  <sheet-footer>
+    <div class="flex gap-2 justify-between flex-row-reverse">
+      <button mat-raised-button color="primary" class="w-full" [disabled]="prizeForm.invalid" (click)="submit()">Add Prize</button>
+      <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
+    </div>
+  </sheet-footer>
+
+  <div>
+    <mat-form-field class="w-full">
+      <mat-label>Position</mat-label>
+      <input matInput type="number" placeholder="2nd" [formControl]="position">
+      <mat-error *ngIf="position.hasError('min')">Value must be greater than or equal to 1</mat-error>
+    </mat-form-field>
+
+    <mat-checkbox #showPercentage class="mb-4" [(ngModel)]="usePercentage">Percentage of donation</mat-checkbox>
+
+    <mat-form-field class="w-full" *ngIf="showPercentage.checked">
+      <mat-label>Percentage</mat-label>
+      <span matSuffix>% &nbsp;</span>
+      <input matInput type="number" placeholder="35%" [formControl]="donationPercentage">
+      <mat-error *ngIf="donationPercentage.hasError('greaterThan') || donationPercentage.hasError('max')">Value must be between 0% and 100%</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-full" *ngIf="!showPercentage.checked">
+      <mat-label>Description</mat-label>
+      <input matInput placeholder="100k Gold" [formControl]="description">
+    </mat-form-field>
+  </div>
+</sheet-container>

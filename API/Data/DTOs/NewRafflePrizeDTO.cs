@@ -4,7 +4,9 @@ namespace RaffleApi.Data.DTOs;
 
 public class NewRafflePrizeDTO
 {
+    [Range(1, Int32.MaxValue)]
     public int Place { get; set; }
-    [Required]
-    public string Description { get; set; }
+    public string? Description { get; set; }
+    [Range(0f, 1f)]
+    public float DonationPercentage { get; set; }
 }

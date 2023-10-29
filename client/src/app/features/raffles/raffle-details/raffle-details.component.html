@@ -12,15 +12,17 @@
         </div>
         <div class="mx-2 basis-1/3">
           <p class="font-bold text-sm">Donations</p>
-          <p class="font-extralight text-2xl leading-tight font-display">{{getDonations(raffle) | shortNumber}}</p>
+          <p class="font-extralight text-2xl leading-tight font-display">{{(totalDonations$ | async)! | shortNumber}}</p>
         </div>
         <div class="mx-2 basis-1/3">
           <p class="font-bold text-sm">Tickets</p>
-          <p class="font-extralight text-2xl leading-tight font-display">{{getTickets(raffle)}}</p>
+          <p class="font-extralight text-2xl leading-tight font-display">{{totalTickets$ | async}}</p>
         </div>
       </div>
     </div>
   </component-frame>
+  <app-prize-list/>
+  <app-create-prize-button/>
 
   <app-create-entry/>
 

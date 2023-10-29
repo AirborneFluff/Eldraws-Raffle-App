@@ -10,6 +10,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { NumericPositionPipe } from './pipes/numeric-position';
 
 
 
@@ -19,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
     ShortNumberPipe,
     ReversePipe,
     TimeUntilPipe,
+    NumericPositionPipe,
     ComponentFrameComponent
   ],
   imports: [
@@ -34,7 +36,11 @@ import { MatIconModule } from '@angular/material/icon';
     ShortNumberPipe,
     ReversePipe,
     TimeUntilPipe,
-    ComponentFrameComponent
+    ComponentFrameComponent,
+    NumericPositionPipe
+  ],
+  providers: [
+    NumericPositionPipe
   ]
 })
 export class CoreModule { }
