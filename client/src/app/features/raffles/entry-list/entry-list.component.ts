@@ -1,11 +1,10 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component} from '@angular/core';
 import { RaffleEntry } from '../../../data/models/raffle-entry';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { combineLatest, map, Observable, of, startWith, Subscription, switchMap } from 'rxjs';
+import { combineLatest, map, of, startWith, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { RaffleStream } from '../../../core/streams/raffle-stream';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
@@ -15,8 +14,7 @@ import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream
   templateUrl: './entry-list.component.html',
   styleUrls: ['./entry-list.component.scss']
 })
-export class EntryListComponent implements OnDestroy {
-  subscription = new Subscription();
+export class EntryListComponent {
 
   constructor(private raffle$: CurrentRaffleStream, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private dialog: MatDialog) {
   }
@@ -27,12 +25,8 @@ export class EntryListComponent implements OnDestroy {
     startWith([])
   )
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
   removeEntry(entry: RaffleEntry) {
-    const subscription = this.dialog.open(ConfirmDialogComponent, {
+    this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Are you sure?',
         message: `Removing this entry will re-assign all ticket assignments beyond the deleted entry <br>${entry.entrant.gamertag} : ${entry.tickets.item1} - ${entry.tickets.item2}`,
@@ -47,12 +41,11 @@ export class EntryListComponent implements OnDestroy {
           this.clanId$.pipe(notNullOrUndefined()),
           this.raffleId$.pipe(notNullOrUndefined())
         ]).pipe(
+          take(1),
           switchMap(([clanId, raffleId]) => this.api.Raffles.removeEntry(clanId, raffleId, entry.id))
         )
-    })).subscribe(value => {
-      this.raffle$.next(value)
+    })).subscribe(updatedRaffle => {
+      this.raffle$.next(updatedRaffle)
     })
-
-    this.subscription.add(subscription);
   }
 }
