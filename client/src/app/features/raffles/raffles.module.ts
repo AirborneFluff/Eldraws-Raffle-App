@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CreateRaffleComponent } from './create-raffle/create-raffle.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RaffleFormsModule } from '../../shared/forms/raffle-forms.module';
 import { RaffleDetailsComponent } from './raffle-details/raffle-details.component';
@@ -26,7 +25,6 @@ import { RaffleFormComponent } from './raffle-form/raffle-form.component';
 
 @NgModule({
   declarations: [
-    CreateRaffleComponent,
     RaffleDetailsComponent,
     EntryListComponent,
     CreateEntryComponent,
