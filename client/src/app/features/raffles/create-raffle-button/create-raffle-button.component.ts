@@ -9,10 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./create-raffle-button.component.scss']
 })
 export class CreateRaffleButtonComponent {
-  constructor(public clanId$: ClanIdStream, private dialog: MatDialog) {}
-
-
-
+  constructor(private dialog: MatDialog) {}
   openCreateRaffle() {
     this.dialog.open(CreateRaffleComponent);
   }
