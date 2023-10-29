@@ -1,6 +1,7 @@
 
 <component-frame>
   <ng-container *ngIf="(prizes$ | async) as prizes">
+    <mat-checkbox [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
     <div *ngFor="let prize of (prizes | reverse)"
          class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2 relative">
 
@@ -8,7 +9,8 @@
       <p class="text-lg font-display">
         <ng-container *ngIf="prize.donationPercentage as percentage else prizeDescription">
           {{percentage * 100}}% of donations
-          <span class="font-light italic ml-2">{{(percentage * (totalDonations$ | async)!) | shortNumber}}</span>
+          <span class="font-light italic ml-2" *ngIf="!showFullQuantity">{{(percentage * (totalDonations$ | async)!) | shortNumber}}</span>
+          <span class="font-light italic ml-2" *ngIf="showFullQuantity">{{percentage * (totalDonations$ | async)!}}</span>
         </ng-container>
         <ng-template #prizeDescription>
           {{prize.description}}

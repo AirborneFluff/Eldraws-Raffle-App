@@ -16,6 +16,7 @@ import { ApiService } from '../../../core/services/api.service';
   styleUrls: ['./prize-list.component.scss']
 })
 export class PrizeListComponent {
+  showFullQuantity: boolean = false;
 
   constructor(public raffle$: CurrentRaffleStream, private dialog: MatDialog, private numericPipe: NumericPositionPipe, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private api: ApiService) {
   }
