@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   BehaviorSubject,
   combineLatest,
   map,
   of, shareReplay,
-  startWith,
+  startWith, Subscription,
   switchMap, take, tap,
   withLatestFrom
 } from 'rxjs';
@@ -22,11 +22,16 @@ import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream
   templateUrl: './create-entry.component.html',
   styleUrls: ['./create-entry.component.scss']
 })
-export class CreateEntryComponent {
+export class CreateEntryComponent implements OnDestroy {
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl('', [Validators.required, Validators.min(0)])
+  subscriptions = new Subscription();
   constructor(private api: ApiService, private clanId: ClanIdStream, private clan$: CurrentClanStream, private raffleId: RaffleIdStream, private raffle$: CurrentRaffleStream) {
-    this.selectedEntrant$.subscribe(val => console.log(val))
+    this.subscriptions.add(this.selectedEntrant$.subscribe());
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   submitted$ = new BehaviorSubject<boolean>(false);
@@ -46,21 +51,6 @@ export class CreateEntryComponent {
     }),
     shareReplay(1)
   )
-
-    // combineLatest([
-    // this.entrantAdditionsSource$.pipe(
-    //   scan((all: Entrant[], current) => [...all, current], []),
-    //   startWith([])
-    // ),
-    // this.clanId.pipe(
-    //   notNullOrUndefined(),
-    //   switchMap((id) => this.api.Clans.getById(id).pipe(
-    //     tap(() => this.entrantsLoading = false),
-    //     map(clan => clan.entrants))))
-    // ]).pipe(
-    //   map(([arr1, arr2]) => [...arr1, ...arr2]),
-    //   shareReplay({refCount: true, bufferSize: 1}))
-
 
   entryForm = new FormGroup<any>({
     gamertag: this.gamertag,
@@ -89,6 +79,7 @@ export class CreateEntryComponent {
     if (!donation) return;
 
     this.selectedEntrant$.pipe(
+      take(1),
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
       switchMap(([entrant, clanId]) => {
         if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
@@ -100,8 +91,8 @@ export class CreateEntryComponent {
           map(([entrant, clan]) => entrant)
         );
         return of(entrant)
-      }))
-      .pipe(
+      })).pipe(
+        take(1),
         withLatestFrom(this.clanId.pipe(notNullOrUndefined()), this.raffleId.pipe(notNullOrUndefined())),
         switchMap(([entrant, clanId, raffleId]) => {
           this.submitted$.next(true);
@@ -109,8 +100,7 @@ export class CreateEntryComponent {
             entrantId: entrant.id,
             donation: parseNumericSuffix(donation)
           })
-        }),
-        take(1)
+        })
       ).subscribe(updatedRaffle => {
         this.raffle$.next(updatedRaffle);
         this.submitted$.next(false);
