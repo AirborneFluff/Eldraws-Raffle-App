@@ -42,6 +42,8 @@ public sealed class AutoMapperProfiles : Profile
 
         CreateMap<NewRafflePrizeDTO, RafflePrize>();
         CreateMap<UpdateRafflePrizeDTO, RafflePrize>();
-        CreateMap<RafflePrize, RafflePrizeInfoDTO>();
+        CreateMap<RafflePrize, RafflePrizeInfoDTO>()
+            .ForMember(dest => dest.DonationPercentage, opt =>
+                opt.MapFrom(src => src.DonationPercentage));
     }
 }
