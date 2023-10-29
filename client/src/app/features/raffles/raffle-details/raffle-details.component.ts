@@ -1,7 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
-import { map } from 'rxjs';
-import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { RaffleStream } from '../../../core/streams/raffle-stream';
+import { Component } from '@angular/core';
 import { Raffle } from '../../../data/models/raffle';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
@@ -10,21 +7,9 @@ import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream
   templateUrl: './raffle-details.component.html',
   styleUrls: ['./raffle-details.component.scss']
 })
-export class RaffleDetailsComponent implements OnDestroy {
+export class RaffleDetailsComponent {
 
-  constructor(private raffleUpdates$: RaffleStream, public raffle$: CurrentRaffleStream) {
-  }
-
-  editable$ = this.raffle$.pipe(
-    notNullOrUndefined(),
-    map(raffle => {
-      const date = new Date(raffle.closeDate);
-      return date.getTime() > new Date().getTime();
-    })
-  )
-
-  ngOnDestroy() {
-    this.raffleUpdates$.next(undefined);
+  constructor(public raffle$: CurrentRaffleStream) {
   }
 
   getDonations(raffle: Raffle): number {
