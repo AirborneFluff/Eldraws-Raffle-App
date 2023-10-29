@@ -7,7 +7,7 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import { combineLatest, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { NewRafflePrize } from '../../../data/models/new-prize';
-import { RaffleStream } from '../../../core/streams/raffle-stream';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
 
 @Component({
@@ -20,7 +20,7 @@ export class CreatePrizeComponent {
 
   position: FormControl = new FormControl<number>(1, Validators.min(1));
   donationPercentage: FormControl = new FormControl<number | null>(0, [Validators.min(0), Validators.max(100)]);
-  description: FormControl = new FormControl<any>('');
+  description: FormControl = new FormControl<string>('');
 
   prizeForm: FormGroup = new FormGroup<any>({
     place: this.position,
@@ -37,7 +37,7 @@ export class CreatePrizeComponent {
       return;
     }
   }
-  constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private raffleUpdates: RaffleStream) {
+  constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private raffle$: CurrentRaffleStream) {
   }
 
   submit() {
@@ -45,7 +45,7 @@ export class CreatePrizeComponent {
     const newPrize: NewRafflePrize = this.prizeForm.value;
 
     newPrize.donationPercentage = this.donationPercentage.value / 100;
-    if (this.donationPercentage) newPrize.description = '';
+    if (newPrize.donationPercentage) newPrize.description = '';
 
     combineLatest([
         this.clanId$.pipe(notNullOrUndefined()),
@@ -55,7 +55,7 @@ export class CreatePrizeComponent {
       switchMap(([clanId, raffleId]) => {
         return this.api.Raffles.addPrize(clanId, raffleId, newPrize)
     })).subscribe(raffle => {
-      this.raffleUpdates.next(raffle);
+      this.raffle$.next(raffle);
       this.bottomSheet.dismiss();
     })
   }
