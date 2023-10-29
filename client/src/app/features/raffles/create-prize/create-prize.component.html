@@ -20,7 +20,7 @@
       <mat-label>Percentage</mat-label>
       <span matSuffix>% &nbsp;</span>
       <input matInput type="number" placeholder="35%" [formControl]="donationPercentage">
-      <mat-error *ngIf="donationPercentage.hasError('min') || donationPercentage.hasError('max')">Value must be between 0% and 100%</mat-error>
+      <mat-error *ngIf="donationPercentage.hasError('greaterThan') || donationPercentage.hasError('max')">Value must be between 0% and 100%</mat-error>
     </mat-form-field>
 
     <mat-form-field class="w-full" *ngIf="!showPercentage.checked">

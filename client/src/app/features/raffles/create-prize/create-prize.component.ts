@@ -8,6 +8,7 @@ import { combineLatest, map, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { NewRafflePrize } from '../../../data/models/new-prize';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
+import { GreaterThanValidator } from '../../../core/validators/greater-than-validator';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class CreatePrizeComponent {
   )
 
   position: FormControl = new FormControl<number>(1, Validators.min(1));
-  donationPercentage: FormControl = new FormControl<number | null>(0, [Validators.min(0), Validators.max(100)]);
+  donationPercentage: FormControl = new FormControl<number | null>(0, [GreaterThanValidator(0), Validators.max(100)]);
   description: FormControl = new FormControl<string>('');
 
   prizeForm: FormGroup = new FormGroup<any>({
