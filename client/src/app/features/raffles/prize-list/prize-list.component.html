@@ -1,19 +1,38 @@
-<component-frame *ngIf="prizes.length">
-  <div *ngFor="let prize of (prizes | reverse)"
-       class="flex min-w-0 gap-x-4 py-6 justify-between last:border-none border-b border-gray-200 dark:border-primary-850 relative text-center text-xs pointer-events-none">
-    <p class="text-sm font-semibold basis-1/3 flex items-center justify-center">
-      <span>{{prize.place | numericPosition}}</span>
-    </p>
-    <p class="truncate basis-1/3 flex items-center justify-center">{{prize.description}}</p>
-    <p class="truncate basis-1/3 flex items-center justify-center flex-col">
-      <span class="text-md font-bold">{{(prize.donationPercentage * totalDonations) | shortNumber}}</span>
-      <span class="text-sm font-light">{{prize.donationPercentage * 100}}%</span>
-    </p>
 
-<!--      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removeEntry(entry)"></div>-->
+<component-frame>
+  <ng-container *ngIf="(prizes$ | async) as prizes">
+    <div *ngFor="let prize of (prizes | reverse)"
+         class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2">
 
-<!--      <div class="hidden sm:flex align-middle mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removeEntry(entry)">-->
-<!--        <mat-icon >delete_outline</mat-icon>-->
-<!--      </div>-->
-  </div>
+      <p class="font-extralight text-sm min-w-[3rem] text-center">{{prize.place | numericPosition}}</p>
+      <p class="text-lg font-display">
+        <ng-container *ngIf="prize.donationPercentage as percentage else prizeDescription">
+          {{percentage * 100}}% of donations
+          <span class="font-light italic ml-2">{{(percentage * (totalDonations$ | async)!) | shortNumber}}</span>
+        </ng-container>
+        <ng-template #prizeDescription>
+          {{prize.description}}
+        </ng-template>
+      </p>
+      <!--    <p class="truncate basis-1/3 flex items-center justify-center">{{prize.description}}</p>-->
+      <!--    <p class="truncate basis-1/3 flex items-center justify-center flex-col">-->
+      <!--      <ng-container *ngIf="totalDonations$ | async as total">-->
+      <!--        <span class="text-md font-bold">{{(prize.donationPercentage * total) | shortNumber}}</span>-->
+      <!--        <span class="text-sm font-light">{{prize.donationPercentage * 100}}%</span>-->
+      <!--      </ng-container>-->
+      <!--    </p>-->
+
+      <!--      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removeEntry(entry)"></div>-->
+
+      <!--      <div class="hidden sm:flex align-middle mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removeEntry(entry)">-->
+      <!--        <mat-icon >delete_outline</mat-icon>-->
+      <!--      </div>-->
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!(prizes$ | async)?.length">
+    <div class="flex min-w-0 py-2 justify-center">
+      <p class="text-sm font-semibold text-center">No prizes yet</p>
+    </div>
+  </ng-container>
 </component-frame>

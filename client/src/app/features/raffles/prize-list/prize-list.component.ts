@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
-import { RafflePrize } from '../../../data/models/raffle-prize';
+import { Component } from '@angular/core';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
+import { map, startWith, tap } from 'rxjs';
+import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
 @Component({
   selector: 'app-prize-list',
@@ -7,7 +9,25 @@ import { RafflePrize } from '../../../data/models/raffle-prize';
   styleUrls: ['./prize-list.component.scss']
 })
 export class PrizeListComponent {
-  @Input() prizes: RafflePrize[] = [];
-  @Input() totalDonations: number = 0;
 
+  constructor(public raffle$: CurrentRaffleStream) {
+  }
+
+  prizes$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    map(raffle => raffle.prizes.sort((a, b) => {
+      return b.place - a.place;
+    })),
+    startWith([])
+  )
+
+  totalDonations$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    map(raffle => {
+      return raffle.entries.reduce((acc, curr) => {
+        return acc + curr.donation
+      }, 0)
+    }),
+    startWith(0)
+  )
 }
