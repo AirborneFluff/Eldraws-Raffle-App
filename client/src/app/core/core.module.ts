@@ -40,7 +40,7 @@ import { NumericPositionPipe } from './pipes/numeric-position';
     NumericPositionPipe
   ],
   providers: [
-    NumericPositionPipe
+    NumericPositionPipe,
   ]
 })
 export class CoreModule { }
