@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  distinctUntilChanged, shareReplay,
+  distinctUntilChanged, of, shareReplay,
   switchMap
 } from 'rxjs';
 import { InjectableStream } from '../observables/injectable-stream';
@@ -17,10 +17,10 @@ export class CurrentClanStream extends DataModelStream<Clan | undefined> {
   constructor(clanId$: ClanIdStream, api: ApiService) {
     super(
       clanId$.pipe(
-        notNullOrUndefined(),
         distinctUntilChanged(),
         switchMap((clanId) => {
-          return api.Clans.getById(clanId)
+          if (!clanId) return of();
+          return api.Clans.getById(clanId);
         })
       )
     );
