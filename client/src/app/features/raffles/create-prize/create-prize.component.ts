@@ -4,7 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { combineLatest, switchMap, take } from 'rxjs';
+import { combineLatest, map, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { NewRafflePrize } from '../../../data/models/new-prize';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
@@ -17,6 +17,13 @@ import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream
 })
 export class CreatePrizeComponent {
   private _usePercentage = true;
+
+  nextPosition$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    map(raffle => {
+      return raffle.prizes.reduce((max, curr) => curr > max ? curr : max).place + 1;
+    })
+  )
 
   position: FormControl = new FormControl<number>(1, Validators.min(1));
   donationPercentage: FormControl = new FormControl<number | null>(0, [Validators.min(0), Validators.max(100)]);
@@ -38,6 +45,11 @@ export class CreatePrizeComponent {
     }
   }
   constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private raffle$: CurrentRaffleStream) {
+    this.nextPosition$.pipe(
+      take(1)
+    ).subscribe(val => {
+      this.position.setValue(val)
+    })
   }
 
   submit() {
