@@ -21,6 +21,7 @@ export class CreatePrizeComponent {
   nextPosition$ = this.raffle$.pipe(
     notNullOrUndefined(),
     map(raffle => {
+      if (!raffle.prizes.length) return 1;
       return raffle.prizes.reduce((max, curr) => curr > max ? curr : max).place + 1;
     })
   )
