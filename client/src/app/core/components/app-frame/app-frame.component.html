@@ -2,9 +2,11 @@
   <div class="max-w-screen-lg sm:px-6 flex justify-between items-center mx-auto h-12">
     <div class="flex items-center">
       <a [ngClass]="{'hidden' : baseRoute$ | async}"
-         (click)="back()" class="mr-2 sm:mr-6 px-2 cursor-pointer font-semibold text-xl leading-none"><</a>
+         (click)="back()" class="sm:mr-6 px-2 cursor-pointer font-semibold text-xl leading-none">
+        <mat-icon>arrow_back_ios_new</mat-icon>
+      </a>
 
-      <h2 class="text-3xl font-light leading-none">{{title.getTitle()}}</h2>
+      <h2 class="text-3xl font-light leading-none ml-2">{{title.getTitle()}}</h2>
     </div>
 
     <div class="flex items-center gap-3">
