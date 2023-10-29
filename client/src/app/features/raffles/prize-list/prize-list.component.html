@@ -1,7 +1,7 @@
 
 <component-frame>
   <ng-container *ngIf="(prizes$ | async) as prizes">
-    <mat-checkbox [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
+    <mat-checkbox *ngIf="prizes.length" [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
     <div *ngFor="let prize of (prizes | reverse)"
          class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2 relative">
 
