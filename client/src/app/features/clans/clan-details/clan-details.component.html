@@ -23,14 +23,16 @@
               Members
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <clan-member-list [members]="clan.members" [owner]="clan.owner" [isOwner]="isOwner$ | async"/>
-          <add-clan-member-button *ngIf="isOwner$ | async"/>
+
+          <clan-member-list/>
+          <add-clan-member-button/>
+
         </mat-expansion-panel>
       </div>
     </div>
   </component-frame>
-  <create-raffle-button (click)="openCreateRaffle()"/>
-  <app-raffle-list [raffles]="clan.raffles"></app-raffle-list>
+  <create-raffle-button/>
+  <app-raffle-list/>
 </ng-container>
 
 <ng-template #loading>

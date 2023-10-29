@@ -4,9 +4,8 @@ import {
   BehaviorSubject,
   combineLatest,
   map,
-  of, scan, shareReplay,
-  startWith,
-  Subject, Subscription,
+  of, shareReplay,
+  startWith, Subscription,
   switchMap, take, tap,
   withLatestFrom
 } from 'rxjs';
@@ -14,9 +13,9 @@ import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { RaffleStream } from '../../../core/streams/raffle-stream';
-import { Entrant } from '../../../data/models/entrant';
 import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
+import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
 @Component({
   selector: 'app-create-entry',
@@ -24,26 +23,38 @@ import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
   styleUrls: ['./create-entry.component.scss']
 })
 export class CreateEntryComponent implements OnDestroy {
-  entryForm!: FormGroup;
-  entrantAdditionsSource$ = new Subject<Entrant>();
-  entrantsLoading = true;
-
-  entrants$ = combineLatest([
-    this.entrantAdditionsSource$.pipe(
-      scan((all: Entrant[], current) => [...all, current], []),
-      startWith([])
-    ),
-    this.clanId.pipe(
-      notNullOrUndefined(),
-      switchMap((id) => this.api.Clans.getById(id).pipe(
-        tap(() => this.entrantsLoading = false),
-        map(clan => clan.entrants))))
-    ]).pipe(
-      map(([arr1, arr2]) => [...arr1, ...arr2]),
-      shareReplay({refCount: true, bufferSize: 1}))
-
   gamertag = new FormControl('', Validators.required)
-  donation = new FormControl(null, [Validators.required, Validators.min(0)])
+  donation = new FormControl('', [Validators.required, Validators.min(0)])
+  subscriptions = new Subscription();
+  constructor(private api: ApiService, private clanId: ClanIdStream, private clan$: CurrentClanStream, private raffleId: RaffleIdStream, private raffle$: CurrentRaffleStream) {
+    this.subscriptions.add(this.selectedEntrant$.subscribe());
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  submitted$ = new BehaviorSubject<boolean>(false);
+
+  entrants$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    map(clan => clan.entrants),
+    shareReplay({refCount: true, bufferSize: 1}));
+
+  selectedEntrant$ = this.gamertag.valueChanges.pipe(
+    notNullOrUndefined(),
+    withLatestFrom(this.entrants$),
+    switchMap(([gamertag, entrants]) => {
+      const entrant = entrants.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase());
+      return of(entrant);
+    }),
+    shareReplay(1)
+  )
+
+  entryForm = new FormGroup<any>({
+    gamertag: this.gamertag,
+    donation: this.donation
+  })
 
   filteredEntrants$ = combineLatest([
     this.entrants$,
@@ -52,25 +63,9 @@ export class CreateEntryComponent implements OnDestroy {
     return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
   }))
 
-  submitted$ = new BehaviorSubject<boolean>(false);
-  entrySubmission = new Subscription();
-
-  constructor(private api: ApiService, private clanId: ClanIdStream, private raffleId: RaffleIdStream, private raffleUpdates: RaffleStream) {
-    this.initializeForm();
-  }
-
-  ngOnDestroy() {
-    this.entrySubmission.unsubscribe();
-  }
-
   initializeForm() {
     this.gamertag.reset();
     this.donation.reset();
-
-    this.entryForm = new FormGroup<any>({
-      gamertag: this.gamertag,
-      donation: this.donation
-    })
   }
 
   submit() {
@@ -82,16 +77,22 @@ export class CreateEntryComponent implements OnDestroy {
     const donation = this.donation.value;
     if (!donation) return;
 
-    this.submitted$.next(true);
-
-    const subscription = this.entrants$.pipe(
-      map(arr => arr.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase())),
+    this.selectedEntrant$.pipe(
+      take(1),
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
-      switchMap(([ent, clanId]) => {
-        if (!ent) return this.api.Clans.addEntrant(clanId, gamertag).pipe(tap(entrant => this.addEntrantToList(entrant)));
-        return of(ent)
-      }), take(1))
-      .pipe(
+      switchMap(([entrant, clanId]) => {
+        this.submitted$.next(true);
+        if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
+          withLatestFrom(this.clan$.pipe(notNullOrUndefined())),
+          tap(([entrant, clan]) => {
+            clan.entrants.push(entrant);
+            this.clan$.next(clan)
+          }),
+          map(([entrant, clan]) => entrant)
+        );
+        return of(entrant)
+      })).pipe(
+        take(1),
         withLatestFrom(this.clanId.pipe(notNullOrUndefined()), this.raffleId.pipe(notNullOrUndefined())),
         switchMap(([entrant, clanId, raffleId]) => {
           return this.api.Raffles.addEntry(clanId, raffleId, {
@@ -99,16 +100,10 @@ export class CreateEntryComponent implements OnDestroy {
             donation: parseNumericSuffix(donation)
           })
         })
-      ).subscribe(x => {
-        this.raffleUpdates.next(x);
+      ).subscribe(updatedRaffle => {
+        this.raffle$.next(updatedRaffle);
         this.submitted$.next(false);
         this.initializeForm();
     })
-
-    this.entrySubmission.add(subscription);
-  }
-
-  addEntrantToList(entrant: Entrant) {
-    this.entrantAdditionsSource$.next(entrant)
   }
 }

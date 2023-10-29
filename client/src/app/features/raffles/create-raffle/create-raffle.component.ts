@@ -1,6 +1,6 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subject, Subscription, switchMap } from 'rxjs';
+import { switchMap, take, withLatestFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { Router } from '@angular/router';
 import { NewRaffle } from '../../../data/models/new-raffle';
@@ -8,6 +8,7 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialogRef } from '@angular/material/dialog';
 import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
+import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -22,7 +23,7 @@ INITIAL_DRAW_DATE.setTime(INITIAL_CLOSE_DATE.getTime() + 3600000);
   templateUrl: './create-raffle.component.html',
   styleUrls: ['./create-raffle.component.scss']
 })
-export class CreateRaffleComponent implements OnDestroy {
+export class CreateRaffleComponent {
   raffleForm!: FormGroup;
 
   name = new FormControl('', Validators.required)
@@ -31,16 +32,9 @@ export class CreateRaffleComponent implements OnDestroy {
   closeDate = new FormControl(INITIAL_CLOSE_DATE, Validators.required)
   drawDate = new FormControl(INITIAL_DRAW_DATE, Validators.required)
 
-  invalidForm$ = new Subject<boolean>();
 
-  subscription = new Subscription();
-
-  constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream, public dialogRef: MatDialogRef<CreateRaffleComponent>) {
+  constructor(private api: ApiService, private router: Router, private clanId$: ClanIdStream, public dialogRef: MatDialogRef<CreateRaffleComponent>, private clan$: CurrentClanStream) {
     this.initializeForm();
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 
   initializeForm() {
@@ -58,21 +52,19 @@ export class CreateRaffleComponent implements OnDestroy {
     const raffle: NewRaffle = this.raffleForm.value;
     raffle.entryCost = parseNumericSuffix(raffle.entryCost.toString());
 
-    const subscription = this.clanId$.pipe(
+    this.clanId$.pipe(
       notNullOrUndefined(),
-      switchMap(clanId => this.api.Raffles.addNew(clanId, raffle))
+      take(1),
+      switchMap(clanId => this.api.Raffles.addNew(clanId, raffle)),
+      withLatestFrom(this.clan$.pipe(notNullOrUndefined()))
     ).subscribe({
-        next: newRaffle => {
-          this.invalidForm$.next(false);
+        next: ([newRaffle, clan]) => {
+          clan.raffles.push(newRaffle);
+          this.clan$.next(clan);
           this.router.navigateByUrl('/clans/' + newRaffle.clan.id + '/raffles/' + newRaffle.id, { state: newRaffle });
           this.dialogRef.close();
-        },
-        error: () => {
-          this.invalidForm$.next(true);
         }
       }
     )
-
-    this.subscription.add(subscription);
   }
 }

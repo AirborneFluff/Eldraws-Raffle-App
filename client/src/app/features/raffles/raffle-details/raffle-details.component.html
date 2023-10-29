@@ -22,9 +22,9 @@
     </div>
   </component-frame>
 
-  <app-create-entry *ngIf="editable$ | async"/>
+  <app-create-entry/>
 
-  <app-entry-list [entries]="raffle.entries"/>
+  <app-entry-list/>
 </ng-container>
 
 <ng-template #loading>

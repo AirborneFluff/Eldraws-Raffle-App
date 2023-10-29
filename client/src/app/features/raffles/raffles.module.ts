@@ -11,7 +11,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RaffleListItemComponent } from './raffle-list-item/raffle-list-item.component';
 import { RaffleListComponent } from './raffle-list/raffle-list.component';
 import { RouterLink } from '@angular/router';
 import { CreateRaffleButtonComponent } from './create-raffle-button/create-raffle-button.component';
@@ -25,7 +24,6 @@ import { MatIconModule } from '@angular/material/icon';
     RaffleDetailsComponent,
     EntryListComponent,
     CreateEntryComponent,
-    RaffleListItemComponent,
     RaffleListComponent,
     CreateRaffleButtonComponent
   ],
@@ -42,7 +40,6 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule
   ],
   exports: [
-    RaffleListItemComponent,
     RaffleListComponent,
     CreateRaffleButtonComponent
   ]

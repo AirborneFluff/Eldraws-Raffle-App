@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Raffle } from '../../../data/models/raffle';
 import { BehaviorSubject, map } from 'rxjs';
+import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
+import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
 @Component({
   selector: 'app-raffle-list',
@@ -8,16 +10,15 @@ import { BehaviorSubject, map } from 'rxjs';
   styleUrls: ['./raffle-list.component.scss']
 })
 export class RaffleListComponent {
-  rafflesSource$ = new BehaviorSubject<Raffle[]>([]);
-  @Input()
-  set raffles(val: Raffle[]) {
-    this.rafflesSource$.next(val);
-  }
-  @Input() closed: boolean = false;
 
-  constructor() {}
+  constructor(public clan$: CurrentClanStream) {}
 
-  oldRaffles$ = this.rafflesSource$.pipe(
+  raffles$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    map(clan => clan.raffles)
+  )
+
+  oldRaffles$ = this.raffles$.pipe(
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)
@@ -27,7 +28,7 @@ export class RaffleListComponent {
     })
   )
 
-  currentRaffles$ = this.rafflesSource$.pipe(
+  currentRaffles$ = this.raffles$.pipe(
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)

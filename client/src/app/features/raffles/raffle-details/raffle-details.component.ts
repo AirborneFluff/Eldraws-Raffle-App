@@ -1,47 +1,15 @@
-import { Component, OnDestroy } from '@angular/core';
-import { ApiService } from '../../../core/services/api.service';
-import {
-  combineLatest, map, of, shareReplay,
-  switchMap, tap
-} from 'rxjs';
-import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { ClanIdStream } from '../../../core/streams/clan-id-stream';
-import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { RaffleStream } from '../../../core/streams/raffle-stream';
+import { Component } from '@angular/core';
 import { Raffle } from '../../../data/models/raffle';
-import { PageTitleService } from '../../../core/services/page-title.service';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
 @Component({
   selector: 'app-raffle-details',
   templateUrl: './raffle-details.component.html',
   styleUrls: ['./raffle-details.component.scss']
 })
-export class RaffleDetailsComponent implements OnDestroy {
-  raffle$ = combineLatest([
-        this.raffleId$.pipe(notNullOrUndefined()),
-        this.clanId$.pipe(notNullOrUndefined()),
-        this.raffleUpdates$])
-    .pipe(
-      switchMap(([raffleId, clanId, raffle]) => {
-        if (!raffle) return this.api.Raffles.getById(clanId, raffleId);
-        return of(raffle);
-      }),
-      tap(raffle => this.title.setTitle(raffle.title)),
-      shareReplay({refCount: true, bufferSize: 1}))
+export class RaffleDetailsComponent {
 
-  editable$ = this.raffle$.pipe(
-    map(raffle => {
-      const date = new Date(raffle.closeDate);
-      return date.getTime() > new Date().getTime();
-    })
-  )
-
-  constructor(private api: ApiService, private raffleId$: RaffleIdStream, private clanId$: ClanIdStream, private raffleUpdates$: RaffleStream, private title: PageTitleService) {
-    title.busy();
-  }
-
-  ngOnDestroy() {
-    this.raffleUpdates$.next(undefined);
+  constructor(public raffle$: CurrentRaffleStream) {
   }
 
   getDonations(raffle: Raffle): number {
