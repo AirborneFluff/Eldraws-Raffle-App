@@ -2,7 +2,7 @@
 <component-frame>
   <ng-container *ngIf="(prizes$ | async) as prizes">
     <div *ngFor="let prize of (prizes | reverse)"
-         class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2">
+         class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2 relative">
 
       <p class="font-extralight text-sm min-w-[3rem] text-center">{{prize.place | numericPosition}}</p>
       <p class="text-lg font-display">
