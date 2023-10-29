@@ -88,11 +88,10 @@ export class CreateEntryComponent {
     const donation = this.donation.value;
     if (!donation) return;
 
-    this.entrants$.pipe(
-      map(arr => arr.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase())),
+    this.selectedEntrant$.pipe(
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
-      switchMap(([ent, clanId]) => {
-        if (!ent) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
+      switchMap(([entrant, clanId]) => {
+        if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
           withLatestFrom(this.clan$.pipe(notNullOrUndefined())),
           tap(([entrant, clan]) => {
             clan.entrants.push(entrant);
@@ -100,7 +99,7 @@ export class CreateEntryComponent {
           }),
           map(([entrant, clan]) => entrant)
         );
-        return of(ent)
+        return of(entrant)
       }))
       .pipe(
         withLatestFrom(this.clanId.pipe(notNullOrUndefined()), this.raffleId.pipe(notNullOrUndefined())),
