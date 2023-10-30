@@ -3,10 +3,7 @@
   <component-frame>
     <div class="flex pb-2 items-center justify-between">
       <p class="font-display text-md text-center pointer-events-none">
-        <ng-container *ngIf="(timeTillClose$ | async) as time else closed">
-          Closes in {{time}}
-        </ng-container>
-        <ng-template #closed><span class="text-red-600">Raffle Closed</span></ng-template>
+        {{statusText$ | async}}
       </p>
       <button mat-mini-fab color="primary" (click)="editRaffle()">
         <mat-icon>edit</mat-icon>

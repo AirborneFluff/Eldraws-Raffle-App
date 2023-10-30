@@ -6,6 +6,12 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { RaffleFormComponent } from '../raffle-form/raffle-form.component';
 import { TimeUntilPipe } from '../../../core/pipes/time-until.pipe';
 
+const STATUS_SUFFIX = {
+  Close: "Closes in ",
+  Draw: "Prize draw in ",
+  Complete: "Raffle closed"
+}
+
 @Component({
   selector: 'app-raffle-details',
   templateUrl: './raffle-details.component.html',
@@ -37,14 +43,18 @@ export class RaffleDetailsComponent {
     )
   )
 
-  timeTillClose$ = combineLatest([
+  statusText$ = combineLatest([
     this.raffle$.pipe(notNullOrUndefined()),
     interval(1000).pipe(startWith(1))
   ]).pipe(
     map(([raffle, _]) => {
-      const timeDiff = new Date(raffle.closeDate).getTime() - Date.now();
-      if (timeDiff > 0) return this.timeUntil.transform(raffle.closeDate);
-      return null;
+      const timeUntilClose = new Date(raffle.closeDate).getTime() - Date.now();
+      if (timeUntilClose > 0) return STATUS_SUFFIX.Close + this.timeUntil.transform(raffle.closeDate);
+
+      const timeUntilDraw = new Date(raffle.drawDate).getTime() - Date.now();
+      if (timeUntilDraw > 0) return STATUS_SUFFIX.Draw + this.timeUntil.transform(raffle.drawDate);
+
+      return STATUS_SUFFIX.Complete;
     })
   )
 
