@@ -12,17 +12,16 @@ enum Periods {
 })
 export class TimeUntilPipe implements PipeTransform {
 
-  transform(value: unknown, ...args: unknown[]): unknown {
-    if (typeof value !== 'string') return;
-    const date = Date.parse(value);
+  transform(value: string | Date, ...args: unknown[]): unknown {
+    const date = Date.parse(value.toString());
 
     const timeDiff = date - new Date().getTime();
 
     if (timeDiff >= 2 * Periods.Day) return `${(timeDiff / Periods.Day).toFixed()} days`
-    if (timeDiff >= Periods.Hour) return `${(timeDiff / Periods.Hour).toFixed()} hours`
-    if (timeDiff >= Periods.Minute) return `${(timeDiff / Periods.Minute).toFixed()} minutes`
+    if (timeDiff >= 2 * Periods.Hour) return `${(timeDiff / Periods.Hour).toFixed()} hours`
+    if (timeDiff >= 5 * Periods.Minute) return `${(timeDiff / Periods.Minute).toFixed()} minutes`
 
-    return `${(timeDiff / Periods.Second).toFixed()} seconds left`;
+    return `${(timeDiff / Periods.Second).toFixed()} seconds`;
   }
 
 }

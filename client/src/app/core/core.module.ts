@@ -41,6 +41,7 @@ import { NumericPositionPipe } from './pipes/numeric-position';
   ],
   providers: [
     NumericPositionPipe,
+    TimeUntilPipe
   ]
 })
 export class CoreModule { }
