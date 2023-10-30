@@ -1,6 +1,6 @@
 <sheet-container>
   <sheet-header>
-    <ng-container *ngIf="raffle$ | async as raffle else createTitle">Edit {{raffle.title}}</ng-container>
+    <ng-container *ngIf="raffle$ | async as raffle else createTitle">Edit Raffle</ng-container>
     <ng-template #createTitle>New Raffle</ng-template>
   </sheet-header>
   <sheet-footer>
