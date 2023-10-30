@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { ClanIdStream } from '../../../core/streams/clan-id-stream';
-import { CreateRaffleComponent } from '../create-raffle/create-raffle.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { RaffleFormComponent } from '../raffle-form/raffle-form.component';
 
 @Component({
   selector: 'create-raffle-button',
@@ -9,9 +8,9 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./create-raffle-button.component.scss']
 })
 export class CreateRaffleButtonComponent {
-  constructor(private dialog: MatDialog) {}
-  openCreateRaffle() {
-    this.dialog.open(CreateRaffleComponent);
-  }
+  constructor(private bottomSheet: MatBottomSheet) {}
 
+  openCreateRaffle() {
+    this.bottomSheet.open(RaffleFormComponent);
+  }
 }

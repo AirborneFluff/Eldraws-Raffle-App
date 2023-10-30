@@ -23,6 +23,10 @@ export class RaffleRepository extends BaseRepository {
       return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles`, newRaffle)
   }
 
+  public updateRaffle(clanId: number, raffleId: number, raffle: NewRaffle): Observable<Raffle> {
+    return this.http.put<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}`, raffle)
+  }
+
   public addEntry(clanId: number, raffleId: number, entry: NewRaffleEntry) {
     return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/entries`, entry);
   }

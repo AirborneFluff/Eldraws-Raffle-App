@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CreateRaffleComponent } from './create-raffle/create-raffle.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RaffleFormsModule } from '../../shared/forms/raffle-forms.module';
 import { RaffleDetailsComponent } from './raffle-details/raffle-details.component';
@@ -20,12 +19,12 @@ import { CreatePrizeComponent } from './create-prize/create-prize.component';
 import { CreatePrizeButtonComponent } from './create-prize-button/create-prize-button.component';
 import { SharedModule } from '../../shared/shared.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { RaffleFormComponent } from './raffle-form/raffle-form.component';
 
 
 
 @NgModule({
   declarations: [
-    CreateRaffleComponent,
     RaffleDetailsComponent,
     EntryListComponent,
     CreateEntryComponent,
@@ -33,7 +32,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     CreateRaffleButtonComponent,
     PrizeListComponent,
     CreatePrizeComponent,
-    CreatePrizeButtonComponent
+    CreatePrizeButtonComponent,
+    RaffleFormComponent
   ],
   imports: [
     CommonModule,

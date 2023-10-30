@@ -1,8 +1,16 @@
 import { Component } from '@angular/core';
-import { Raffle } from '../../../data/models/raffle';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { map, startWith } from 'rxjs';
+import { map, startWith, combineLatest, interval } from 'rxjs';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { RaffleFormComponent } from '../raffle-form/raffle-form.component';
+import { TimeUntilPipe } from '../../../core/pipes/time-until.pipe';
+
+const STATUS_SUFFIX = {
+  Close: "Closes in ",
+  Draw: "Prize draw in ",
+  Complete: "Raffle closed"
+}
 
 @Component({
   selector: 'app-raffle-details',
@@ -11,7 +19,7 @@ import { map, startWith } from 'rxjs';
 })
 export class RaffleDetailsComponent {
 
-  constructor(public raffle$: CurrentRaffleStream) {
+  constructor(public raffle$: CurrentRaffleStream, public bottomSheet: MatBottomSheet, private timeUntil: TimeUntilPipe) {
   }
 
   totalDonations$ = this.raffle$.pipe(
@@ -28,17 +36,29 @@ export class RaffleDetailsComponent {
     notNullOrUndefined(),
     map(raffle => {
       return raffle.entries.reduce((max, entry) => {
-        const item2 = entry.tickets?.item2 ?? 0; // Use 0 as a default value if Item2 is missing
+        const item2 = entry.tickets?.item2 ?? 0;
         return item2 > max ? item2 : max;
         }, 0);
       }
     )
   )
 
-  getTickets(raffle: Raffle): number {
-    return raffle.entries.reduce((max, entry) => {
-      const item2 = entry.tickets?.item2 ?? 0; // Use 0 as a default value if Item2 is missing
-      return item2 > max ? item2 : max;
-    }, 0);
+  statusText$ = combineLatest([
+    this.raffle$.pipe(notNullOrUndefined()),
+    interval(1000).pipe(startWith(1))
+  ]).pipe(
+    map(([raffle, _]) => {
+      const timeUntilClose = new Date(raffle.closeDate).getTime() - Date.now();
+      if (timeUntilClose > 0) return STATUS_SUFFIX.Close + this.timeUntil.transform(raffle.closeDate);
+
+      const timeUntilDraw = new Date(raffle.drawDate).getTime() - Date.now();
+      if (timeUntilDraw > 0) return STATUS_SUFFIX.Draw + this.timeUntil.transform(raffle.drawDate);
+
+      return STATUS_SUFFIX.Complete;
+    })
+  )
+
+  editRaffle() {
+    this.bottomSheet.open(RaffleFormComponent);
   }
 }
