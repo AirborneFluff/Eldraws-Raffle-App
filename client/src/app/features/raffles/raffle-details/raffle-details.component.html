@@ -1,8 +1,18 @@
 
 <ng-container *ngIf="(raffle$ | async) as raffle else loading">
   <component-frame>
-    <button mat-button (click)="editRaffle()">Edit</button>
-    <div class="p-6">
+    <div class="flex pb-2 items-center justify-between">
+      <p class="font-display text-md text-center pointer-events-none">
+        <ng-container *ngIf="(timeTillClose$ | async) as time else closed">
+          Closes in {{time}}
+        </ng-container>
+        <ng-template #closed><span class="text-red-600">Raffle Closed</span></ng-template>
+      </p>
+      <button mat-mini-fab color="primary" (click)="editRaffle()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div class="pb-6">
       <div class="pointer-events-none flex justify-center align-middle mb-6">
         <h1 class="font-display leading-none text-2xl">{{raffle.title}}</h1>
       </div>
