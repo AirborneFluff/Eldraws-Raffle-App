@@ -34,7 +34,7 @@ public sealed class RaffleController : ControllerBase
     {
         return Ok(_mapper.Map<RaffleDTO>(HttpContext.GetRaffle()));
     }
-
+    
     [HttpPost]
     public async Task<ActionResult> CreateNewRaffle([FromBody] NewRaffleDTO raffleDto, int clanId)
     {

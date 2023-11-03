@@ -2,16 +2,10 @@
   "ConnectionStrings": {
     "DefaultConnection" : "Server=localhost\\SQLEXPRESS;Database=azureraffle;Trusted_Connection=True;Encrypt=False;"
   },
-  "Kestrel": {
-    "Endpoints": {
-      "Https": {
-        "Url": "https://192.168.1.10:5001"
-      }
-    }
-  },
   "HostUrl": "https://192.168.1.10:5001",
   "ClientUrl": "https://localhost:4200",
   "TokenKey": "<your-token-key>",
+  "DiscordToken" : "<your-token-key>",
   "Logging": {
     "LogLevel": {
       "Default": "Information",
