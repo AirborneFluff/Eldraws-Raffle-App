@@ -7,6 +7,7 @@ public sealed class ClanDTO
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public ulong? DiscordChannelId { get; set; }
 
     public MemberDTO Owner { get; set; }
     public IEnumerable<MemberDTO> Members { get; set; }

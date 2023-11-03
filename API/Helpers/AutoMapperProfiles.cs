@@ -26,6 +26,7 @@ public sealed class AutoMapperProfiles : Profile
                 opt.MapFrom(src => src.Member!.UserName));
             
         CreateMap<NewClanDTO, Clan>();
+        CreateMap<UpdateClanDTO, Clan>();
         CreateMap<Clan, ClanDTO>();
         CreateMap<Clan, ClanInfoDTO>();
         

@@ -45,9 +45,23 @@ public sealed class ClansController : ControllerBase
         
         newClan.Members.Add(clanMember);
         
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(newClan));
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanInfoDTO>(newClan));
         
-        return BadRequest("Issue adding member to clan");
+        return BadRequest("Issue adding clan");
+    }
+    
+    
+    [HttpPut("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
+    public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
+    {
+        var clan = HttpContext.GetClan();
+
+        _mapper.Map(clanDto, clan);
+
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanInfoDTO>(clan));
+        
+        return BadRequest("Issue updating clan");
     }
     
     [HttpGet]
