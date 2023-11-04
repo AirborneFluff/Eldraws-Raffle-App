@@ -7,6 +7,8 @@ namespace RaffleApi.Helpers;
 
 public static class RaffleEmbedBuilder
 {
+    private static readonly string URL = "https://eldraws.co.uk/";
+    
     public static EmbedBuilder GenerateEmbed(this Raffle raffle)
     {
         var embed = raffle.GenerateDescriptionEmbed();
@@ -14,7 +16,7 @@ public static class RaffleEmbedBuilder
         // embed.AddWinners(raffle);
         embed.AddEntries(raffle);
 
-        //embed.AddField("Trouble viewing this? Try the website...", $"[FluffStuff](https://www.fluffstuff.uk/raffles/{raffle.Id}/preview)", false);
+        //embed.AddField("Trouble viewing this? Try the website...", $"({URL}/raffles/{raffle.Id}/preview)", false);
 
         var currentTime = DateTime.Now.ToString("dd-MMM @ hh:mm tt");
         embed.Footer = new EmbedFooterBuilder()
@@ -68,7 +70,7 @@ public static class RaffleEmbedBuilder
 
         if (prize.DonationPercentage > 0)
         {
-            description = (raffle.GetTotalDonations() * prize.DonationPercentage).ToString();
+            description = ((int)(raffle.GetTotalDonations() * prize.DonationPercentage)).ToString();
         }
 
         sb.Append(description);
