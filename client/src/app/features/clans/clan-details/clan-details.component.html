@@ -1,14 +1,19 @@
 <ng-container *ngIf="clan$ | async as clan else loading">
   <component-frame>
+    <div class="flex pb-2 items-center justify-between">
+      <button mat-mini-fab color="primary" class="ml-auto" (click)="editClan()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
     <h1 class="text-center text-3xl mt-4 mb-6 sm:my-8">{{clan.name}}</h1>
     <div class="flex justify-between sm:justify-around text-center mb-10">
         <div class="mx-2 basis-1/3">
             <p class="font-bold text-sm">Members</p>
-            <p class="font-extralight text-2xl leading-tight font-display">{{clan.members.length}}</p>
+            <p class="font-extralight text-2xl leading-tight font-display">{{clan.members?.length}}</p>
         </div>
         <div class="mx-2 basis-1/3">
             <p class="font-bold text-sm">Raffles</p>
-            <p class="font-extralight text-2xl leading-tight font-display">{{clan.raffles.length}}</p>
+            <p class="font-extralight text-2xl leading-tight font-display">{{clan.raffles?.length}}</p>
         </div>
     </div>
 
