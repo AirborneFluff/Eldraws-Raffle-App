@@ -12,7 +12,7 @@ public static class RaffleEmbedBuilder
         var embed = raffle.GenerateDescriptionEmbed();
         embed.AddPrizes(raffle);
         // embed.AddWinners(raffle);
-        // embed.AddEntries(raffle);
+        embed.AddEntries(raffle);
 
         //embed.AddField("Trouble viewing this? Try the website...", $"[FluffStuff](https://www.fluffstuff.uk/raffles/{raffle.Id}/preview)", false);
 
@@ -65,7 +65,6 @@ public static class RaffleEmbedBuilder
         sb.Append(position.PadString(65, 75));
 
         var description = prize.Description;
-        
 
         if (prize.DonationPercentage > 0)
         {
@@ -103,49 +102,54 @@ public static class RaffleEmbedBuilder
     //     return embed;
     // }
     //
-    // public static EmbedBuilder AddEntries(this EmbedBuilder embed, Raffle raffle)
-    // {
-    //     var winningTickets = raffle.Prizes.Select(p => p.WinningTicketNumber).ToList();
-    //     var entries = raffle.Entries;
-    //
-    //     var entryLines = new string[entries.Count];
-    //     var entryPos = 0;
-    //     foreach (var entry in entries)
-    //     {
-    //         var entrySb = new StringBuilder();
-    //         var gamertag = entry.Entrant?.Gamertag;
-    //         if (gamertag == null) continue;
-    //
-    //         entrySb.Append(gamertag.PadString(250, 300));
-    //         entrySb.Append(entry.Tickets.Item1);
-    //         entrySb.Append(" - ");
-    //         entrySb.Append(entry.Tickets.Item2.ToString());
-    //
-    //         entryLines[entryPos] = entrySb.ToString();
-    //         entryPos++;
-    //     }
-    //     var lineCount = entryLines.Count();
-    //     var linePos = 0;
-    //     var pagePos = 1;
-    //
-    //     var fieldSb = new StringBuilder();
-    //     while (linePos < lineCount)
-    //     {
-    //         fieldSb.AppendLine(entryLines[linePos]);
-    //         linePos++;
-    //
-    //         if (linePos % 10 == 0)
-    //         {
-    //             embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false);
-    //             fieldSb.Clear();
-    //             pagePos++;
-    //         }
-    //     }
-    //     
-    //     embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false); // Final page
-    //
-    //     return embed;
-    // }
+    public static EmbedBuilder AddEntries(this EmbedBuilder embed, Raffle raffle)
+    {
+        var entries = raffle.Entries;
+        if (!entries.Any()) return
+            embed.AddField($"Entries", "Nobody has entered yet", false);
+    
+        var entryLines = new string[entries.Count];
+        var entryPos = 0;
+        foreach (var entry in entries)
+        {
+            entryLines[entryPos] = GetEntryDescription(entry);
+            entryPos++;
+        }
+        
+        var lineCount = entryLines.Count();
+        var linePos = 0;
+        var pagePos = 1;
+    
+        var fieldSb = new StringBuilder();
+        while (linePos < lineCount)
+        {
+            fieldSb.AppendLine(entryLines[linePos]);
+            linePos++;
+
+            if (linePos % 10 != 0) continue;
+            
+            embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false);
+            fieldSb.Clear();
+            pagePos++;
+        }
+        
+        embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false); // Final page
+    
+        return embed;
+    }
+
+    private static string GetEntryDescription(RaffleEntry entry)
+    {
+        var sb = new StringBuilder();
+        var gamertag = entry.Entrant?.Gamertag ?? "Unknown";
+    
+        sb.Append(gamertag.PadString(250, 300));
+        sb.Append(entry.Tickets.Item1);
+        sb.Append(" - ");
+        sb.Append(entry.Tickets.Item2);
+    
+        return sb.ToString();
+    }
     //
     // public static EmbedBuilder RollEmoji(this EmbedBuilder embed, int rollPlace, int winningTicket, bool showWinner)
     // {
