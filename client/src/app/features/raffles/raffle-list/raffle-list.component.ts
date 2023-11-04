@@ -1,6 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { Raffle } from '../../../data/models/raffle';
-import { BehaviorSubject, map } from 'rxjs';
+import { Component } from '@angular/core';
+import { map, startWith } from 'rxjs';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
@@ -15,7 +14,8 @@ export class RaffleListComponent {
 
   raffles$ = this.clan$.pipe(
     notNullOrUndefined(),
-    map(clan => clan.raffles)
+    map(clan => clan.raffles),
+    startWith([])
   )
 
   oldRaffles$ = this.raffles$.pipe(
