@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { DiscordFormComponent } from '../discord-form/discord-form.component';
 
 const DISCORD_ICON = "https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/653714c1f22aef3b6921d63d_636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg";
 
@@ -11,10 +13,10 @@ const DISCORD_ICON = "https://cdn.prod.website-files.com/6257adef93867e50d84d30e
 })
 export class DiscordButtonComponent {
 
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
+  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, private bottomSheet: MatBottomSheet) {
     iconRegistry.addSvgIconLiteral('discord', sanitizer.bypassSecurityTrustHtml(DISCORD_ICON));
   }
   openDiscord() {
-
+    this.bottomSheet.open(DiscordFormComponent)
   }
 }
