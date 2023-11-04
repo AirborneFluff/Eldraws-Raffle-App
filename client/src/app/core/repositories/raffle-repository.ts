@@ -42,4 +42,8 @@ export class RaffleRepository extends BaseRepository {
   public removePrize(clanId: number, raffleId: number, prizePlace: number) {
     return this.http.delete<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}`);
   }
+
+  public createDiscordPost(clanId: number, raffleId: number) {
+    return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord`, {})
+  }
 }
