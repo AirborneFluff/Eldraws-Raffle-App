@@ -28,7 +28,7 @@ public static class RaffleEmbedBuilder
         var descriptionSb = new StringBuilder();
         var openDate = raffle.OpenDate.ToString("d MMM");
         var closeDate = raffle.CloseDate.ToString("d MMM");
-        var drawDate = raffle.DrawDate.ToString("d MMM");
+        var drawDate = raffle.DrawDate.ToString("dd-MMM");
         var drawTime = raffle.DrawDate.ToString("h tt");
         
         descriptionSb.AppendLine($"From: {openDate} to {closeDate}");
@@ -45,31 +45,35 @@ public static class RaffleEmbedBuilder
     private static EmbedBuilder AddPrizes(this EmbedBuilder embed, Raffle raffle)
     {
         var prizes = raffle.Prizes;
-        if (!prizes.Any()) return embed;
+        if (!prizes.Any()) return
+            embed.AddField($"Prizes", "No listed prizes yet", false);
         
-        var prizesSb = new StringBuilder();
+        var sb = new StringBuilder();
         foreach(var prize in prizes)
-        {
-            var posStr = $"**{prize.Place.AddPositionalSynonym()}**";
-            prizesSb.Append(posStr.PadString(65, 75));
-            var descLines = prize.Description?.Split('\n');
-            if (descLines == null) continue;
-            
-            foreach (var line in descLines)
-            {
-                if (descLines.First() == line)
-                {
-                    prizesSb.AppendLine(line);
-                    continue;
-                }
-                prizesSb.AppendLine(new String("").PadString(65, 75) + line);
-            }
-        }
-        if (prizes.Any()) embed.AddField($"Prizes", prizesSb.ToString(), false);
+            sb.AppendLine(GetPrizeDescription(raffle, prize));
         
-        else embed.AddField($"Prizes", "No listed prizes yet", false);
+        embed.AddField($"Prizes", sb.ToString(), false);
         
         return embed;
+    }
+
+    private static string GetPrizeDescription(Raffle raffle, RafflePrize prize)
+    {
+        var sb = new StringBuilder();
+        
+        var position = $"**{prize.Place.AddPositionalSynonym()}**";
+        sb.Append(position.PadString(65, 75));
+
+        var description = prize.Description;
+        
+
+        if (prize.DonationPercentage > 0)
+        {
+            description = (raffle.GetTotalDonations() * prize.DonationPercentage).ToString();
+        }
+
+        sb.Append(description);
+        return sb.ToString();
     }
     
     //

@@ -24,4 +24,9 @@ public static class RaffleExtensions
             count += ticketCount;
         }
     }
+
+    public static int GetTotalDonations(this Raffle raffle)
+    {
+        return raffle.Entries.Sum(entry => entry.Donation);
+    }
 }
