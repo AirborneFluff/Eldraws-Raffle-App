@@ -18,9 +18,9 @@ public static class RaffleEmbedBuilder
 
         //embed.AddField("Trouble viewing this? Try the website...", $"({URL}/raffles/{raffle.Id}/preview)", false);
 
-        var currentTime = DateTime.Now.ToString("dd-MMM @ hh:mm tt");
+        var currentTime = DateTime.UtcNow.ToString("dd-MMM @ hh:mm tt");
         embed.Footer = new EmbedFooterBuilder()
-            .WithText($"Last updated: {currentTime} GMT");
+            .WithText($"Last updated: {currentTime} UTC");
 
         return embed;
     }
@@ -33,9 +33,9 @@ public static class RaffleEmbedBuilder
         var drawDate = raffle.DrawDate.ToString("dd-MMM");
         var drawTime = raffle.DrawDate.ToString("h tt");
         
-        descriptionSb.AppendLine($"From: {openDate} to {closeDate}");
-        descriptionSb.AppendLine($"We will draw winners at around {drawTime} on {drawDate}");
-        descriptionSb.AppendLine($"Tickets cost {raffle.EntryCost} each");
+        descriptionSb.AppendLine($"Open from: {openDate} to {closeDate}");
+        descriptionSb.AppendLine($"Drawing winners at: {drawTime} on {drawDate}");
+        descriptionSb.AppendLine($"Tickets cost: {raffle.EntryCost} each");
 
         return new EmbedBuilder
         {
