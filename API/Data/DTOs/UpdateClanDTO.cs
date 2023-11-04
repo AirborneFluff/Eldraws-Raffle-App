@@ -2,5 +2,5 @@
 
 public class UpdateClanDTO
 {
-    public ulong? DiscordChannelId { get; set; }
+    public string? DiscordChannelId { get; set; }
 }

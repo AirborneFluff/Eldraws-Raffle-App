@@ -20,6 +20,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-placeholder.component';
+import { ClanFormComponent } from './clan-form/clan-form.component';
+import { FormSheetModule } from '../../shared/form-sheet/form-sheet.module';
 
 
 
@@ -33,7 +35,8 @@ import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-
     ClanMemberListComponent,
     AddClanMemberButtonComponent,
     AddClanMemberComponent,
-    ClanListPlaceholderComponent
+    ClanListPlaceholderComponent,
+    ClanFormComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +50,8 @@ import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    FormSheetModule
   ],
   exports: [
     ClanListComponent,

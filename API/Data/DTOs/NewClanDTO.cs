@@ -7,5 +7,5 @@ public class NewClanDTO
     [Required]
     public string Name { get; set; }
 
-    public ulong? DiscordChannelId { get; set; }
+    public string? DiscordChannelId { get; set; }
 }
