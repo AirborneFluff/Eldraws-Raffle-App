@@ -9,7 +9,6 @@ public sealed class DiscordService
 {
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
-    private IMessageChannel? _channel;
 
     public DiscordService(DiscordSocketClient discord, IConfiguration config)
     {
@@ -21,19 +20,19 @@ public sealed class DiscordService
 
     public async Task<ulong?> SendRaffleEmbed(Raffle raffle, ulong channelId)
     {
-        await StartSession(channelId);
-        if (_channel == null) return null;
+        var channel = await StartSession(channelId);
+        if (channel == null) return null;
         
         var embed = raffle.GenerateEmbed();
         ulong? messageId = null;
 
         if (raffle.DiscordMessageId != null)
         {
-            messageId = await EditMessage(embed, (ulong)raffle.DiscordMessageId);
+            messageId = await EditMessage(channel, embed, (ulong)raffle.DiscordMessageId);
             if (messageId != null) return await Complete(messageId);
         }
         
-        messageId = await SendNewMessage(embed);
+        messageId = await SendNewMessage(channel, embed);
         return await Complete(messageId);
     }
 
@@ -43,32 +42,28 @@ public sealed class DiscordService
         return value;
     }
 
-    private async Task<ulong?> SendNewMessage(EmbedBuilder embed)
+    private async Task<ulong?> SendNewMessage(IMessageChannel channel, EmbedBuilder embed)
     {
-        if (_channel == null) return await Complete(null);
-        
-        var msgResult = await _channel.SendMessageAsync("", false, embed.Build());
+        var msgResult = await channel.SendMessageAsync("", false, embed.Build());
         return msgResult?.Id;
     }
 
-    private async Task<ulong?> EditMessage(EmbedBuilder embed, ulong messageId)
+    private async Task<ulong?> EditMessage(IMessageChannel channel, EmbedBuilder embed, ulong messageId)
     {
-        if (_channel == null) return await Complete(null);
-
-        if (!(await _channel.GetMessageAsync(messageId) is IUserMessage msg)) return await Complete(null);
+        if (await channel.GetMessageAsync(messageId) is not IUserMessage msg) return await Complete(null);
         await msg.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
         
         return messageId;
     }
     
-    private async Task StartSession(ulong channelId)
+    private async Task<IMessageChannel?> StartSession(ulong channelId)
     {
         if (_discord.LoginState == LoginState.LoggedOut) 
             await _discord.LoginAsync(TokenType.Bot, _token);
         
         await _discord.StartAsync();
 
-        _channel = await _discord.GetChannelAsync(channelId) as IMessageChannel;
+        return await _discord.GetChannelAsync(channelId) as IMessageChannel;
     }
 
     private async Task CloseSession()
