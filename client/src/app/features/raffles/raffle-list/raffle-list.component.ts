@@ -14,11 +14,11 @@ export class RaffleListComponent {
 
   raffles$ = this.clan$.pipe(
     notNullOrUndefined(),
-    map(clan => clan.raffles),
-    startWith([])
+    map(clan => clan.raffles)
   )
 
   oldRaffles$ = this.raffles$.pipe(
+    notNullOrUndefined(),
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)
@@ -29,6 +29,7 @@ export class RaffleListComponent {
   )
 
   currentRaffles$ = this.raffles$.pipe(
+    notNullOrUndefined(),
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)
