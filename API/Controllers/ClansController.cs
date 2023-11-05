@@ -48,7 +48,7 @@ public sealed class ClansController : ControllerBase
         
         newClan.Members.Add(clanMember);
         
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanInfoDTO>(newClan));
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(newClan));
         
         return BadRequest("Issue adding clan");
     }
@@ -62,7 +62,7 @@ public sealed class ClansController : ControllerBase
 
         _mapper.Map(clanDto, clan);
 
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanInfoDTO>(clan));
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
         
         return BadRequest("Issue updating clan");
     }
