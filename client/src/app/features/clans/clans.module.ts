@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-placeholder.component';
 import { ClanFormComponent } from './clan-form/clan-form.component';
 import { FormSheetModule } from '../../shared/form-sheet/form-sheet.module';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 
@@ -49,7 +50,8 @@ import { FormSheetModule } from '../../shared/form-sheet/form-sheet.module';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    FormSheetModule
+    FormSheetModule,
+    MatProgressSpinnerModule
   ]
 })
 export class ClansModule { }
