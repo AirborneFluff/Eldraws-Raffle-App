@@ -30,6 +30,9 @@ public sealed class ClansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
+        var clanCheck = await _unitOfWork.ClanRepository.GetByName(clan.Name);
+        if (clanCheck != null) return Conflict(clan.Name);
+        
         var user = HttpContext.GetUser();
         var newClan = _mapper.Map<Clan>(clan);
         newClan.OwnerId = user.Id;

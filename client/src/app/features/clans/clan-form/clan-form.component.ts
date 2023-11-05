@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { switchMap, take } from 'rxjs';
@@ -9,6 +13,7 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
 import { NewClan } from '../../../data/models/new-clan';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-clan-form',
@@ -16,6 +21,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./clan-form.component.scss']
 })
 export class ClanFormComponent {
+
   name = new FormControl('', Validators.required);
   discordChannelId = new FormControl('', Validators.pattern('^\\d{17}$|^\\d{18}$|^\\d{19}$'));
 
@@ -42,8 +48,8 @@ export class ClanFormComponent {
             this.router.navigate(['clans', newClan.id]);
             this.bottomSheet.dismiss();
           },
-          error: e => {
-            console.log(e)
+          error: (requestError: HttpErrorResponse) => {
+            this.handleResponseError(requestError);
           }
         }
       )
@@ -61,10 +67,13 @@ export class ClanFormComponent {
           this.clan$.next(clan);
           this.bottomSheet.dismiss();
         },
-        error: e => {
-          console.log(e)
+        error: (requestError: HttpErrorResponse) => {
+          this.handleResponseError(requestError);
         }
       }
     )
+  }
+
+  handleResponseError(error: HttpErrorResponse) {
   }
 }
