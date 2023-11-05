@@ -64,6 +64,7 @@ export class ClanFormComponent {
       })
     ).subscribe({
         next: clan => {
+          console.log(clan)
           this.clan$.next(clan);
           this.bottomSheet.dismiss();
         },
