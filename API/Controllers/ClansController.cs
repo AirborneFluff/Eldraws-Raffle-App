@@ -58,8 +58,12 @@ public sealed class ClansController : ControllerBase
     {
         var clan = await _unitOfWork.ClanRepository.GetByName(name);
         if (clan == null) return NotFound("No clan found by that name");
-        
-        return Ok(clan.Name);
+
+        return Ok(new
+        {
+            id = clan.Id,
+            name = clan.Name
+        });
     }
     
     
