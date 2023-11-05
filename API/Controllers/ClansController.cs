@@ -53,6 +53,19 @@ public sealed class ClansController : ControllerBase
         return BadRequest("Issue adding clan");
     }
     
+    [HttpGet("search")]
+    public async Task<ActionResult<ClanDTO>> SearchByClanName([FromQuery] string name)
+    {
+        var clan = await _unitOfWork.ClanRepository.GetByName(name);
+        if (clan == null) return NotFound("No clan found by that name");
+
+        return Ok(new
+        {
+            id = clan.Id,
+            name = clan.Name
+        });
+    }
+    
     
     [HttpPut("{clanId:int}")]
     [ServiceFilter(typeof(ValidateClanOwner))]

@@ -1,8 +1,18 @@
 import { BaseRepository } from './base-repository';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { NewClan, Entrant, Clan } from '../../data/data-models';
 
 export class ClanRepository extends BaseRepository {
+  public exists(name: string | null): Observable<boolean> {
+    if (name == null) return of(false);
+    const params = {
+      name: name
+    }
+    return this.http.get<any>(this.baseUrl + 'search', { params: params })
+      .pipe(
+        catchError(() => of(null)),
+        map(val => !!val))
+  }
   public getById(id: number): Observable<Clan> {
     return this.http.get<Clan>(this.baseUrl + id);
   }

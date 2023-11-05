@@ -29,16 +29,6 @@ public sealed class AccountController: ControllerBase
         _tokenService = tokenService;
     }
 
-    [HttpGet("all")]
-    [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAllUsers()
-    {
-        var result = await _userManager.Users
-            .Select(user => _mapper.Map<MemberDTO>(user))
-            .ToListAsync();
-        return Ok(result);
-    }
-
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Login(LoginDTO input)

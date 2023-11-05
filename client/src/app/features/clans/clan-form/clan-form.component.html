@@ -14,7 +14,7 @@
       <button mat-raised-button
               color="primary"
               class="w-full"
-              [disabled]="clanForm.invalid"
+              [disabled]="clanForm.invalid || (checkingName$ | async)"
               (click)="createClan()"
               *ngIf="!(clan$ | async)">Create</button>
       <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
@@ -23,9 +23,13 @@
 
   <form [formGroup]="clanForm">
     <mat-form-field class="w-full mb-4">
-      <mat-label>Title</mat-label>
-      <input matInput [formControl]="name" placeholder="Clan Title">
-      <mat-error *ngIf="name.hasError('required')">The clan must have a title</mat-error>
+      <mat-label>Name</mat-label>
+      <input matInput [formControl]="name" placeholder="Clan Name">
+      <mat-error *ngIf="name.hasError('required')">The clan must have a name</mat-error>
+      <mat-error *ngIf="name.hasError('exists')">This clan name is already in use</mat-error>
+      <mat-icon matSuffix *ngIf="checkingName$ | async">
+        <mat-spinner diameter="24"></mat-spinner>
+      </mat-icon>
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4">
