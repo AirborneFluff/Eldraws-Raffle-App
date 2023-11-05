@@ -38,7 +38,7 @@ public sealed class DiscordService
 
     private async Task<ulong?> Complete(ulong? value)
     {
-        //await _discord.StopAsync();
+        await _discord.StopAsync();
         return value;
     }
 
