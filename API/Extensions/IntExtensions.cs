@@ -33,6 +33,12 @@ public static class IntExtensions
         
         return val.ToString();
     }
+
+    public static string AddDigitGroupSeperator(this int val)
+    {
+        return String.Format("{0:n0}", val);
+    }
+
     public static int IndexOf<T>(this IEnumerable<T> source, T value)
     {
         var index = 0;

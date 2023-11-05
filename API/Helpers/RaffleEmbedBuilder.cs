@@ -74,7 +74,7 @@ public static class RaffleEmbedBuilder
             var percentage = (int)(prize.DonationPercentage * 100);
             var value = (int)(raffle.GetTotalDonations() * prize.DonationPercentage);
             description = 
-                $"{percentage}% of donations: " + value;
+                $"{percentage}% of donations: " + value.AddDigitGroupSeperator();
         }
 
         sb.Append(description);
