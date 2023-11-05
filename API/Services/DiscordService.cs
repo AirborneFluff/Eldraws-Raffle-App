@@ -13,39 +13,55 @@ public sealed class DiscordService
 
     public DiscordService(DiscordSocketClient discord, IConfiguration config)
     {
-        this._discord = discord;
+        _discord = discord;
 
         var token = config["DiscordToken"];
-        this._token = token ?? throw new Exception("Discord Token not defined");
+        _token = token ?? throw new Exception("Discord Token not defined");
     }
 
-    public async Task SendRaffleEmbed(Raffle raffle, ulong channelId)
+    public async Task<ulong?> SendRaffleEmbed(Raffle raffle, ulong channelId)
     {
         await StartSession(channelId);
-        if (_channel == null) return;
+        if (_channel == null) return null;
         
         var embed = raffle.GenerateEmbed();
+
+        if (raffle.DiscordMessageId != null)
+        {
+            var messageId = await EditMessage(embed, (ulong)raffle.DiscordMessageId);
+            if (messageId != null) return messageId;
+        }
+        
+        return await SendNewMessage(embed);
+    }
+
+    private async Task<ulong?> SendNewMessage(EmbedBuilder embed)
+    {
+        if (_channel == null)
+        {
+            await CloseSession();
+            return null;
+        };
         
         var msgResult = await _channel.SendMessageAsync("", false, embed.Build());
-        raffle.DiscordMessageId = msgResult.Id;
-
-        //
-        // if (raffle.DiscordMessageId != null)
-        // {
-        //     var msg = await _channel.GetMessageAsync((ulong)raffle.DiscordMessageId) as IUserMessage;
-        //     if (msg != null)
-        //     {
-        //         await msg.ModifyAsync(msg => msg.Embed = embed.Build());
-        //         goto Finish;
-        //     }
-        // }
-        //
-        // var msgResult = await _channel.SendMessageAsync("", false, embed.Build());
-        // raffle.DiscordMessageId = msgResult.Id;
-        //
-        // Finish:
+        
         await CloseSession();
-        // return raffle.DiscordMessageId;
+        return msgResult?.Id;
+    }
+
+    private async Task<ulong?> EditMessage(EmbedBuilder embed, ulong messageId)
+    {
+        if (_channel == null)
+        {
+            await CloseSession();
+            return null;
+        };
+
+        if (!(await _channel.GetMessageAsync(messageId) is IUserMessage msg)) return null;
+        await msg.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
+        
+        await CloseSession();
+        return messageId;
     }
     
     private async Task StartSession(ulong channelId)

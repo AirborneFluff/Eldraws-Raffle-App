@@ -14,10 +14,12 @@ namespace RaffleApi.Controllers;
 [Authorize]
 public class DiscordController : ControllerBase
 {
+    private readonly UnitOfWork _unitOfWork;
     private readonly DiscordService _discord;
 
     public DiscordController(IMapper mapper, UnitOfWork unitOfWork, DiscordService discord)
     {
+        _unitOfWork = unitOfWork;
         _discord = discord;
     }
 
@@ -28,9 +30,16 @@ public class DiscordController : ControllerBase
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        await _discord.SendRaffleEmbed(raffle, (ulong)clan.DiscordChannelId);
+        var messageId = await _discord.SendRaffleEmbed(raffle, (ulong)clan.DiscordChannelId);
+
+        if (messageId == null) return BadRequest("Couldn't send message to Discord");
+
+        if (raffle.DiscordMessageId == messageId) return Ok();
         
-        return Ok();
+        raffle.DiscordMessageId = messageId;
+        if (await _unitOfWork.Complete()) return Ok();
+        
+        return BadRequest("Couldn't send message to Discord");
     }
     
     
