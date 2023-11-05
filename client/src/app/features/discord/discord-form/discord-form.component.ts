@@ -3,7 +3,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { combineLatest, switchMap, take } from 'rxjs';
+import { combineLatest, map, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -19,6 +19,13 @@ export class DiscordFormComponent {
   discordMessageForm = new FormGroup({
     discordChannelId: this.discordChannelId
   })
+
+  discordChannelId$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    map(clan => clan.discordChannelId),
+    notNullOrUndefined()
+  )
+
   constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private clan$: CurrentClanStream) {
     this.clan$.pipe(
       notNullOrUndefined(),

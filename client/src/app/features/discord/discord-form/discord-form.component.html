@@ -5,10 +5,16 @@
       <button mat-raised-button
               (click)="post()"
               color="primary"
+              [disabled]="!(discordChannelId$ | async)"
               class="w-full">Post</button>
       <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
     </div>
   </sheet-footer>
+
+  <div *ngIf="!(discordChannelId$ | async)" class="font-display mb-4 text-md font-light">
+    <mat-error>You should add a channel Id for your clan.</mat-error>
+    <mat-error>You can do this by returning to your clan details page and pressing the Edit button</mat-error>
+  </div>
 
   <form [formGroup]="discordMessageForm">
     <mat-form-field class="w-full mb-4">
