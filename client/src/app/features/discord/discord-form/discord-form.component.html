@@ -30,7 +30,9 @@
   </div>
 
   <div *ngIf="postError$ | async" class="mb-4">
-    <mat-error>There was a problem with posting to Discord. Check your Channel Id is correct</mat-error>
+    <mat-error>There was a problem with posting to Discord.</mat-error>
+    <mat-error>Check your Channel Id is correct</mat-error>
+    <mat-error>Check bot permissions are correct</mat-error>
   </div>
 
 </sheet-container>
