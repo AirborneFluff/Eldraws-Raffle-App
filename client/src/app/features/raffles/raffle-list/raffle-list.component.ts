@@ -1,6 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { Raffle } from '../../../data/models/raffle';
-import { BehaviorSubject, map } from 'rxjs';
+import { Component } from '@angular/core';
+import { map, startWith } from 'rxjs';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
@@ -19,6 +18,7 @@ export class RaffleListComponent {
   )
 
   oldRaffles$ = this.raffles$.pipe(
+    notNullOrUndefined(),
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)
@@ -29,6 +29,7 @@ export class RaffleListComponent {
   )
 
   currentRaffles$ = this.raffles$.pipe(
+    notNullOrUndefined(),
     map(raffles => {
       return raffles.filter(raffle => {
         const date = new Date(raffle.closeDate)

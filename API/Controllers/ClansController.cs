@@ -30,6 +30,9 @@ public sealed class ClansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ClanDTO>> CreateNewClan(NewClanDTO clan)
     {
+        var clanCheck = await _unitOfWork.ClanRepository.GetByName(clan.Name);
+        if (clanCheck != null) return Conflict(clan.Name);
+        
         var user = HttpContext.GetUser();
         var newClan = _mapper.Map<Clan>(clan);
         newClan.OwnerId = user.Id;
@@ -47,7 +50,21 @@ public sealed class ClansController : ControllerBase
         
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(newClan));
         
-        return BadRequest("Issue adding member to clan");
+        return BadRequest("Issue adding clan");
+    }
+    
+    
+    [HttpPut("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
+    public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
+    {
+        var clan = HttpContext.GetClan();
+
+        _mapper.Map(clanDto, clan);
+
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
+        
+        return BadRequest("Issue updating clan");
     }
     
     [HttpGet]

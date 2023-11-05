@@ -20,6 +20,7 @@ import { CreatePrizeButtonComponent } from './create-prize-button/create-prize-b
 import { SharedModule } from '../../shared/shared.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RaffleFormComponent } from './raffle-form/raffle-form.component';
+import { DiscordModule } from '../discord/discord.module';
 
 
 
@@ -47,7 +48,8 @@ import { RaffleFormComponent } from './raffle-form/raffle-form.component';
     RouterLink,
     MatIconModule,
     SharedModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    DiscordModule
   ],
   exports: [
     RaffleListComponent,

@@ -11,6 +11,7 @@ public sealed class Clan
     public string OwnerId { get; set; }
 
     public string NormalizedName { get => Name.ToUpper(); set => Name.ToUpper(); }
+    public ulong? DiscordChannelId { get; set; }
 
     public ICollection<Raffle> Raffles { get; set; } = new Collection<Raffle>();
     public ICollection<ClanMember> Members { get; set; } = new Collection<ClanMember>();

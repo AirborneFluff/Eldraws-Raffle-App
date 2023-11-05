@@ -1,0 +1,36 @@
+<sheet-container>
+  <sheet-header>Discord</sheet-header>
+  <sheet-footer>
+    <div class="flex gap-2 justify-between flex-row-reverse">
+      <button mat-raised-button
+              (click)="post()"
+              color="primary"
+              [disabled]="!(discordChannelId$ | async) || (submitted$ | async)"
+              class="w-full">Post</button>
+      <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
+    </div>
+  </sheet-footer>
+
+  <div *ngIf="!(discordChannelId$ | async)" class="mb-4">
+    <mat-error>You should add a channel Id for your clan.</mat-error>
+    <mat-error>You can do this by returning to your clan details page and pressing the Edit button</mat-error>
+  </div>
+
+  <form [formGroup]="discordMessageForm">
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Discord Channel Id</mat-label>
+      <input matInput [formControl]="discordChannelId" placeholder="Id">
+      <mat-error *ngIf="discordChannelId.hasError('pattern')">This is not a valid Discord channel Id</mat-error>
+    </mat-form-field>
+  </form>
+
+  <div class="font-display mb-4 text-md font-light">
+    <p>Message editing will be coming soon... Sit tight.</p>
+    <p>For now, you can post the default Discord message</p>
+  </div>
+
+  <div *ngIf="postError$ | async" class="mb-4">
+    <mat-error>There was a problem with posting to Discord. Check your Channel Id is correct</mat-error>
+  </div>
+
+</sheet-container>

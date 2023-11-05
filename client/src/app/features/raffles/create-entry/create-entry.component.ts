@@ -57,9 +57,10 @@ export class CreateEntryComponent implements OnDestroy {
   })
 
   filteredEntrants$ = combineLatest([
-    this.entrants$,
+    this.entrants$.pipe(notNullOrUndefined()),
     this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
-  ]).pipe(map(([entrants, filter = '']) => {
+  ]).pipe(
+    map(([entrants, filter = '']) => {
     return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
   }))
 

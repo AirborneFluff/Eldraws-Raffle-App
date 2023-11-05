@@ -1,6 +1,7 @@
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
 using AutoMapper;
+using static RaffleApi.Extensions.ULongExtensions;
 
 namespace RaffleApi.Helpers;
 
@@ -25,7 +26,12 @@ public sealed class AutoMapperProfiles : Profile
             .ForMember(dest => dest.UserName, opt =>
                 opt.MapFrom(src => src.Member!.UserName));
             
-        CreateMap<NewClanDTO, Clan>();
+        CreateMap<NewClanDTO, Clan>()
+            .ForMember(dest => dest.DiscordChannelId, opt =>
+                opt.MapFrom(src => ParseNullableULong(src.DiscordChannelId)));
+        CreateMap<UpdateClanDTO, Clan>()
+            .ForMember(dest => dest.DiscordChannelId, opt =>
+                opt.MapFrom(src => ParseNullableULong(src.DiscordChannelId)));
         CreateMap<Clan, ClanDTO>();
         CreateMap<Clan, ClanInfoDTO>();
         

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ClanListComponent } from './clan-list/clan-list.component';
 import { ClanListItemComponent } from './clan-list-item/clan-list-item.component';
 import { RaffleFormsModule } from '../../shared/forms/raffle-forms.module';
-import { CreateClanComponent } from './create-clan/create-clan.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ClanDetailsComponent } from './clan-details/clan-details.component';
 import { CoreModule } from '../../core/core.module';
@@ -20,6 +19,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-placeholder.component';
+import { ClanFormComponent } from './clan-form/clan-form.component';
+import { FormSheetModule } from '../../shared/form-sheet/form-sheet.module';
 
 
 
@@ -27,13 +28,13 @@ import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-
   declarations: [
     ClanListComponent,
     ClanListItemComponent,
-    CreateClanComponent,
     ClanDetailsComponent,
     CreateClanButtonComponent,
     ClanMemberListComponent,
     AddClanMemberButtonComponent,
     AddClanMemberComponent,
-    ClanListPlaceholderComponent
+    ClanListPlaceholderComponent,
+    ClanFormComponent
   ],
   imports: [
     CommonModule,
@@ -47,12 +48,8 @@ import { ClanListPlaceholderComponent } from './clan-list-placeholder/clan-list-
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
-  ],
-  exports: [
-    ClanListComponent,
-    ClanListItemComponent,
-    CreateClanComponent,
+    MatInputModule,
+    FormSheetModule
   ]
 })
 export class ClansModule { }

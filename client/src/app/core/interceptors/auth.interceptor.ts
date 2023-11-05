@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
           this.account.logout();
           this.router.navigate(['login'],{queryParams:{'redirectURL':this.router.url}});
         }
-        return throwError(() => new Error(requestError.message));
+        return throwError(() => requestError);
       })
     );
   }

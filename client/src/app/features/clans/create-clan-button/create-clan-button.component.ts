@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { CreateClanComponent } from '../create-clan/create-clan.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ClanFormComponent } from '../clan-form/clan-form.component';
 
 @Component({
   selector: 'app-create-clan-button',
@@ -8,10 +8,10 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./create-clan-button.component.scss']
 })
 export class CreateClanButtonComponent {
-  constructor(private dialog: MatDialog) {
+  constructor(private bottomSheet: MatBottomSheet) {
   }
 
   openCreateClan() {
-    this.dialog.open(CreateClanComponent)
+    this.bottomSheet.open(ClanFormComponent);
   }
 }

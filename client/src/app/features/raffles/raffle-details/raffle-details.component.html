@@ -5,9 +5,12 @@
       <p class="font-display text-md text-center pointer-events-none">
         {{statusText$ | async}}
       </p>
-      <button mat-mini-fab color="primary" (click)="editRaffle()">
-        <mat-icon>edit</mat-icon>
-      </button>
+      <div class="flex gap-2">
+        <discord-button/>
+        <button mat-mini-fab color="primary" (click)="editRaffle()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
     </div>
     <div class="pb-6">
       <div class="pointer-events-none flex justify-center align-middle mb-6">
