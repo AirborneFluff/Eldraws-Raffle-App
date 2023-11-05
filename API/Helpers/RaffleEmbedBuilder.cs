@@ -28,12 +28,13 @@ public static class RaffleEmbedBuilder
     private static EmbedBuilder GenerateDescriptionEmbed(this Raffle raffle)
     {
         var descriptionSb = new StringBuilder();
-        var openDate = raffle.OpenDate.ToString("d MMM");
-        var closeDate = raffle.CloseDate.ToString("d MMM");
-        var drawDate = raffle.DrawDate.ToString("dd-MMM");
+        var openDate = raffle.OpenDate.ToString("dddd dd MMM");
+        var closeDate = raffle.CloseDate.ToString("dddd dd MMM");
+        var drawDate = raffle.DrawDate.ToString("dddd dd MMM");
         var drawTime = raffle.DrawDate.ToString("h tt");
         
-        descriptionSb.AppendLine($"Open from: {openDate} to {closeDate}");
+        descriptionSb.AppendLine($"Open from: {openDate}");
+        descriptionSb.AppendLine($"Closes at: {closeDate}");
         descriptionSb.AppendLine($"Drawing winners at: {drawTime} on {drawDate}");
         descriptionSb.AppendLine($"Tickets cost: {raffle.EntryCost} each");
 
@@ -70,7 +71,10 @@ public static class RaffleEmbedBuilder
 
         if (prize.DonationPercentage > 0)
         {
-            description = ((int)(raffle.GetTotalDonations() * prize.DonationPercentage)).ToString();
+            var percentage = (int)(prize.DonationPercentage * 100);
+            var value = (int)(raffle.GetTotalDonations() * prize.DonationPercentage);
+            description = 
+                $"{percentage}% of donations: " + value;
         }
 
         sb.Append(description);
@@ -125,7 +129,7 @@ public static class RaffleEmbedBuilder
         var fieldSb = new StringBuilder();
         while (linePos < lineCount)
         {
-            fieldSb.AppendLine(entryLines[linePos]);
+            fieldSb.Append(entryLines[linePos]);
             linePos++;
 
             if (linePos % 10 != 0) continue;
@@ -142,6 +146,8 @@ public static class RaffleEmbedBuilder
 
     private static string GetEntryDescription(RaffleEntry entry)
     {
+        if (entry.Tickets.Item1 == 0 || entry.Tickets.Item2 == 0) return String.Empty;
+        
         var sb = new StringBuilder();
         var gamertag = entry.Entrant?.Gamertag ?? "Unknown";
     
@@ -149,6 +155,7 @@ public static class RaffleEmbedBuilder
         sb.Append(entry.Tickets.Item1);
         sb.Append(" - ");
         sb.Append(entry.Tickets.Item2);
+        sb.AppendLine();
     
         return sb.ToString();
     }
