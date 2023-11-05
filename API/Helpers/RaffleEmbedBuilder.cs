@@ -108,7 +108,7 @@ public static class RaffleEmbedBuilder
     //     return embed;
     // }
     //
-    public static EmbedBuilder AddEntries(this EmbedBuilder embed, Raffle raffle)
+    private static EmbedBuilder AddEntries(this EmbedBuilder embed, Raffle raffle)
     {
         var entries = raffle.Entries;
         if (!entries.Any()) return
