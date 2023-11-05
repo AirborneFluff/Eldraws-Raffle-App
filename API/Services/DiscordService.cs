@@ -25,48 +25,47 @@ public sealed class DiscordService
         if (_channel == null) return null;
         
         var embed = raffle.GenerateEmbed();
+        ulong? messageId = null;
 
         if (raffle.DiscordMessageId != null)
         {
-            var messageId = await EditMessage(embed, (ulong)raffle.DiscordMessageId);
-            if (messageId != null) return messageId;
+            messageId = await EditMessage(embed, (ulong)raffle.DiscordMessageId);
+            if (messageId != null) return await Complete(messageId);
         }
         
-        return await SendNewMessage(embed);
+        messageId = await SendNewMessage(embed);
+        return await Complete(messageId);
+    }
+
+    private async Task<ulong?> Complete(ulong? value)
+    {
+        await CloseSession();
+        return value;
     }
 
     private async Task<ulong?> SendNewMessage(EmbedBuilder embed)
     {
-        if (_channel == null)
-        {
-            await CloseSession();
-            return null;
-        };
+        if (_channel == null) return await Complete(null);
         
         var msgResult = await _channel.SendMessageAsync("", false, embed.Build());
-        
-        await CloseSession();
         return msgResult?.Id;
     }
 
     private async Task<ulong?> EditMessage(EmbedBuilder embed, ulong messageId)
     {
-        if (_channel == null)
-        {
-            await CloseSession();
-            return null;
-        };
+        if (_channel == null) return await Complete(null);
 
-        if (!(await _channel.GetMessageAsync(messageId) is IUserMessage msg)) return null;
+        if (!(await _channel.GetMessageAsync(messageId) is IUserMessage msg)) return await Complete(null);
         await msg.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
         
-        await CloseSession();
         return messageId;
     }
     
     private async Task StartSession(ulong channelId)
     {
-        await _discord.LoginAsync(TokenType.Bot, _token);
+        if (_discord.LoginState == LoginState.LoggedOut) 
+            await _discord.LoginAsync(TokenType.Bot, _token);
+        
         await _discord.StartAsync();
 
         _channel = await _discord.GetChannelAsync(channelId) as IMessageChannel;
@@ -74,6 +73,6 @@ public sealed class DiscordService
 
     private async Task CloseSession()
     {
-        await _discord.LogoutAsync();
+        await _discord.StopAsync();
     }
 }
