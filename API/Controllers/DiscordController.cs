@@ -39,7 +39,7 @@ public class DiscordController : ControllerBase
         raffle.DiscordMessageId = messageId;
         if (await _unitOfWork.Complete()) return Ok();
         
-        return BadRequest("Couldn't send message to Discord");
+        return BadRequest();
     }
     
     

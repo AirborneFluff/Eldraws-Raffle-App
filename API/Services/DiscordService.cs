@@ -21,7 +21,7 @@ public sealed class DiscordService
     public async Task<ulong?> SendRaffleEmbed(Raffle raffle, ulong channelId)
     {
         var channel = await StartSession(channelId);
-        if (channel == null) return null;
+        if (channel == null) return await Complete(null);
         
         var embed = raffle.GenerateEmbed();
         ulong? messageId = null;
@@ -38,7 +38,7 @@ public sealed class DiscordService
 
     private async Task<ulong?> Complete(ulong? value)
     {
-        await CloseSession();
+        await _discord.StopAsync();
         return value;
     }
 
@@ -64,10 +64,5 @@ public sealed class DiscordService
         await _discord.StartAsync();
 
         return await _discord.GetChannelAsync(channelId) as IMessageChannel;
-    }
-
-    private async Task CloseSession()
-    {
-        await _discord.StopAsync();
     }
 }
