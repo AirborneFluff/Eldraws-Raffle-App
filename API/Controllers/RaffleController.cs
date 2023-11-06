@@ -51,6 +51,18 @@ public sealed class RaffleController : ControllerBase
         return BadRequest("Issue creating raffle");
     }
 
+    [HttpDelete("{raffleId:int}")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> DeleteRaffle(int raffleId, int clanId)
+    {
+        var raffle = HttpContext.GetRaffle();
+        _unitOfWork.RaffleRepository.Delete(raffle);
+
+        if (await _unitOfWork.Complete()) return Ok();
+
+        return BadRequest();
+    }
+
     [HttpPut("{raffleId:int}")]
     [ServiceFilter(typeof(ValidateRaffle))]
     public async Task<ActionResult> UpdateRaffle(int raffleId, [FromBody] NewRaffleDTO raffleDto, int clanId)
