@@ -1,6 +1,13 @@
 <sheet-container>
   <sheet-header>
-    <ng-container *ngIf="raffle$ | async as raffle else createTitle">Edit Raffle</ng-container>
+    <ng-container *ngIf="raffle$ | async as raffle else createTitle">
+      <div class="flex justify-between">
+        <span>Edit Raffle</span>
+        <button mat-mini-fab color="warn" (click)="deleteRaffle()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </ng-container>
     <ng-template #createTitle>New Raffle</ng-template>
   </sheet-header>
   <sheet-footer>

@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import { NavigationEnd, Router } from '@angular/router';
-import {filter, map, take } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { ClipboardService } from 'ngx-clipboard';
-import { PageTitleService } from '../../services/page-title.service';
-import {UrlStream} from "../../streams/url-stream";
 import { Title } from '@angular/platform-browser';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-frame',
@@ -21,8 +20,7 @@ export class AppFrameComponent {
               private router: Router,
               private dialog: MatDialog,
               private clipboard: ClipboardService,
-              private url$: UrlStream) {
-    this.url$.subscribe();
+              private navigation: NavigationService) {
   }
 
 
@@ -34,10 +32,7 @@ export class AppFrameComponent {
     }))
 
   back() {
-    this.url$.pipe(take(1)).subscribe(currentRoute => {
-      const parentRoute = currentRoute.split('/').slice(0, -2).join('/');
-      this.router.navigateByUrl(parentRoute);
-    })
+    this.navigation.navigateDown();
   }
 
   showMemberId() {
