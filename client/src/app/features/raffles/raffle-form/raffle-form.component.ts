@@ -13,6 +13,7 @@ import { NewRaffle } from '../../../data/models/new-raffle';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { Router } from '@angular/router';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
+import { NavigationService } from '../../../core/services/navigation.service';
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -48,7 +49,8 @@ export class RaffleFormComponent {
               private api: ApiService,
               private clan$: CurrentClanStream,
               private router: Router,
-              private raffleId$: RaffleIdStream) {
+              private raffleId$: RaffleIdStream,
+              private navigation: NavigationService) {
     this.raffle$.pipe(notNullOrUndefined(), take(1)).subscribe(raffle => {
       this.patchValues(raffle);
     })
@@ -84,6 +86,21 @@ export class RaffleFormComponent {
       switchMap(([clanId, raffleId]) => this.api.Raffles.updateRaffle(clanId, raffleId, this.raffleForm.value as NewRaffle))
     ).subscribe(updatedRaffled => {
         this.raffle$.next(updatedRaffled);
+        this.bottomSheet.dismiss();
+      }
+    )
+  }
+
+  deleteRaffle() {
+    combineLatest([
+      this.clanId$.pipe(notNullOrUndefined()),
+      this.raffleId$.pipe(notNullOrUndefined())
+    ]).pipe(
+      take(1),
+      switchMap(([clanId, raffleId]) => this.api.Raffles.delete(clanId, raffleId))
+    ).subscribe(() => {
+        this.raffle$.next(undefined);
+        this.navigation.navigateDown();
         this.bottomSheet.dismiss();
       }
     )
