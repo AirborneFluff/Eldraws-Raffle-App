@@ -61,6 +61,7 @@ export class RaffleFormComponent {
   createRaffle() {
     this.clanId$.pipe(
       notNullOrUndefined(),
+      take(1),
       switchMap(clanId => this.api.Raffles.addNew(clanId, this.raffleForm.value as NewRaffle)),
       withLatestFrom(this.clan$.pipe(notNullOrUndefined()))
     ).subscribe({
