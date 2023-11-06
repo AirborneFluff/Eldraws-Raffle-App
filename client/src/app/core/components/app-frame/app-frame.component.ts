@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import { NavigationEnd, Router } from '@angular/router';
-import {filter, map, take } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { ClipboardService } from 'ngx-clipboard';
-import { PageTitleService } from '../../services/page-title.service';
-import {UrlStream} from "../../streams/url-stream";
 import { Title } from '@angular/platform-browser';
 import { NavigationService } from '../../services/navigation.service';
 
