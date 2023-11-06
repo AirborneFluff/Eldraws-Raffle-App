@@ -8,6 +8,7 @@ import { ClipboardService } from 'ngx-clipboard';
 import { PageTitleService } from '../../services/page-title.service';
 import {UrlStream} from "../../streams/url-stream";
 import { Title } from '@angular/platform-browser';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-frame',
@@ -21,8 +22,7 @@ export class AppFrameComponent {
               private router: Router,
               private dialog: MatDialog,
               private clipboard: ClipboardService,
-              private url$: UrlStream) {
-    this.url$.subscribe();
+              private navigation: NavigationService) {
   }
 
 
@@ -34,10 +34,7 @@ export class AppFrameComponent {
     }))
 
   back() {
-    this.url$.pipe(take(1)).subscribe(currentRoute => {
-      const parentRoute = currentRoute.split('/').slice(0, -2).join('/');
-      this.router.navigateByUrl(parentRoute);
-    })
+    this.navigation.navigateDown();
   }
 
   showMemberId() {
