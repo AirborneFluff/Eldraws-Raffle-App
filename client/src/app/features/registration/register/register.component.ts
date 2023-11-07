@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { AccountService } from '../../../core/services/account.service';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -17,6 +17,7 @@ export class RegisterComponent implements OnDestroy {
   confirmPassword = new FormControl('', [Validators.required, Validators.minLength(6), this.matchValues('password')])
 
   registrationError$ = new BehaviorSubject<string | null>(null);
+  submitted$ = new BehaviorSubject(false);
 
   subscriptions = new Subscription();
 
@@ -55,11 +56,14 @@ export class RegisterComponent implements OnDestroy {
 
   register() {
     if (this.registerForm.invalid) return;
-    this.subscriptions.add(
-      this.account.register(this.registerForm.value).subscribe({
-        error: err => {
-          this.registrationError$.next(err.error)
-        }
-      }))
+
+    this.submitted$.next(true);
+    this.account.register(this.registerForm.value).pipe(
+      finalize(() => this.submitted$.next(false))
+    ).subscribe({
+      error: err => {
+        this.registrationError$.next(err.error)
+      }
+    })
   }
 }

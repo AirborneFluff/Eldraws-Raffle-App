@@ -40,10 +40,16 @@
         {{error}}
       </mat-error>
 
-      <app-form-actions>
-        <app-form-button [disabled]="registerForm.invalid" (onClick)="register()">Submit</app-form-button>
-        <app-form-link [link]="'/login'">Back</app-form-link>
-      </app-form-actions>
+      <div class="flex justify-between flex-row-reverse">
+        <button mat-raised-button
+                color="primary"
+                class="w-1/3"
+                [disabled]="(submitted$ | async)! || registerForm.invalid"
+                (click)="register()">Submit</button>
+        <button mat-button
+                routerLink="/login"
+                [disabled]="(submitted$ | async)!">Back</button>
+      </div>
     </form>
   </app-form-dialog>
 </div>

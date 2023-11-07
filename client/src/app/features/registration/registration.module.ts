@@ -4,6 +4,8 @@ import { RegisterComponent } from './register/register.component';
 import { RaffleFormsModule } from '../../shared/forms/raffle-forms.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
 
 
 
@@ -15,7 +17,9 @@ import { MatInputModule } from '@angular/material/input';
     CommonModule,
     RaffleFormsModule,
     ReactiveFormsModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule,
+    RouterLink
   ],
   exports: [
     RegisterComponent
