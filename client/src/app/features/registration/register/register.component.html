@@ -11,7 +11,7 @@
           Username is <strong>required</strong>
         </mat-error>
         <mat-error *ngIf="userName.hasError('pattern')">
-          Only letters, numbers and the following characters: <strong>-._@+</strong>
+          Allowed special characters: <strong>-._@+</strong>
         </mat-error>
       </mat-form-field>
 
