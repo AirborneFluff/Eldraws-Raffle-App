@@ -32,7 +32,7 @@ import { Router } from '@angular/router';
 })
 export class ClanFormComponent {
 
-  name = new FormControl('', Validators.required, this.clanExistsValidator());
+  name = new FormControl('', Validators.required);
   discordChannelId = new FormControl('', Validators.pattern('^\\d{17}$|^\\d{18}$|^\\d{19}$'));
 
   clanForm = new FormGroup({
@@ -42,10 +42,20 @@ export class ClanFormComponent {
 
   checkingName$ = new BehaviorSubject(false);
 
+  isUpdateForm$ = this.clan$.pipe(
+    map(clan => !!clan)
+  )
+
   constructor(public clan$: CurrentClanStream, public bottomSheet: MatBottomSheet, private clanId$: ClanIdStream, private api: ApiService, private router: Router) {
-    this.clan$.pipe(notNullOrUndefined(), take(1)).subscribe(clan => {
-      this.patchValues(clan);
-      this.name.disable();
+    this.clan$.pipe(
+      notNullOrUndefined(),
+      take(1)).subscribe(clan => {
+        this.patchValues(clan);
+        this.name.disable();
+      })
+
+    this.isUpdateForm$.pipe(take(1)).subscribe(isUpdate => {
+      if (!isUpdate) this.name.addAsyncValidators(this.clanExistsValidator());
     })
   }
 
@@ -74,7 +84,6 @@ export class ClanFormComponent {
       })
     ).subscribe({
         next: clan => {
-          console.log(clan)
           this.clan$.next(clan);
           this.bottomSheet.dismiss();
         }
