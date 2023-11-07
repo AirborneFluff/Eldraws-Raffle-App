@@ -27,8 +27,8 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-error *ngIf="invalidCredentials$ | async">
-        Invalid username/password combination
+      <mat-error class="mb-4" *ngIf="error$ | async as errorMessage">
+        {{errorMessage}}
       </mat-error>
 
       <div class="flex justify-between flex-row-reverse">

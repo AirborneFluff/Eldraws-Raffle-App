@@ -36,7 +36,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-error *ngIf="registrationError$ | async as error">
+      <mat-error class="mb-4" *ngIf="error$ | async as error">
         {{error}}
       </mat-error>
 
