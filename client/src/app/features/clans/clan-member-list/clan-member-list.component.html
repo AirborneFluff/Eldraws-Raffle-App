@@ -1,6 +1,6 @@
 <div class="w-full mb-2 py-1 flex justify-between align-middle" *ngFor="let member of members$ | async">
   <span class="pointer-events-none">{{member.userName}}</span>
-  <div *ngIf="isOwner$ | async"
+  <div *ngIf="(isOwner$ | async) && (member.id != (ownerId$ | async))"
        (click)="openConfirmDialog(member)"
        class="text-gray-400 hover:text-red-600 cursor-pointer transition hover:duration-500">
     <mat-icon>remove_circle_outline</mat-icon>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { Member } from '../../../data/models/member';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
@@ -6,7 +6,6 @@ import { map, of, switchMap, withLatestFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { ClanStream } from '../../../core/streams/clan-stream';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { AccountService } from '../../../core/services/account.service';
 
@@ -24,6 +23,11 @@ export class ClanMemberListComponent {
     map(([clan, user]) => {
       return clan.owner.id == user.id
     })
+  )
+
+  ownerId$ = this.clan$.pipe(
+    notNullOrUndefined(),
+    map(clan => clan.owner.id)
   )
 
   members$ = this.clan$.pipe(

@@ -27,14 +27,20 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-error *ngIf="invalidCredentials$ | async">
-        Invalid username/password combination
+      <mat-error class="mb-4" *ngIf="error$ | async as errorMessage">
+        {{errorMessage}}
       </mat-error>
 
-      <app-form-actions>
-        <app-form-button (onClick)="login()">Login</app-form-button>
-        <app-form-link [link]="'/register'">Register</app-form-link>
-      </app-form-actions>
+      <div class="flex justify-between flex-row-reverse">
+        <button mat-raised-button
+                color="primary"
+                class="w-1/3"
+                [disabled]="(submitted$ | async)!"
+                (click)="login()">Login</button>
+        <button mat-button
+                routerLink="/register"
+                [disabled]="(submitted$ | async)!">Register</button>
+      </div>
     </form>
   </app-form-dialog>
 </div>
