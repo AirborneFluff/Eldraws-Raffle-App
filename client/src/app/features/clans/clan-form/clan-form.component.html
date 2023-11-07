@@ -14,7 +14,7 @@
       <button mat-raised-button
               color="primary"
               class="w-full"
-              [disabled]="clanForm.invalid || (checkingName$ | async)"
+              [disabled]="clanForm.invalid || (checkingName$ | async)!"
               (click)="createClan()"
               *ngIf="!(clan$ | async)">Create</button>
       <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
