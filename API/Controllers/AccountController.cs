@@ -33,16 +33,13 @@ public sealed class AccountController: ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Login(LoginDTO input)
     {
-        if (input.UserName == null) return BadRequest("Please provide a Username");
-        if (input.Password == null) return BadRequest("Please provide a password");
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName!.ToUpper() == input.UserName.ToUpper());
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToUpper() == input.UserName.ToUpper());
-
-        if (user == null) return NotFound("No account found with this email/password combination");
+        if (user == null) return Unauthorized("Invalid login credentials");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, false);
 
-        if (!result.Succeeded) return NotFound("No account found with this email/password combination");
+        if (!result.Succeeded) return Unauthorized("Invalid login credentials");
 
         var userResult = _mapper.Map<AppUserDTO>(user);
         userResult.Token = await _tokenService.CreateToken(user);
@@ -55,8 +52,10 @@ public sealed class AccountController: ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<AppUserDTO>> Register(RegisterDTO userDetails)
     {
-        var newUser = new AppUser();
-        newUser.UserName = userDetails.UserName;
+        var newUser = new AppUser
+        {
+            UserName = userDetails.UserName
+        };
 
         var result = await _userManager.CreateAsync(newUser, userDetails.Password);
         if (!result.Succeeded)
