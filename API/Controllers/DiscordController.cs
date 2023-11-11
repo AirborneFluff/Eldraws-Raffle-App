@@ -14,12 +14,10 @@ namespace RaffleApi.Controllers;
 [Authorize]
 public class DiscordController : ControllerBase
 {
-    private readonly UnitOfWork _unitOfWork;
     private readonly DiscordService _discord;
 
-    public DiscordController(IMapper mapper, UnitOfWork unitOfWork, DiscordService discord)
+    public DiscordController(DiscordService discord)
     {
-        _unitOfWork = unitOfWork;
         _discord = discord;
     }
 
@@ -30,17 +28,31 @@ public class DiscordController : ControllerBase
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        var messageId = await _discord.SendRaffleEmbed(raffle, (ulong)clan.DiscordChannelId);
-
-        if (messageId == null) return BadRequest("Couldn't send message to Discord");
-
-        if (raffle.DiscordMessageId == messageId) return Ok();
         
-        raffle.DiscordMessageId = messageId;
-        if (await _unitOfWork.Complete()) return Ok();
-        
-        return BadRequest();
+        var result = await _discord.SendRaffleEmbed(raffle, (ulong)clan.DiscordChannelId);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+
+        return Ok();
     }
+
+    // [HttpPost("{raffleId:int}/discord/roll")]
+    // [ServiceFilter(typeof(ValidateRaffle))]
+    // public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] DiscordRollDTO rollParams)
+    // {
+    //     var raffle = HttpContext.GetRaffle();
+    //     var clan = HttpContext.GetClan();
+    //     if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+    //     if (raffle.DiscordMessageId == null) return BadRequest("This raffle hasn't been posted to Discord yet");
+    //
+    //     if (rollParams.RollAll)
+    //     {
+    //         
+    //     }
+    //     
+    //     if (await _unitOfWork.Complete()) return Ok();
+    //     
+    //     return BadRequest();
+    // }
     
     
 }

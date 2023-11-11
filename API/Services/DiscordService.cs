@@ -1,83 +1,117 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using RaffleApi.Classes;
+using RaffleApi.Data;
 using RaffleApi.Entities;
 using RaffleApi.Helpers;
+using static RaffleApi.Classes.OperationResult;
 
 namespace RaffleApi.Services;
 
 public sealed class DiscordService
 {
+    private readonly UnitOfWork _unitOfWork;
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
 
-    public DiscordService(DiscordSocketClient discord, IConfiguration config)
+    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork)
     {
         _discord = discord;
+        _unitOfWork = unitOfWork;
 
         var token = config["DiscordToken"];
         _token = token ?? throw new Exception("Discord Token not defined");
     }
 
-    public async Task<ulong?> SendRaffleEmbed(Raffle raffle, ulong channelId)
+    public async Task<OperationResult> SendRaffleEmbed(Raffle raffle, ulong channelId)
     {
-        var channel = await StartSession(channelId);
-        if (channel == null) return await Complete(null);
+        var channel = await GetMessageChannel(channelId);
+        if (channel == null) return FailureResult("Couldn't connect to channel");
 
         var embed = raffle.GenerateEmbed();
-        ulong? messageId = null;
 
-        if (raffle.DiscordMessageId != null)
-        {
-            messageId = await EditMessage(channel, embed, (ulong)raffle.DiscordMessageId);
-            if (messageId != null) return await Complete(messageId);
-        }
-
-        messageId = await SendNewMessage(channel, embed);
-        return await Complete(messageId);
-    }
-
-    private async Task<ulong?> Complete(ulong? value)
-    {
-        await _discord.StopAsync();
-        return value;
-    }
-
-    private async Task<ulong?> SendNewMessage(IMessageChannel channel, EmbedBuilder embed)
-    {
         try
-        {
-            var msgResult = await channel.SendMessageAsync("", false, embed.Build());
-            return msgResult?.Id;
+        { 
+            var result = await PostMessage(channel, embed, raffle);
+            if (result.Failure) return result;
+
+            return raffle.DiscordMessageId == null ? FailureResult("Issue sending message") : SuccessResult();
         }
-        catch
+        catch (Exception e)
         {
-            return null;
+            return ExceptionResult(e);
         }
     }
 
-    private async Task<ulong?> EditMessage(IMessageChannel channel, EmbedBuilder embed, ulong messageId)
+    private async Task<OperationResult> PostMessage(IMessageChannel channel, EmbedBuilder embed, Raffle raffle)
     {
-        try
-        {
-            if (await channel.GetMessageAsync(messageId) is not IUserMessage msg) return await Complete(null);
-            await msg.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
+        var messageId = raffle.DiscordMessageId;
+        if (messageId == null) return await SendNewMessage(channel, embed, raffle);
 
-            return messageId;
-        }
-        catch
-        {
-            return null;
-        }
+        return await UpdateMessage(channel, embed, raffle);
+    }
+
+    private async Task<OperationResult> SendNewMessage(IMessageChannel channel, EmbedBuilder embed, Raffle raffle)
+    {
+        var msgResult = await channel.SendMessageAsync("", false, embed.Build());
+        if (msgResult == null) return FailureResult("Couldn't send message");
+
+        raffle.DiscordMessageId = msgResult.Id;
+        if (await _unitOfWork.Complete()) return SuccessResult();
+        return FailureResult("Issue setting message Id");
+    }
+
+    private async Task<OperationResult> UpdateMessage(IMessageChannel channel, EmbedBuilder embed, Raffle raffle)
+    {
+        if (raffle.DiscordMessageId == null) throw new Exception("MessageId cannot be null");
+        
+        var message = await channel.GetMessageAsync((ulong) raffle.DiscordMessageId) as IUserMessage;
+        if (message == null) return await SendNewMessage(channel, embed, raffle);
+        
+        await message.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
+        return SuccessResult();
     }
     
-    private async Task<IMessageChannel?> StartSession(ulong channelId)
+    private async Task<IMessageChannel?> GetMessageChannel(ulong channelId)
     {
         if (_discord.LoginState == LoginState.LoggedOut) 
             await _discord.LoginAsync(TokenType.Bot, _token);
         
-        if (_discord.ConnectionState is ConnectionState.Disconnected or ConnectionState.Disconnecting)
+        if (_discord.ConnectionState is ConnectionState.Disconnected)
             await _discord.StartAsync();
 
         return await _discord.GetChannelAsync(channelId) as IMessageChannel;
     }
+
+    // public async Task RollWinners(Raffle raffle, ulong channelId)
+    // {
+    //     if (raffle.DiscordMessageId == null) return await Complete(null);
+    //     
+    //     
+    // }
+    //
+    // public async Task<ulong?> RollNextWinner(Raffle raffle, ulong channelId)
+    // {
+    //     if (raffle.DiscordMessageId == null) return await Complete(null);
+    //     
+    //     var channel = await StartSession(channelId);
+    //     if (channel == null) return await Complete(null);
+    //
+    //     var prize = raffle.Prizes
+    //         .OrderByDescending(p => p.Place)
+    //         .FirstOrDefault(p => p.WinningTicketNumber == null);
+    //
+    //     if (prize == null) return await Complete(null);
+    //     
+    //     var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
+    //     var result = await _http.GetStringAsync($"https://www.random.org/integers/?num=1&min=1&max={max}&col=1&base=10&format=plain&rnd=new");
+    //
+    //     prize.WinningTicketNumber = int.Parse(result);
+    //
+    //     var embed = raffle.GenerateEmbed(true);
+    //     
+    //     var messageId = await EditMessage(channel, embed, (ulong)raffle.DiscordMessageId);
+    //     
+    //     return await Complete(messageId);
+    // }
 }
