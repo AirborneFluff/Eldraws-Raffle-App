@@ -11,13 +11,15 @@ namespace RaffleApi.Services;
 public sealed class DiscordService
 {
     private readonly UnitOfWork _unitOfWork;
+    private readonly RandomService _random;
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
 
-    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork)
+    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, RandomService random)
     {
         _discord = discord;
         _unitOfWork = unitOfWork;
+        _random = random;
 
         var token = config["DiscordToken"];
         _token = token ?? throw new Exception("Discord Token not defined");
@@ -58,6 +60,7 @@ public sealed class DiscordService
 
         raffle.DiscordMessageId = msgResult.Id;
         if (await _unitOfWork.Complete()) return SuccessResult();
+        
         return FailureResult("Issue setting message Id");
     }
 
@@ -90,28 +93,26 @@ public sealed class DiscordService
     //     
     // }
     //
-    // public async Task<ulong?> RollNextWinner(Raffle raffle, ulong channelId)
-    // {
-    //     if (raffle.DiscordMessageId == null) return await Complete(null);
-    //     
-    //     var channel = await StartSession(channelId);
-    //     if (channel == null) return await Complete(null);
-    //
-    //     var prize = raffle.Prizes
-    //         .OrderByDescending(p => p.Place)
-    //         .FirstOrDefault(p => p.WinningTicketNumber == null);
-    //
-    //     if (prize == null) return await Complete(null);
-    //     
-    //     var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
-    //     var result = await _http.GetStringAsync($"https://www.random.org/integers/?num=1&min=1&max={max}&col=1&base=10&format=plain&rnd=new");
-    //
-    //     prize.WinningTicketNumber = int.Parse(result);
-    //
-    //     var embed = raffle.GenerateEmbed(true);
-    //     
-    //     var messageId = await EditMessage(channel, embed, (ulong)raffle.DiscordMessageId);
-    //     
-    //     return await Complete(messageId);
-    // }
+    public async Task<OperationResult> RollNextWinner(Raffle raffle, ulong channelId)
+    {
+        if (raffle.DiscordMessageId == null) return FailureResult("Raffle hasn't been posted to Discord");
+        
+        var channel = await GetMessageChannel(channelId);
+        if (channel == null) return FailureResult("Couldn't connect to channel");
+    
+        var prize = raffle.Prizes
+            .OrderByDescending(p => p.Place)
+            .FirstOrDefault(p => p.WinningTicketNumber == null);
+
+        if (prize == null) return SuccessResult();
+        
+        var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
+        var result = await _random.GetRandomInt(max, 1);
+
+        prize.WinningTicketNumber = result;
+        if (!await _unitOfWork.Complete()) return FailureResult("Issue setting prize winner");
+    
+        var embed = raffle.GenerateEmbed(true);
+        return await UpdateMessage(channel, embed, raffle);
+    }
 }

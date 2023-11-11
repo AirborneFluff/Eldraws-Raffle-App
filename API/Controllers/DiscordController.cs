@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaffleApi.ActionFilters;
 using RaffleApi.Data;
+using RaffleApi.Data.DTOs;
 using RaffleApi.Extensions;
 using RaffleApi.Services;
 
@@ -35,24 +36,20 @@ public class DiscordController : ControllerBase
         return Ok();
     }
 
-    // [HttpPost("{raffleId:int}/discord/roll")]
-    // [ServiceFilter(typeof(ValidateRaffle))]
-    // public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] DiscordRollDTO rollParams)
-    // {
-    //     var raffle = HttpContext.GetRaffle();
-    //     var clan = HttpContext.GetClan();
-    //     if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-    //     if (raffle.DiscordMessageId == null) return BadRequest("This raffle hasn't been posted to Discord yet");
-    //
-    //     if (rollParams.RollAll)
-    //     {
-    //         
-    //     }
-    //     
-    //     if (await _unitOfWork.Complete()) return Ok();
-    //     
-    //     return BadRequest();
-    // }
+    [HttpPost("{raffleId:int}/discord/roll")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] DiscordRollDTO rollParams)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        if (raffle.DiscordMessageId == null) return BadRequest("This raffle hasn't been posted to Discord yet");
+        
+        var result = await _discord.RollNextWinner(raffle, (ulong)clan.DiscordChannelId);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+
+        return Ok();
+    }
     
     
 }
