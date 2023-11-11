@@ -9,10 +9,11 @@ public static class RaffleEmbedBuilder
 {
     private static readonly string URL = "https://eldraws.co.uk/";
     
-    public static EmbedBuilder GenerateEmbed(this Raffle raffle, bool showWinners = false)
+    public static EmbedBuilder GenerateEmbed(this Raffle raffle, bool showWinners = false, bool showRoll = false, int? rollValue = null)
     {
         var embed = raffle.GenerateDescriptionEmbed();
         embed.AddPrizes(raffle);
+        if (showRoll) embed.AddRollValue(rollValue);
         if (showWinners) embed.AddWinners(raffle);
         embed.AddEntries(raffle);
 
@@ -108,6 +109,19 @@ public static class RaffleEmbedBuilder
         }
     
         embed.AddField($"Winners", sb.ToString(), false);
+    
+        return embed;
+    }
+    
+    private static EmbedBuilder AddRollValue(this EmbedBuilder embed, int? value)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("Rolling... ");
+        sb.Append("<a:dices:1172979983321411676> ");
+        sb.Append(value.ToString() ?? "...");
+    
+        embed.AddField("Roll",sb.ToString(), false);
     
         return embed;
     }

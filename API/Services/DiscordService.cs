@@ -86,20 +86,35 @@ public sealed class DiscordService
         return await _discord.GetChannelAsync(channelId) as IMessageChannel;
     }
 
-    // public async Task RollWinners(Raffle raffle, ulong channelId)
-    // {
-    //     if (raffle.DiscordMessageId == null) return await Complete(null);
-    //     
-    //     
-    // }
-    //
-    public async Task<OperationResult> RollNextWinner(Raffle raffle, ulong channelId)
+    public async Task<OperationResult> RollWinners(Raffle raffle, ulong channelId, int delaySeconds)
     {
         if (raffle.DiscordMessageId == null) return FailureResult("Raffle hasn't been posted to Discord");
         
         var channel = await GetMessageChannel(channelId);
         if (channel == null) return FailureResult("Couldn't connect to channel");
+
+        var embed = raffle.GenerateEmbed(true, true);
+        var updateResult = await UpdateMessage(channel, embed, raffle);
+        if (updateResult.Failure) return updateResult;
+
+        return await Task.Run(() => RollAllWinners(raffle, channel, delaySeconds));
+    }
+
+    private async Task<OperationResult> RollAllWinners(Raffle raffle, IMessageChannel channel, int delaySeconds)
+    {
+        for (var i = 0; i < raffle.Prizes.Count; i++)
+        {
+            await Task.Delay(delaySeconds * 1000);
+            var result = await RollNextWinner(channel, raffle);
+            if (result.Failure) return FailureResult("Issue rolling winner");
+        }
+
+        var embed = raffle.GenerateEmbed(true);
+        return await UpdateMessage(channel, embed, raffle);
+    }
     
+    private async Task<OperationResult> RollNextWinner(IMessageChannel channel, Raffle raffle)
+    {
         var prize = raffle.Prizes
             .OrderByDescending(p => p.Place)
             .FirstOrDefault(p => p.WinningTicketNumber == null);
@@ -110,9 +125,9 @@ public sealed class DiscordService
         var result = await _random.GetRandomInt(max, 1);
 
         prize.WinningTicketNumber = result;
-        if (!await _unitOfWork.Complete()) return FailureResult("Issue setting prize winner");
+        await _unitOfWork.Complete();
     
-        var embed = raffle.GenerateEmbed(true);
+        var embed = raffle.GenerateEmbed(true, true, result);
         return await UpdateMessage(channel, embed, raffle);
     }
 }
