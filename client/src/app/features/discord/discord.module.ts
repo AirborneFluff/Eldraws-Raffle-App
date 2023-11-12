@@ -8,16 +8,23 @@ import { FormSheetModule } from '../../shared/form-sheet/form-sheet.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RollWinnersFormComponent } from './roll-winners-form/roll-winners-form.component';
+import { RollWinnersButtonComponent } from './roll-winners-button/roll-winners-button.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SharedModule } from '../../shared/shared.module';
 
 
 
 @NgModule({
   declarations: [
     DiscordButtonComponent,
-    DiscordFormComponent
+    DiscordFormComponent,
+    RollWinnersFormComponent,
+    RollWinnersButtonComponent
   ],
   exports: [
-    DiscordButtonComponent
+    DiscordButtonComponent,
+    RollWinnersButtonComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +33,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     FormSheetModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    SharedModule
   ]
 })
 export class DiscordModule { }

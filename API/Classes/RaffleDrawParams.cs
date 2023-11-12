@@ -1,18 +1,12 @@
-﻿namespace RaffleApi.Classes;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RaffleApi.Classes;
 
 public class RaffleDrawParams
 {
-    public int Delay { get; set; }
-    public bool PreventMultipleWins { get; set; }
-
-    public RaffleDrawParams(int delay, bool preventMultipleWins)
-    {
-        Delay = delay;
-        PreventMultipleWins = preventMultipleWins;
-    }
-
-    public RaffleDrawParams(int delay)
-    {
-        Delay = delay;
-    }
+    [Range(0, 30)]
+    public int Delay { get; set; } = 5;
+    [Range(1, 50)]
+    public int MaxRerolls { get; set; } = 10;
+    public bool PreventMultipleWins { get; set; } = true;
 }

@@ -149,7 +149,7 @@ public sealed class DiscordService : IAsyncDisposable
     {
         
         var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
-        var tickets = RandomService.GetRandomIntegerList(max, 1);
+        var tickets = RandomService.GetRandomIntegerList(max, 1, options.MaxRerolls);
 
         int? validTicket = null;
         var lastRolledTicket = tickets[0];

@@ -6,7 +6,6 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
   BehaviorSubject,
   combineLatest,
-  filter,
   finalize,
   map,
   startWith,
@@ -90,28 +89,6 @@ export class DiscordFormComponent {
             raffle.discordMessageId = messageId;
             return raffle;
           })).subscribe(updatedRaffle => this.raffle$.next(updatedRaffle))
-        this.bottomSheet.dismiss();
-      },
-      error: e => this.handleError(e)
-    })
-  }
-
-  rollWinners() {
-    combineLatest([
-      this.clanId$.pipe(notNullOrUndefined()),
-      this.raffleId$.pipe(notNullOrUndefined())
-    ]).pipe(
-      tap(() => {
-        this.postError$.next(null);
-        this.submitted$.next(true);
-      }),
-      take(1),
-      switchMap(([clanId, raffleId]) => {
-        return this.api.Raffles.rollWinnersDiscord(clanId, raffleId);
-      }),
-      finalize(() => this.submitted$.next(false))
-    ).subscribe({
-      next: () => {
         this.bottomSheet.dismiss();
       },
       error: e => this.handleError(e)

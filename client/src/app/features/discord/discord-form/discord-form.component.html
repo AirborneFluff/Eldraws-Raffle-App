@@ -1,20 +1,11 @@
 <sheet-container>
-  <sheet-header>
-    <div class="flex justify-between">
-      <span>Discord</span>
-      <button mat-mini-fab color="primary"
-              (click)="rollWinners()"
-              *ngIf="(discordMessageId$ | async) && (showRollButton$ | async)">
-        <mat-icon>casino</mat-icon>
-      </button>
-    </div>
-  </sheet-header>
+  <sheet-header>Discord</sheet-header>
   <sheet-footer>
     <div class="flex gap-2 justify-between flex-row-reverse">
       <button mat-raised-button
               (click)="post()"
               color="primary"
-              [disabled]="!(discordChannelId$ | async) || (submitted$ | async)"
+              [disabled]="!(discordChannelId$ | async)! || (submitted$ | async)!"
               class="w-full">{{submitButtonText$ | async}}</button>
       <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
     </div>

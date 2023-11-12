@@ -2,6 +2,8 @@ import { BaseRepository } from './base-repository';
 import { map, Observable } from 'rxjs';
 import { Raffle, NewRaffle, NewRafflePrize } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
+import { RollParams } from '../../data/models/roll-params';
+import { HttpParams } from '@angular/common/http';
 
 export class RaffleRepository extends BaseRepository {
 
@@ -50,7 +52,13 @@ export class RaffleRepository extends BaseRepository {
     return this.http.post<number>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord`, {})
   }
 
-  public rollWinnersDiscord(clanId: number, raffleId: number) {
-    return this.http.post(this.baseUrl + `${clanId}/raffles/${raffleId}/discord/roll`, {})
+  public rollWinnersDiscord(clanId: number, raffleId: number, options: RollParams) {
+    let params = new HttpParams;
+
+    params = params.append('preventMultipleWins', options.preventMultipleWins ? 'true' : 'false');
+    if (!!options.delay) params = params.append('delay', options.delay.toString());
+    if (!!options.maxRerolls) params = params.append('maxRerolls', options.maxRerolls.toString());
+
+    return this.http.post(this.baseUrl + `${clanId}/raffles/${raffleId}/discord/roll`, {}, {params: params})
   }
 }
