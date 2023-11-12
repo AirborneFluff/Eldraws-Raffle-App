@@ -3,10 +3,22 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { BehaviorSubject, combineLatest, finalize, map, switchMap, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  finalize,
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 
 @Component({
   selector: 'app-discord-form',
@@ -26,10 +38,27 @@ export class DiscordFormComponent {
     notNullOrUndefined()
   )
 
-  postError$ = new BehaviorSubject<boolean>(false);
+  discordMessageId$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    map(raffle => raffle.discordMessageId)
+  )
+
+  submitButtonText$ = this.discordMessageId$.pipe(
+    map(val => !!val ? 'Update' : 'Post'),
+    startWith('Post')
+  )
+
+  showRollButton$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    map(raffle => raffle.prizes.length > 0),
+    withLatestFrom(this.discordMessageId$.pipe(map(val => val > 0))),
+    map(([prizes, messageId]) => prizes && messageId)
+  )
+
+  postError$ = new BehaviorSubject<string | null>(null);
   submitted$ = new BehaviorSubject<boolean>(false);
 
-  constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private clan$: CurrentClanStream) {
+  constructor(public bottomSheet: MatBottomSheet, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private clan$: CurrentClanStream, private raffle$: CurrentRaffleStream) {
     this.clan$.pipe(
       notNullOrUndefined(),
       take(1),
@@ -44,7 +73,7 @@ export class DiscordFormComponent {
       this.raffleId$.pipe(notNullOrUndefined())
     ]).pipe(
       tap(() => {
-        this.postError$.next(false);
+        this.postError$.next(null);
         this.submitted$.next(true);
       }),
       take(1),
@@ -53,12 +82,48 @@ export class DiscordFormComponent {
       }),
       finalize(() => this.submitted$.next(false))
     ).subscribe({
+      next: messageId => {
+        this.raffle$.pipe(
+          take(1),
+          notNullOrUndefined(),
+          map(raffle => {
+            raffle.discordMessageId = messageId;
+            return raffle;
+          })).subscribe(updatedRaffle => this.raffle$.next(updatedRaffle))
+        this.bottomSheet.dismiss();
+      },
+      error: e => this.handleError(e)
+    })
+  }
+
+  rollWinners() {
+    combineLatest([
+      this.clanId$.pipe(notNullOrUndefined()),
+      this.raffleId$.pipe(notNullOrUndefined())
+    ]).pipe(
+      tap(() => {
+        this.postError$.next(null);
+        this.submitted$.next(true);
+      }),
+      take(1),
+      switchMap(([clanId, raffleId]) => {
+        return this.api.Raffles.rollWinnersDiscord(clanId, raffleId);
+      }),
+      finalize(() => this.submitted$.next(false))
+    ).subscribe({
       next: () => {
         this.bottomSheet.dismiss();
       },
-      error: e => {
-        this.postError$.next(true);
-      }
+      error: e => this.handleError(e)
     })
+  }
+
+  handleError(e: any) {
+    const errorMessage: string = e.error;
+
+    if (errorMessage.includes('50013') || errorMessage.includes('50001'))
+      return this.postError$.next('Missing Permissions');
+
+    this.postError$.next(errorMessage);
   }
 }

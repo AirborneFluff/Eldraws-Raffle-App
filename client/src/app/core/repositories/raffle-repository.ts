@@ -47,6 +47,10 @@ export class RaffleRepository extends BaseRepository {
   }
 
   public createDiscordPost(clanId: number, raffleId: number) {
-    return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord`, {})
+    return this.http.post<number>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord`, {})
+  }
+
+  public rollWinnersDiscord(clanId: number, raffleId: number) {
+    return this.http.post<number>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord/roll`, {})
   }
 }
