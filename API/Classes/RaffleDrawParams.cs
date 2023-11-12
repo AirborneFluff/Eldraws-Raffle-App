@@ -2,8 +2,8 @@
 
 public class RaffleDrawParams
 {
-    public int Delay { get; set; } = 5;
-    public bool PreventMultipleWins { get; set; } = false;
+    public int Delay { get; set; }
+    public bool PreventMultipleWins { get; set; }
 
     public RaffleDrawParams(int delay, bool preventMultipleWins)
     {
