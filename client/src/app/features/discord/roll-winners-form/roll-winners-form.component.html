@@ -1,0 +1,35 @@
+<sheet-container>
+  <sheet-header>Draw Winners</sheet-header>
+  <sheet-footer>
+    <div class="flex gap-2 justify-between flex-row-reverse">
+      <button mat-raised-button
+              (click)="rollWinners()"
+              color="primary"
+              [disabled]="(submitted$ | async)!"
+              class="w-full">Roll All</button>
+      <button mat-raised-button class="w-full" (click)="bottomSheet.dismiss()">Cancel</button>
+    </div>
+  </sheet-footer>
+
+  <form [formGroup]="paramsForm">
+    <mat-form-field class="w-full mb-4">
+      <mat-label>Minimum Delay</mat-label>
+      <input matInput [formControl]="delay" type="number" placeholder="5">
+      <mat-hint>The minimum delay between drawing winners</mat-hint>
+    </mat-form-field>
+
+    <mat-checkbox [(ngModel)]="preventMultipleWins" [ngModelOptions]="{standalone: true}">Prevent Multiple Wins</mat-checkbox>
+
+    <mat-form-field class="w-full mb-4 mt-2" *ngIf="preventMultipleWins">
+      <mat-label>Maximum Re-rolls</mat-label>
+      <input matInput [formControl]="maxRerolls" type="number" placeholder="10">
+      <mat-hint>Maximum number of re-roll attempts</mat-hint>
+    </mat-form-field>
+  </form>
+
+  <div *ngIf="postError$ | async as error" class="mb-4">
+    <mat-error>There was a problem with posting to Discord.</mat-error>
+    <mat-error>{{error}}</mat-error>
+  </div>
+
+</sheet-container>
