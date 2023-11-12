@@ -116,9 +116,12 @@ public sealed class DiscordService : IAsyncDisposable
             watch.Start();
             var result = await RollNextWinner(raffle, options);
             if (result.Failure) return FailureResult("Issue rolling winner");
-
+            if (result.Value == null) continue;
+            
             var requiredDelay = options.Delay * 1000 - (int)watch.ElapsedMilliseconds;
-            if (!isLast && requiredDelay > 0) await Task.Delay(requiredDelay);
+            if (!isLast && requiredDelay > 0) continue;
+
+            await Task.Delay(requiredDelay);
             
             _logger.Log(LogLevel.Information, watch.ElapsedMilliseconds.ToString());
         }
@@ -133,7 +136,7 @@ public sealed class DiscordService : IAsyncDisposable
             .OrderBy(p => p.Place)
             .FirstOrDefault(p => p.WinningTicketNumber == null);
 
-        if (prize == null) return SuccessResult();
+        if (prize == null) return SuccessResult(null);
         
         prize.WinningTicketNumber = await RollTicket(raffle, options);
         await _unitOfWork.Complete();
@@ -147,9 +150,7 @@ public sealed class DiscordService : IAsyncDisposable
         
         var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
         var tickets = RandomService.GetRandomIntegerList(max, 1, 5);
-        
-        if (!options.PreventMultipleWins) return tickets[0];
-        
+
         int? validTicket = null;
         var lastRolledTicket = tickets[0];
         var reroll = false;
@@ -167,7 +168,7 @@ public sealed class DiscordService : IAsyncDisposable
             var requiredDelay = _rollPauseDelay - (int)watch.ElapsedMilliseconds;
             if (requiredDelay > 0) await Task.Delay(requiredDelay);
 
-            if (HasEntrantAlreadyWon(raffle, winner))
+            if (options.PreventMultipleWins && HasEntrantAlreadyWon(raffle, winner))
             {
                 reroll = true;
                 continue;
