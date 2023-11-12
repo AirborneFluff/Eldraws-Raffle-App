@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaffleApi.ActionFilters;
+using RaffleApi.Classes;
 using RaffleApi.Extensions;
 using RaffleApi.Services;
 
@@ -27,7 +28,7 @@ public class DiscordController : ControllerBase
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
-        var result = await _discord.SendRaffleEmbed(raffle, (ulong)clan.DiscordChannelId);
+        var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
         if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
 
         return Ok();
@@ -35,14 +36,14 @@ public class DiscordController : ControllerBase
 
     [HttpPost("{raffleId:int}/discord/roll")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay)
+    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay = 5, [FromQuery] bool preventMultipleWins = false)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         if (raffle.DiscordMessageId == null) return BadRequest("This raffle hasn't been posted to Discord yet");
         
-        var result = await _discord.RollWinners(raffle, (ulong)clan.DiscordChannelId, delay);
+        var result = await _discord.RollWinners(raffle, (ulong)clan.DiscordChannelId, new RaffleDrawParams(delay, preventMultipleWins));
         if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
 
         return Ok();
