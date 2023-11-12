@@ -1,17 +1,14 @@
 ﻿namespace RaffleApi.Services;
 
-public class RandomService
+public static class RandomService
 {
-    private readonly HttpClient _http;
-
-    public RandomService(HttpClient http)
+    public static int[] GetRandomIntegerList(int max, int min = 0, int count = 256)
     {
-        _http = http;
-    }
+        Random rnd = new Random(Guid.NewGuid().GetHashCode());
 
-    public async Task<int> GetRandomInt(int max, int min = 0)
-    {
-        var result = await _http.GetStringAsync($"https://www.random.org/integers/?num=1&min={min}&max={max}&col=1&base=10&format=plain&rnd=new");
-        return int.Parse(result);
+        return Enumerable
+            .Repeat(0, count)
+            .Select(i => rnd.Next(min, max))
+            .ToArray();
     }
 }
