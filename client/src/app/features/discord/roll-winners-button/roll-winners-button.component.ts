@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { RollWinnersFormComponent } from '../roll-winners-form/roll-winners-form.component';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
-import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
-import { combineLatest, map } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'roll-winners-button',
@@ -13,7 +12,7 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
 })
 export class RollWinnersButtonComponent {
 
-  constructor(private bottomSheet: MatBottomSheet, private raffle$: CurrentRaffleStream, private clan$: CurrentClanStream) {
+  constructor(private bottomSheet: MatBottomSheet, private raffle$: CurrentRaffleStream) {
   }
 
   disabled$ = this.raffle$.pipe(

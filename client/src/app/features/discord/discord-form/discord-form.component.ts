@@ -6,7 +6,6 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
   BehaviorSubject,
   combineLatest,
-  filter,
   finalize,
   map,
   startWith,
