@@ -96,28 +96,6 @@ export class DiscordFormComponent {
     })
   }
 
-  rollWinners() {
-    combineLatest([
-      this.clanId$.pipe(notNullOrUndefined()),
-      this.raffleId$.pipe(notNullOrUndefined())
-    ]).pipe(
-      tap(() => {
-        this.postError$.next(null);
-        this.submitted$.next(true);
-      }),
-      take(1),
-      switchMap(([clanId, raffleId]) => {
-        return this.api.Raffles.rollWinnersDiscord(clanId, raffleId);
-      }),
-      finalize(() => this.submitted$.next(false))
-    ).subscribe({
-      next: () => {
-        this.bottomSheet.dismiss();
-      },
-      error: e => this.handleError(e)
-    })
-  }
-
   handleError(e: any) {
     const errorMessage: string = e.error;
 

@@ -1,14 +1,5 @@
 <sheet-container>
-  <sheet-header>
-    <div class="flex justify-between">
-      <span>Discord</span>
-      <button mat-mini-fab color="primary"
-              (click)="rollWinners()"
-              *ngIf="(discordMessageId$ | async) && (showRollButton$ | async)">
-        <mat-icon>casino</mat-icon>
-      </button>
-    </div>
-  </sheet-header>
+  <sheet-header>Discord</sheet-header>
   <sheet-footer>
     <div class="flex gap-2 justify-between flex-row-reverse">
       <button mat-raised-button
