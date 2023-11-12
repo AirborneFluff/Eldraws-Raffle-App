@@ -31,12 +31,12 @@ public class DiscordController : ControllerBase
         var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
         if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
 
-        return Ok();
+        return Ok(raffle.DiscordMessageId);
     }
 
     [HttpPost("{raffleId:int}/discord/roll")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay = 5, [FromQuery] bool preventMultipleWins = false)
+    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay = 10, [FromQuery] bool preventMultipleWins = false)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
