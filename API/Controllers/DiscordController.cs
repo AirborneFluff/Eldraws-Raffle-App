@@ -36,7 +36,7 @@ public class DiscordController : ControllerBase
 
     [HttpPost("{raffleId:int}/discord/roll")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay = 10, [FromQuery] bool preventMultipleWins = false)
+    public async Task<ActionResult> RollWinners(int raffleId, int clanId, [FromQuery] int delay = 10, [FromQuery] bool preventMultipleWins = true)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
