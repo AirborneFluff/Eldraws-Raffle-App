@@ -13,7 +13,24 @@ public static class RaffleEmbedBuilder
     {
         var embed = raffle.GenerateDescriptionEmbed();
         embed.AddPrizes(raffle);
-        // embed.AddWinners(raffle);
+        embed.AddWinners(raffle);
+        embed.AddEntries(raffle);
+
+        //embed.AddField("Trouble viewing this? Try the website...", $"({URL}/raffles/{raffle.Id}/preview)", false);
+
+        var currentTime = DateTime.UtcNow.ToString("dd-MMM @ hh:mm tt");
+        embed.Footer = new EmbedFooterBuilder()
+            .WithText($"Last updated: {currentTime} UTC");
+
+        return embed;
+    }
+
+    public static EmbedBuilder GenerateRollingEmbed(this Raffle raffle, int? rollValue = null, bool reRoll = false)
+    {
+        var embed = raffle.GenerateDescriptionEmbed();
+        embed.AddPrizes(raffle);
+        embed.AddRollValue(rollValue, !reRoll);
+        embed.AddWinners(raffle, true);
         embed.AddEntries(raffle);
 
         //embed.AddField("Trouble viewing this? Try the website...", $"({URL}/raffles/{raffle.Id}/preview)", false);
@@ -81,33 +98,53 @@ public static class RaffleEmbedBuilder
         return sb.ToString();
     }
     
-    //
-    // public static EmbedBuilder AddWinners(this EmbedBuilder embed, Raffle raffle)
-    // {
-    //     var wonPrizes = raffle.Prizes
-    //         .OrderBy(p => p.Place)
-    //         .Where(p => p.WinningTicketNumber != null && p.WinningTicketNumber != 0)
-    //         .ToList();
-    //
-    //     if (wonPrizes == null) return embed;
-    //
-    //     var winnersSb = new StringBuilder();
-    //
-    //     foreach (var prize in wonPrizes)
-    //     {
-    //         var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= prize.WinningTicketNumber && e.Tickets.Item2 >= prize.WinningTicketNumber);
-    //         if (winner == null) continue;
-    //
-    //         var posStr = $"**{prize.Place.AddPositionalSynonym()}**";
-    //         winnersSb.Append(posStr.PadString(65, 75));
-    //         winnersSb.AppendLine(winner.Entrant?.Gamertag);
-    //     }
-    //
-    //     embed.AddField($"Winners", winnersSb.ToString(), false);
-    //
-    //     return embed;
-    // }
-    //
+    private static EmbedBuilder AddWinners(this EmbedBuilder embed, Raffle raffle, bool showPending = false)
+    {
+        var prizes = raffle.Prizes.OrderBy(p => p.Place)
+            .ToArray();
+
+        if (prizes.Length == 0) return embed;
+
+        var sb = new StringBuilder();
+    
+        foreach (var prize in prizes)
+        {
+            var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= prize.WinningTicketNumber && e.Tickets.Item2 >= prize.WinningTicketNumber);
+            if (!showPending && winner == null) continue;
+
+            var posStr = $"**{prize.Place.AddPositionalSynonym()}**";
+            sb.Append(posStr.PadString(65, 75));
+            if (winner != null)
+            {
+                sb.Append($"({prize.WinningTicketNumber}) ");
+                sb.AppendLine(winner.Entrant?.Gamertag);
+                continue;
+            }
+            
+            sb.AppendLine("<a:threepointsanima:1005525060490117191>");
+            
+        }
+
+        if (sb.Length == 0) return embed;
+        embed.AddField($"Winners", sb.ToString(), false);
+    
+        return embed;
+    }
+    
+    private static EmbedBuilder AddRollValue(this EmbedBuilder embed, int? value, bool rollValid)
+    {
+        if (value == null) return embed;
+        var sb = new StringBuilder();
+
+        sb.Append(rollValid ? "Rolling..." : "Re-rolling...");
+        sb.Append("<a:dices:1172979983321411676> ");
+        sb.Append(value.ToString() ?? "...");
+    
+        embed.AddField("Roll",sb.ToString(), false);
+    
+        return embed;
+    }
+    
     private static EmbedBuilder AddEntries(this EmbedBuilder embed, Raffle raffle)
     {
         var entries = raffle.Entries;

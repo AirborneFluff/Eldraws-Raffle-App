@@ -13,6 +13,9 @@ using RaffleApi.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<TokenService>();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
