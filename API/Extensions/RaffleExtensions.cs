@@ -10,7 +10,7 @@ public static class RaffleExtensions
         if (requiredTickets == 0) return new Tuple<int, int>(0, 0);
         if (raffle.Entries.Count == 0) return new Tuple<int, int>(1, requiredTickets);
 
-        var lastTicket = raffle.Entries.Max(e => e.Tickets.Item2);
+        var lastTicket = raffle.GetLastTicket();
         return new Tuple<int, int>(lastTicket + 1, lastTicket + requiredTickets);
     }
 
@@ -28,5 +28,10 @@ public static class RaffleExtensions
     public static int GetTotalDonations(this Raffle raffle)
     {
         return raffle.Entries.Sum(entry => entry.Donation);
+    }
+
+    public static int GetLastTicket(this Raffle raffle)
+    {
+        return raffle.Entries.Max(e => e.Tickets.Item2);
     }
 }

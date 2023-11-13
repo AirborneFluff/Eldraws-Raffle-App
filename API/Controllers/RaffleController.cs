@@ -21,10 +21,12 @@ public sealed class RaffleController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
+    private readonly DiscordService _discord;
 
-    public RaffleController(IMapper mapper, UnitOfWork unitOfWork)
+    public RaffleController(IMapper mapper, UnitOfWork unitOfWork, DiscordService discord)
     {
         _unitOfWork = unitOfWork;
+        _discord = discord;
         _mapper = mapper;
     }
 
@@ -158,5 +160,47 @@ public sealed class RaffleController : ControllerBase
 
         return BadRequest();
     }
-    
+
+    [HttpPost("{raffleId:int}/discord")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> PostRaffleToDiscord(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        
+        var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+
+        return Ok(raffle.DiscordMessageId);
+    }
+
+    [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> AddPrize(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        
+        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
+        if (prize == null) return NotFound("No prize with that placement");
+
+        var ticketNumber = RandomService.GetRandomInteger(raffle.GetLastTicket());
+        prize.WinningTicketNumber = ticketNumber;
+        prize.HideFromDiscord = true;
+        
+        var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= ticketNumber && e.Tickets.Item2 >= ticketNumber);
+        var entrant = winner == null ? raffle.Entries.First().Entrant : winner.Entrant;
+
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, ticketNumber);
+        
+        if (await _unitOfWork.Complete()) return Ok(new RollWinnerDTO()
+        {
+            Winner = _mapper.Map<EntrantInfoDTO>(entrant),
+            TicketNumber = ticketNumber
+        });
+
+        return BadRequest();
+    }
 }

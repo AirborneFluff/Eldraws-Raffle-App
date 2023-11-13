@@ -114,7 +114,8 @@ public static class RaffleEmbedBuilder
 
             var posStr = $"**{prize.Place.AddPositionalSynonym()}**";
             sb.Append(posStr.PadString(65, 75));
-            if (winner != null)
+            
+            if (winner != null && !prize.HideFromDiscord)
             {
                 sb.Append($"({prize.WinningTicketNumber}) ");
                 sb.AppendLine(winner.Entrant?.Gamertag);
@@ -196,28 +197,4 @@ public static class RaffleEmbedBuilder
     
         return sb.ToString();
     }
-    //
-    // public static EmbedBuilder RollEmoji(this EmbedBuilder embed, int rollPlace, int winningTicket, bool showWinner)
-    // {
-    //     var field = embed.Fields.FirstOrDefault(f => f.Name == "Prizes");
-    //     if (field == null) return embed;
-    //
-    //     var lines = field.Value.ToString()?.Split('\n');
-    //     if (lines == null) return embed;
-    //
-    //     var rollLine = lines.FirstOrDefault(l => l.Contains($"**{rollPlace.AddPositionalSynonym()}**"));
-    //     var rollLinePos = lines.IndexOf(rollLine);
-    //     
-    //     if (rollLine == null) return embed;
-    //     if (!showWinner)
-    //         lines[rollLinePos] = rollLine.PadString(320, 350) + "<a:threepointsanima:1005525060490117191>\n";
-    //     if (showWinner)
-    //         lines[rollLinePos] = rollLine.PadString(320, 350) + winningTicket + '\n';
-    //
-    //     var lineSb = new StringBuilder();
-    //     foreach(var line in lines) lineSb.Append(line);
-    //
-    //     field.Value = lineSb.ToString();
-    //     return embed;
-    // }
 }
