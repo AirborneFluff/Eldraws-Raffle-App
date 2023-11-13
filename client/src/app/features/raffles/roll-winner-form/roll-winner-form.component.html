@@ -7,7 +7,7 @@
               (click)="confirmWinner()"
               color="primary"
               class="w-full">Confirm Winner</button>
-      <button mat-raised-button class="w-full" [disabled]="(submitted$ | async)!">Cancel</button>
+      <button mat-raised-button class="w-full" [disabled]="(submitted$ | async)!" (click)="bottomSheet.dismiss()">Cancel</button>
     </div>
   </sheet-footer>
 
