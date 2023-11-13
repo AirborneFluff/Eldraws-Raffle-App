@@ -1,5 +1,4 @@
-
-<component-frame>
+<component-frame *ngIf="!showRollingUI else rollingUI">
   <ng-container *ngIf="(prizes$ | async) as prizes">
     <mat-checkbox *ngIf="prizes.length" [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
     <div *ngFor="let prize of (prizes | reverse)"
@@ -31,3 +30,11 @@
     </div>
   </ng-container>
 </component-frame>
+
+<ng-template #rollingUI>
+  <component-frame>
+    <ng-container *ngIf="(prizes$ | async) as prizes">
+      <prize-list-item *ngFor="let prize of (prizes | reverse)" [prize]="prize"/>
+    </ng-container>
+  </component-frame>
+</ng-template>

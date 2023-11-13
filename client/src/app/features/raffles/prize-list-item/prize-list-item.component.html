@@ -1,0 +1,15 @@
+<div class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2 relative">
+  <p class="font-extralight text-sm min-w-[3rem] text-center">{{prize.place | numericPosition}}</p>
+  <p class="text-lg font-display" *ngIf="winner$ | async as winner">
+    <span class="font-light italic ml-2" >({{(winningTicketNumber$ | async)}})</span>
+    {{winner.gamertag}}
+  </p>
+
+  <ng-container *ngIf="!(winningTicketNumber$ | async)">
+    <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="showRollWinnerDialog()"></div>
+
+    <div class="hidden sm:flex align-middle ml-auto mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="showRollWinnerDialog()">
+      <mat-icon >casino</mat-icon>
+    </div>
+  </ng-container>
+</div>

@@ -21,6 +21,8 @@ import { SharedModule } from '../../shared/shared.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RaffleFormComponent } from './raffle-form/raffle-form.component';
 import { DiscordModule } from '../discord/discord.module';
+import { PrizeListItemComponent } from './prize-list-item/prize-list-item.component';
+import { RollWinnerFormComponent } from './roll-winner-form/roll-winner-form.component';
 
 
 
@@ -34,7 +36,9 @@ import { DiscordModule } from '../discord/discord.module';
     PrizeListComponent,
     CreatePrizeComponent,
     CreatePrizeButtonComponent,
-    RaffleFormComponent
+    RaffleFormComponent,
+    PrizeListItemComponent,
+    RollWinnerFormComponent
   ],
   imports: [
     CommonModule,

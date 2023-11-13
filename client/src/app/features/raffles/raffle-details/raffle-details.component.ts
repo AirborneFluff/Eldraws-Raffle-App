@@ -18,6 +18,7 @@ const STATUS_SUFFIX = {
   styleUrls: ['./raffle-details.component.scss']
 })
 export class RaffleDetailsComponent {
+  showRollingUI: boolean = false;
 
   constructor(public raffle$: CurrentRaffleStream, public bottomSheet: MatBottomSheet, private timeUntil: TimeUntilPipe) {
   }
@@ -61,4 +62,10 @@ export class RaffleDetailsComponent {
   editRaffle() {
     this.bottomSheet.open(RaffleFormComponent);
   }
+
+  toggleRollingUI() {
+    console.log("Yo")
+    this.showRollingUI = !this.showRollingUI;
+  }
+
 }

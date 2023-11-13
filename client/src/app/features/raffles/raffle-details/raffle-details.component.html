@@ -6,7 +6,7 @@
         {{statusText$ | async}}
       </p>
       <div class="flex gap-2">
-        <roll-winners-button/>
+        <roll-winners-button (click)="toggleRollingUI()"/>
         <discord-button/>
         <button mat-mini-fab color="primary" (click)="editRaffle()">
           <mat-icon>edit</mat-icon>
@@ -33,7 +33,7 @@
       </div>
     </div>
   </component-frame>
-  <app-prize-list/>
+  <app-prize-list [showRollingUI]="showRollingUI"/>
   <app-create-prize-button/>
 
   <app-create-entry/>

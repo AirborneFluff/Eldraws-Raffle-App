@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 import { combineLatest, map, of, startWith, switchMap, take } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
@@ -16,6 +16,7 @@ import { ApiService } from '../../../core/services/api.service';
   styleUrls: ['./prize-list.component.scss']
 })
 export class PrizeListComponent {
+  @Input() showRollingUI: boolean = false;
   showFullQuantity: boolean = false;
 
   constructor(public raffle$: CurrentRaffleStream, private dialog: MatDialog, private numericPipe: NumericPositionPipe, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private api: ApiService) {
