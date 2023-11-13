@@ -4,6 +4,7 @@ import { Raffle, NewRaffle, NewRafflePrize } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
 import { RollParams } from '../../data/models/roll-params';
 import { HttpParams } from '@angular/common/http';
+import { RollWinnerResponse } from '../../data/models/roll-winner-response';
 
 export class RaffleRepository extends BaseRepository {
 
@@ -50,6 +51,10 @@ export class RaffleRepository extends BaseRepository {
 
   public createDiscordPost(clanId: number, raffleId: number) {
     return this.http.post<number>(this.baseUrl + `${clanId}/raffles/${raffleId}/discord`, {})
+  }
+
+  public rollWinner(clanId: number, raffleId: number, prizePlace: number) {
+    return this.http.post<RollWinnerResponse>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}/roll-winner`, {})
   }
 
   public rollWinnersDiscord(clanId: number, raffleId: number, options: RollParams) {
