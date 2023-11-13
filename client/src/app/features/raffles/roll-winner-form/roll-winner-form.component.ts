@@ -4,7 +4,16 @@ import { Entrant, RafflePrize } from '../../../data/data-models';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
-import { BehaviorSubject, combineLatest, finalize, map, switchMap, take, tap, withLatestFrom } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  finalize,
+  map, of,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 
 @Component({
@@ -21,9 +30,11 @@ export class RollWinnerFormComponent {
               private bottomSheetRef: MatBottomSheetRef<RollWinnerFormComponent>) {
     this.prize$.next(data.prize);
     this.bottomSheetRef.afterDismissed().pipe(
-      switchMap(() => this.removeWinner$)
+      switchMap(() => this.winnerConfirmed ? of() :this.removeWinner$)
     ).subscribe();
   }
+
+  winnerConfirmed: boolean = false;
 
   prize$ = new BehaviorSubject<RafflePrize | undefined>(undefined);
   winner$ = new BehaviorSubject<Entrant | undefined>(undefined);
@@ -68,7 +79,14 @@ export class RollWinnerFormComponent {
         take(1),
         tap(() => this.submitted$.next(true)),
         switchMap(([clanId, raffleId]) => this.api.Raffles.createDiscordPost(clanId, raffleId)),
-        finalize(() => this.bottomSheet.dismiss()))
+        finalize(() => {
+          this.winnerConfirmed = true;
+          this.bottomSheet.dismiss()
+        }))
+
+  updateRaffleStream() {
+    /* UPDATE CURRENT RAFFLE */
+  }
 
   rollWinner() {
     this.rollWinner$.subscribe({
