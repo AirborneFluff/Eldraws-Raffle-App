@@ -57,6 +57,10 @@ export class RaffleRepository extends BaseRepository {
     return this.http.post<RollWinnerResponse>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}/roll-winner`, {})
   }
 
+  public removeWinner(clanId: number, raffleId: number, prizePlace: number) {
+    return this.http.delete(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}/roll-winner`, {})
+  }
+
   public rollWinnersDiscord(clanId: number, raffleId: number, options: RollParams) {
     let params = new HttpParams;
 

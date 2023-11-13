@@ -177,7 +177,7 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> AddPrize(int raffleId, int clanId, int prizePlace)
+    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
@@ -200,6 +200,26 @@ public sealed class RaffleController : ControllerBase
             Winner = _mapper.Map<EntrantInfoDTO>(entrant),
             TicketNumber = ticketNumber
         });
+
+        return BadRequest();
+    }
+
+    [HttpDelete("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> RemoveRolledWinner(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        
+        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
+        if (prize == null) return NotFound("No prize with that placement");
+
+        prize.WinningTicketNumber = null;
+
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
+        
+        if (await _unitOfWork.Complete()) return Ok();
 
         return BadRequest();
     }
