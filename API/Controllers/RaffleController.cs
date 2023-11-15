@@ -177,7 +177,7 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
+    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace, [FromQuery] bool preventMultiWin = true)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
@@ -185,23 +185,33 @@ public sealed class RaffleController : ControllerBase
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
 
-        var ticketNumber = RandomService.GetRandomInteger(raffle.GetLastTicket());
+        var rollValue = RandomService.GetRandomInteger(raffle.GetLastTicket());
+        int? ticketNumber = rollValue;
+
+        var winner = raffle.GetEntrantFromTicket(rollValue);
+        if (winner == null) return BadRequest("Ticket number has no winner");
+
+        if (preventMultiWin)
+        {
+            if (raffle.HasEntrantAlreadyWon(winner))
+            {
+                ticketNumber = null;
+                winner = null;
+            }
+        }
+        
         prize.WinningTicketNumber = ticketNumber;
         prize.HideFromDiscord = true;
-        
-        var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= ticketNumber && e.Tickets.Item2 >= ticketNumber);
-        var entrant = winner == null ? raffle.Entries.First().Entrant : winner.Entrant;
 
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, ticketNumber);
+        await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
+        await _unitOfWork.Complete();
         
-        if (await _unitOfWork.Complete()) return Ok(new RollWinnerDTO()
+        return Ok(new RollWinnerDTO()
         {
-            Winner = _mapper.Map<EntrantInfoDTO>(entrant),
-            TicketNumber = ticketNumber
+            Winner = _mapper.Map<EntrantInfoDTO>(winner),
+            TicketNumber = rollValue
         });
-
-        return BadRequest();
     }
 
     [HttpDelete("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]

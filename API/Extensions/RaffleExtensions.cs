@@ -34,4 +34,27 @@ public static class RaffleExtensions
     {
         return raffle.Entries.Max(e => e.Tickets.Item2);
     }
+    
+    public static Entrant? GetEntrantFromTicket(this Raffle raffle, int ticketNumber)
+    {
+        if (!raffle.Entries.Any()) throw new Exception("Raffle entries not included");
+        
+        var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= ticketNumber && e.Tickets.Item2 >= ticketNumber);
+        return winner?.Entrant;
+    }
+
+    public static bool HasEntrantAlreadyWon(this Raffle raffle, Entrant entrant)
+    {
+        foreach (var prize in raffle.Prizes)
+        {
+            if (prize.WinningTicketNumber == null) continue;
+            
+            var winner = GetEntrantFromTicket(raffle, (int) prize.WinningTicketNumber);
+            if (winner == null) continue;
+            
+            if (winner.Id == entrant.Id) return true;
+        }
+
+        return false;
+    }
 }

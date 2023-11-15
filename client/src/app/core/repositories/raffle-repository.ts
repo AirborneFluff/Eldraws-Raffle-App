@@ -54,6 +54,9 @@ export class RaffleRepository extends BaseRepository {
   }
 
   public rollWinner(clanId: number, raffleId: number, prizePlace: number) {
+    let params = new HttpParams();
+    params = params.append('preventMultiWin', true);
+
     return this.http.post<RollWinnerResponse>(this.baseUrl + `${clanId}/raffles/${raffleId}/prizes/${prizePlace}/roll-winner`, {})
   }
 
