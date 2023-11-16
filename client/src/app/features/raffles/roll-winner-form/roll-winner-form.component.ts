@@ -1,20 +1,22 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { Entrant, RafflePrize } from '../../../data/data-models';
+import { Component } from '@angular/core';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { RafflePrize } from '../../../data/data-models';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
-  BehaviorSubject,
-  combineLatest,
+  combineLatest, filter,
   finalize,
-  map, of,
+  map, Subject,
   switchMap,
   take,
   tap,
-  withLatestFrom
+  withLatestFrom,
+  merge, from
 } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
+import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
+import { RollWinnerResponse } from '../../../data/models/roll-winner-response';
 
 @Component({
   selector: 'app-roll-winner-form',
@@ -22,81 +24,64 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
   styleUrls: ['./roll-winner-form.component.scss']
 })
 export class RollWinnerFormComponent {
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
+  prizeCount = 0;
+  rollResponse: RollWinnerResponse | undefined;
+  submitted: boolean = false;
+
+  constructor(private raffle$: CurrentRaffleStream,
               private api: ApiService,
               private clanId$: ClanIdStream,
               private raffleId$: RaffleIdStream,
               public bottomSheet: MatBottomSheet,
               private bottomSheetRef: MatBottomSheetRef<RollWinnerFormComponent>) {
-    this.prize$.next(data.prize);
     this.bottomSheetRef.afterDismissed().pipe(
-      switchMap(() => this.winnerConfirmed ? of() :this.removeWinner$)
+      withLatestFrom(
+        this.clanId$.pipe(notNullOrUndefined()),
+        this.raffleId$.pipe(notNullOrUndefined())),
+      switchMap(([_, clanId, raffleId]) => this.api.Raffles.createDiscordPost(clanId, raffleId))
     ).subscribe();
   }
 
-  winnerConfirmed: boolean = false;
+  private prizeSource$ = new Subject<RafflePrize>();
+  prizes$ = this.raffle$.pipe(
+    notNullOrUndefined(),
+    filter(raffle => raffle.prizes?.length > 0),
+    switchMap(raffle => {
+      const arr = raffle.prizes.filter(prize => prize.winningTicketNumber == null);
+      this.prizeCount = arr.length;
+      return from(arr)
+    }))
 
-  prize$ = new BehaviorSubject<RafflePrize | undefined>(undefined);
-  winner$ = new BehaviorSubject<Entrant | undefined>(undefined);
-  submitted$ = new BehaviorSubject<boolean>(false);
-
-  removeWinner$ = combineLatest([
-    this.clanId$.pipe(notNullOrUndefined()),
-    this.raffleId$.pipe(notNullOrUndefined()),
-    this.prize$.pipe(notNullOrUndefined(), map(prize => prize.place))
-    ]).pipe(
-      take(1),
-      tap(() => this.submitted$.next(true)),
-      switchMap(([clanId, raffleId, place]) => this.api.Raffles.removeWinner(clanId, raffleId, place)),
-      withLatestFrom(this.prize$.pipe(notNullOrUndefined())),
-      map(([_, currentPrize]) => {
-        currentPrize.winningTicketNumber = null;
-        this.prize$.next(currentPrize);
-      }),
-      finalize(() => this.submitted$.next(false)))
-
-  rollWinner$ = combineLatest([
-    this.clanId$.pipe(notNullOrUndefined()),
-    this.raffleId$.pipe(notNullOrUndefined()),
-    this.prize$.pipe(notNullOrUndefined(), map(prize => prize.place))
-    ]).pipe(
-      take(1),
-      tap(() => this.submitted$.next(true)),
-      switchMap(([clanId, raffleId, place]) => this.api.Raffles.rollWinner(clanId, raffleId, place)),
-      withLatestFrom(this.prize$.pipe(notNullOrUndefined())),
-      tap(([rollResponse, currentPrize]) => {
-        currentPrize.winningTicketNumber = rollResponse.ticketNumber;
-
-        this.prize$.next(currentPrize);
-        this.winner$.next(rollResponse.winner);
-      }),
-      finalize(() => this.submitted$.next(false)))
-
-  confirmWinner$ = combineLatest([
-      this.clanId$.pipe(notNullOrUndefined()),
-      this.raffleId$.pipe(notNullOrUndefined())
-      ]).pipe(
-        take(1),
-        tap(() => this.submitted$.next(true)),
-        switchMap(([clanId, raffleId]) => this.api.Raffles.createDiscordPost(clanId, raffleId)),
-        finalize(() => {
-          this.winnerConfirmed = true;
-          this.bottomSheet.dismiss()
-        }))
-
-  updateRaffleStream() {
-    /* UPDATE CURRENT RAFFLE */
-  }
+  prize$ = merge(this.prizes$.pipe(take(1)), this.prizeSource$);
 
   rollWinner() {
-    this.rollWinner$.subscribe({
-      error: e => console.log(e)
+    combineLatest([
+      this.clanId$.pipe(notNullOrUndefined()),
+      this.raffleId$.pipe(notNullOrUndefined()),
+      this.prize$.pipe(notNullOrUndefined(), map(prize => prize.place))
+    ]).pipe(
+      take(1),
+      tap(() => this.submitted = true),
+      switchMap(([clanId, raffleId, prizePlace]) => this.api.Raffles.rollWinner(clanId, raffleId, prizePlace)),
+      withLatestFrom(this.prize$.pipe(notNullOrUndefined())),
+      finalize(() => this.submitted = false)
+    ).subscribe({
+      next: ([response, prize]) => {
+        this.rollResponse = response;
+        if (!response.reroll) {
+          prize.winningTicketNumber = response.ticketNumber;
+          prize.winner = response.winner;
+        }
+      }
     })
   }
 
-  confirmWinner() {
-    this.confirmWinner$.subscribe({
-      error: e => console.log(e)
+  nextPrize() {
+    this.prizes$.pipe(
+      take(1)
+    ).subscribe(nextPrize => {
+      this.prizeSource$.next(nextPrize);
+      this.rollResponse = undefined;
     })
   }
 }
