@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { RollWinnersFormComponent } from '../roll-winners-form/roll-winners-form.component';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { map } from 'rxjs';
+import { RollWinnerFormComponent } from '../../raffles/roll-winner-form/roll-winner-form.component';
 
 @Component({
   selector: 'roll-winners-button',
@@ -20,6 +20,6 @@ export class RollWinnersButtonComponent {
       map(raffle => !raffle.discordMessageId || !raffle.prizes.length))
 
   openRoll() {
-    this.bottomSheet.open(RollWinnersFormComponent)
+    this.bottomSheet.open(RollWinnerFormComponent)
   }
 }
