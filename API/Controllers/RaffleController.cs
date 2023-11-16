@@ -191,17 +191,18 @@ public sealed class RaffleController : ControllerBase
         var winner = raffle.GetEntrantFromTicket(rollValue);
         if (winner == null) return BadRequest("Ticket number has no winner");
 
+        var reroll = false;
         if (preventMultiWin)
         {
             if (raffle.HasEntrantAlreadyWon(winner))
             {
                 ticketNumber = null;
-                winner = null;
+                reroll = true;
             }
         }
         
         prize.WinningTicketNumber = ticketNumber;
-        prize.HideFromDiscord = true;
+        //prize.HideFromDiscord = true;
 
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
@@ -210,6 +211,7 @@ public sealed class RaffleController : ControllerBase
         return Ok(new RollWinnerDTO()
         {
             Winner = _mapper.Map<EntrantInfoDTO>(winner),
+            Reroll = reroll,
             TicketNumber = rollValue
         });
     }
