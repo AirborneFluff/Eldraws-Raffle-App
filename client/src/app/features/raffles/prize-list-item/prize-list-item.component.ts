@@ -34,12 +34,9 @@ export class PrizeListItemComponent {
     startWith(0)
   )
 
-  winningTicketNumber$ = this.prize$.pipe(
+  winner$ = this.prize$.pipe(
     notNullOrUndefined(),
-    map(prize => prize.winningTicketNumber)
-  )
-
-  winner$ = this.winningTicketNumber$.pipe(
+    map(prize => prize.winningTicketNumber),
     notNullOrUndefined(),
     withLatestFrom(this.raffle$.pipe(notNullOrUndefined())),
     map(([ticket, raffle]) => {
