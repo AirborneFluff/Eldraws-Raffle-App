@@ -35,6 +35,7 @@ export class PrizeListItemComponent {
   )
 
   winningTicketNumber$ = this.prize$.pipe(
+    notNullOrUndefined(),
     map(prize => prize.winningTicketNumber)
   )
 
