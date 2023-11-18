@@ -213,25 +213,4 @@ public sealed class RaffleController : ControllerBase
             TicketNumber = rollValue
         });
     }
-
-    [HttpDelete("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
-    [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RemoveRolledWinner(int raffleId, int clanId, int prizePlace)
-    {
-        var raffle = HttpContext.GetRaffle();
-        var clan = HttpContext.GetClan();
-        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        
-        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
-        if (prize == null) return NotFound("No prize with that placement");
-
-        prize.WinningTicketNumber = null;
-
-        var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
-        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
-        
-        if (await _unitOfWork.Complete()) return Ok();
-
-        return BadRequest();
-    }
 }
