@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace RaffleApi.Entities;
 
 public class RafflePrize
