@@ -2,7 +2,7 @@
   <ng-container *ngIf="(prizes$ | async) as prizes">
     <mat-checkbox *ngIf="prizes.length" [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
     <div class="last:border-none border-b border-gray-200" *ngFor="let prize of (prizes | reverse)">
-      <prize-list-item [prize]="prize"/>
+      <prize-list-item [prize]="prize" [showFullQuantity]="showFullQuantity"/>
     </div>
   </ng-container>
 
