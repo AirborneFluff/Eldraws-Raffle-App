@@ -177,7 +177,7 @@ public sealed class RaffleController : ControllerBase
 
     [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
     [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace, [FromQuery] bool preventMultiWin = true)
+    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
@@ -193,13 +193,10 @@ public sealed class RaffleController : ControllerBase
         if (winner == null) return BadRequest("Ticket number has no winner");
 
         var reroll = false;
-        if (preventMultiWin)
+        if (raffle.HasEntrantAlreadyWon(winner))
         {
-            if (raffle.HasEntrantAlreadyWon(winner))
-            {
-                ticketNumber = null;
-                reroll = true;
-            }
+            ticketNumber = null;
+            reroll = true;
         }
         
         prize.WinningTicketNumber = ticketNumber;
