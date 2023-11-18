@@ -181,6 +181,7 @@ public sealed class RaffleController : ControllerBase
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
@@ -202,9 +203,7 @@ public sealed class RaffleController : ControllerBase
         }
         
         prize.WinningTicketNumber = ticketNumber;
-        //prize.HideFromDiscord = true;
 
-        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
         if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
         
@@ -224,14 +223,15 @@ public sealed class RaffleController : ControllerBase
     {
         var raffle = HttpContext.GetRaffle();
         var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
 
         prize.WinningTicketNumber = null;
 
-        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
+        var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
         
         if (await _unitOfWork.Complete()) return Ok();
 
