@@ -115,7 +115,7 @@ public static class RaffleEmbedBuilder
             var posStr = $"**{prize.Place.AddPositionalSynonym()}**";
             sb.Append(posStr.PadString(65, 75));
             
-            if (winner != null && !prize.HideFromDiscord)
+            if (winner != null)
             {
                 sb.Append($"({prize.WinningTicketNumber}) ");
                 sb.AppendLine(winner.Entrant?.Gamertag);

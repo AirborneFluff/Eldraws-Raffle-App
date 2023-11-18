@@ -11,6 +11,4 @@ public class RafflePrize
     public float DonationPercentage { get; set; }
     public string? Description { get; set; }
     public int? WinningTicketNumber { get; set; }
-
-    [NotMapped] public bool HideFromDiscord { get; set; } = false;
 }
