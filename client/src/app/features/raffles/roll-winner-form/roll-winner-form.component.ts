@@ -57,6 +57,7 @@ export class RollWinnerFormComponent {
 
   rollWinner() {
     this.error = null;
+    this.rollResponse = undefined;
 
     combineLatest([
       this.clanId$.pipe(notNullOrUndefined()),
