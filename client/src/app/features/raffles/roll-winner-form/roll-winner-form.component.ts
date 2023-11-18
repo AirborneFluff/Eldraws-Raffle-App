@@ -27,6 +27,7 @@ export class RollWinnerFormComponent {
   prizeCount = 0;
   rollResponse: RollWinnerResponse | undefined;
   submitted: boolean = false;
+  error: string | null = null;
 
   constructor(private raffle$: CurrentRaffleStream,
               private api: ApiService,
@@ -55,6 +56,8 @@ export class RollWinnerFormComponent {
   prize$ = merge(this.prizes$.pipe(take(1)), this.prizeSource$);
 
   rollWinner() {
+    this.error = null;
+
     combineLatest([
       this.clanId$.pipe(notNullOrUndefined()),
       this.raffleId$.pipe(notNullOrUndefined()),
@@ -72,7 +75,8 @@ export class RollWinnerFormComponent {
           prize.winningTicketNumber = response.ticketNumber;
           prize.winner = response.winner;
         }
-      }
+      },
+      error: e => this.handleError(e)
     })
   }
 
@@ -82,6 +86,16 @@ export class RollWinnerFormComponent {
     ).subscribe(nextPrize => {
       this.prizeSource$.next(nextPrize);
       this.rollResponse = undefined;
+      this.rollWinner();
     })
+  }
+
+  handleError(e: any) {
+    const errorMessage: string = e.error;
+    if (errorMessage.includes('50013') || errorMessage.includes('50001')) {
+      this.error = 'Missing Permissions';
+      return;
+    }
+    this.error = errorMessage;
   }
 }

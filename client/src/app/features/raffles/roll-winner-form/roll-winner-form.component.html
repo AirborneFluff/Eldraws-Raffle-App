@@ -1,5 +1,5 @@
-<sheet-container *ngIf="prize$ | async as prize">
-  <sheet-header>Rolling for {{prize.place | numericPosition}} place</sheet-header>
+<sheet-container>
+  <sheet-header>Rolling Winners</sheet-header>
   <sheet-footer>
     <div class="flex gap-2 justify-between flex-row-reverse">
       <ng-container *ngIf="prizeCount > 1 else closeButton">
@@ -11,7 +11,7 @@
       </ng-container>
       <ng-template #closeButton>
         <button mat-raised-button
-                [disabled]="submitted"
+                [disabled]="submitted || (rollResponse == undefined) || (rollResponse?.reroll == true)"
                 (click)="bottomSheet.dismiss()"
                 color="primary"
                 class="w-full">Finish</button>
@@ -21,21 +21,43 @@
     </div>
   </sheet-footer>
 
-  <div class="flex justify-center items-center flex-col py-16">
-    <ng-container *ngIf="rollResponse else rolling">
-      <span class="text-2xl font-display mb-2" [ngClass]="{'text-red-500': rollResponse.reroll}">{{rollResponse.winner.gamertag}}</span>
-      <span class="text-4xl font-display mb-4">{{rollResponse?.ticketNumber}}</span>
-    </ng-container>
-    <ng-template #rolling>
-      <span class="text-4xl font-display mb-4" *ngIf="submitted">Rolling...</span>
-    </ng-template>
-    <button mat-fab color="primary" class="mt-auto" [disabled]="submitted || (rollResponse?.reroll == false)" (click)="rollWinner()">
-      <mat-icon>casino</mat-icon>
-    </button>
-  </div>
+  <ng-container *ngIf="prize$ | async as prize else noPrize">
+    <div class="font-display mb-4 text-lg font-light">
+      <p>Rolling for {{prize.place | numericPosition}} place</p>
+    </div>
 
-<!--  <div class="mb-4">-->
-<!--    <mat-error>There was a problem with posting to Discord.</mat-error>-->
-<!--  </div>-->
+    <div class="flex justify-center items-center flex-col pb-16">
+      <ng-container *ngIf="rollResponse else rolling">
+        <span class="text-2xl font-display mb-2" [ngClass]="{'text-red-500': rollResponse.reroll}">{{rollResponse.winner.gamertag}}</span>
+        <span class="text-4xl font-display mb-4">{{rollResponse?.ticketNumber}}</span>
+      </ng-container>
+      <ng-template #rolling>
+        <div class="min-h-[6rem] flex">
+          <span class="text-2xl font-display mb-4 mt-auto" *ngIf="submitted">Rolling...</span>
+        </div>
+      </ng-template>
+      <button mat-fab color="primary" class="mt-auto" [disabled]="submitted || (rollResponse?.reroll == false)" (click)="rollWinner()">
+        <mat-icon>casino</mat-icon>
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-template #noPrize>
+    <div class="font-display mb-4 text-lg font-light">
+      <p>No prizes left to roll</p>
+    </div>
+
+    <div class="flex justify-center items-center flex-col pb-16">
+        <div class="min-h-[6rem] flex">
+        </div>
+      <button mat-fab color="primary" class="mt-auto" disabled>
+        <mat-icon>casino</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+
+  <div class="mb-4" *ngIf="error">
+    <mat-error>{{error}}</mat-error>
+  </div>
 
 </sheet-container>
