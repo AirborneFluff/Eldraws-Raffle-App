@@ -21,10 +21,12 @@ public sealed class RaffleController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
+    private readonly DiscordService _discord;
 
-    public RaffleController(IMapper mapper, UnitOfWork unitOfWork)
+    public RaffleController(IMapper mapper, UnitOfWork unitOfWork, DiscordService discord)
     {
         _unitOfWork = unitOfWork;
+        _discord = discord;
         _mapper = mapper;
     }
 
@@ -158,5 +160,57 @@ public sealed class RaffleController : ControllerBase
 
         return BadRequest();
     }
-    
+
+    [HttpPost("{raffleId:int}/discord")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> PostRaffleToDiscord(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        
+        var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+
+        return Ok(raffle.DiscordMessageId);
+    }
+
+    [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
+    [ServiceFilter(typeof(ValidateRaffle))]
+    public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
+    {
+        var raffle = HttpContext.GetRaffle();
+        var clan = HttpContext.GetClan();
+        if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
+        
+        var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
+        if (prize == null) return NotFound("No prize with that placement");
+
+        var rollValue = RandomService.GetRandomInteger(raffle.GetLastTicket(), 1);
+        int? ticketNumber = rollValue;
+
+        var winner = raffle.GetEntrantFromTicket(rollValue);
+        if (winner == null) throw new Exception($"There was an issue getting the winner for ticket: {rollValue}");
+
+        var reroll = false;
+        if (raffle.HasEntrantAlreadyWon(winner))
+        {
+            ticketNumber = null;
+            reroll = true;
+        }
+        
+        prize.WinningTicketNumber = ticketNumber;
+
+        var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+        
+        await _unitOfWork.Complete();
+        
+        return Ok(new RollWinnerDTO()
+        {
+            Winner = _mapper.Map<EntrantInfoDTO>(winner),
+            Reroll = reroll,
+            TicketNumber = rollValue
+        });
+    }
 }

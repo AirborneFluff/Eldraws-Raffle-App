@@ -1,27 +1,8 @@
-
 <component-frame>
   <ng-container *ngIf="(prizes$ | async) as prizes">
     <mat-checkbox *ngIf="prizes.length" [(ngModel)]="showFullQuantity">Show Full Amounts</mat-checkbox>
-    <div *ngFor="let prize of (prizes | reverse)"
-         class="pointer-events-none flex gap-2 items-center last:border-none border-b border-gray-200 py-2 relative">
-
-      <p class="font-extralight text-sm min-w-[3rem] text-center">{{prize.place | numericPosition}}</p>
-      <p class="text-lg font-display">
-        <ng-container *ngIf="prize.donationPercentage as percentage else prizeDescription">
-          {{percentage * 100}}% of donations
-          <span class="font-light italic ml-2" *ngIf="!showFullQuantity">{{(percentage * (totalDonations$ | async)!) | shortNumber}}</span>
-          <span class="font-light italic ml-2" *ngIf="showFullQuantity">{{percentage * (totalDonations$ | async)!}}</span>
-        </ng-container>
-        <ng-template #prizeDescription>
-          {{prize.description}}
-        </ng-template>
-      </p>
-
-      <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removePrize(prize)"></div>
-
-      <div class="hidden sm:flex align-middle ml-auto mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removePrize(prize)">
-        <mat-icon >delete_outline</mat-icon>
-      </div>
+    <div class="last:border-none border-b border-gray-200" *ngFor="let prize of (prizes | reverse)">
+      <prize-list-item [prize]="prize" [showFullQuantity]="showFullQuantity"/>
     </div>
   </ng-container>
 

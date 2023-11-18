@@ -64,6 +64,26 @@ public sealed class DiscordService : IAsyncDisposable
         return await Task.Run(() => RollAllWinners(raffle, options));
     }
 
+    public async Task<OperationResult> SendRoll(Raffle raffle, ulong channelId, int ticketNumber)
+    {
+        _channel = await GetMessageChannel(channelId);
+        if (_channel == null) return FailureResult("Couldn't connect to channel");
+
+        var embed = raffle.GenerateRollingEmbed(ticketNumber);
+
+        try
+        { 
+            var result = await UpdateMessage(embed, raffle);
+            if (result.Failure) return result;
+
+            return raffle.DiscordMessageId == null ? FailureResult("Issue sending message") : SuccessResult();
+        }
+        catch (Exception e)
+        {
+            return ExceptionResult(e);
+        }
+    }
+
     private async Task<OperationResult> PostMessage(EmbedBuilder embed, Raffle raffle)
     {
         if (raffle.DiscordMessageId == null) return await SendNewMessage(embed, raffle);

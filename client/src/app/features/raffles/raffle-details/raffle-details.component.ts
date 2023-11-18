@@ -18,7 +18,6 @@ const STATUS_SUFFIX = {
   styleUrls: ['./raffle-details.component.scss']
 })
 export class RaffleDetailsComponent {
-
   constructor(public raffle$: CurrentRaffleStream, public bottomSheet: MatBottomSheet, private timeUntil: TimeUntilPipe) {
   }
 

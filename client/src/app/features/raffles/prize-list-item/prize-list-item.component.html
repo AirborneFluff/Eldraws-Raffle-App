@@ -1,0 +1,36 @@
+<div class="pointer-events-none py-2 relative">
+  <div class="flex gap-2">
+    <p class="font-extralight text-sm min-w-[3rem] text-center mt-[0.25rem]">{{prize.place | numericPosition}}</p>
+    <div class="flex gap-2 flex-grow items-center">
+      <div>
+        <p class="text-lg font-display">
+          <ng-container *ngIf="prize.donationPercentage as percentage else prizeDescription">
+            {{percentage * 100}}% of donations
+            <span class="font-light italic ml-2" *ngIf="!showFullQuantity">{{(percentage * (totalDonations$ | async)!) | shortNumber}}</span>
+            <span class="font-light italic ml-2" *ngIf="showFullQuantity">{{percentage * (totalDonations$ | async)!}}</span>
+          </ng-container>
+          <ng-template #prizeDescription>
+            {{prize.description}}
+          </ng-template>
+        </p>
+
+        <p class="font-light text-sm font-display leading-none">
+          <ng-container *ngIf="prize.winner as winner else asyncWinner">
+            {{winner.gamertag}}
+          </ng-container>
+          <ng-template #asyncWinner>
+            <ng-container *ngIf="winner$ | async as winner">
+              {{winner.gamertag}}
+            </ng-container>
+          </ng-template>
+        </p>
+      </div>
+
+      <div class="hidden sm:flex align-middle ml-auto mr-4 cursor-pointer text-red-600 opacity-70 transition hover:opacity-100 pointer-events-auto" (click)="removePrize()">
+        <mat-icon >delete_outline</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute z-10 w-full h-full top-0 left-0 sm:hidden pointer-events-auto cursor-pointer" (click)="removePrize()"></div>
+</div>
