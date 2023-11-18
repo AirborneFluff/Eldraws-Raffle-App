@@ -15,11 +15,13 @@
         </p>
 
         <p class="font-light text-sm font-display leading-none">
-          <ng-container *ngIf="winner$ | async as winner else varWinner">
+          <ng-container *ngIf="prize.winner as winner else asyncWinner">
             {{winner.gamertag}}
           </ng-container>
-          <ng-template #varWinner>
-            {{prize.winner?.gamertag}}
+          <ng-template #asyncWinner>
+            <ng-container *ngIf="winner$ | async as winner">
+              {{winner.gamertag}}
+            </ng-container>
           </ng-template>
         </p>
       </div>
