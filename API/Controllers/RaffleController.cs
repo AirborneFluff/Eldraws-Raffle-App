@@ -186,11 +186,11 @@ public sealed class RaffleController : ControllerBase
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
 
-        var rollValue = RandomService.GetRandomInteger(raffle.GetLastTicket());
+        var rollValue = RandomService.GetRandomInteger(raffle.GetLastTicket(), 1);
         int? ticketNumber = rollValue;
 
         var winner = raffle.GetEntrantFromTicket(rollValue);
-        if (winner == null) return BadRequest("Ticket number has no winner");
+        if (winner == null) throw new Exception($"There was an issue getting the winner for ticket: {rollValue}");
 
         var reroll = false;
         if (raffle.HasEntrantAlreadyWon(winner))
