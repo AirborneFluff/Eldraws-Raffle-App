@@ -205,7 +205,9 @@ public sealed class RaffleController : ControllerBase
         //prize.HideFromDiscord = true;
 
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
-        await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
+        var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
+        if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
+        
         await _unitOfWork.Complete();
         
         return Ok(new RollWinnerDTO()
