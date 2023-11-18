@@ -29,7 +29,7 @@
     <div class="flex justify-center items-center flex-col pb-16">
       <ng-container *ngIf="rollResponse else rolling">
         <span class="text-2xl font-display mb-2" [ngClass]="{'text-red-500': rollResponse.reroll}">{{rollResponse.winner.gamertag}}</span>
-        <span class="text-4xl font-display mb-4">{{rollResponse?.ticketNumber}}</span>
+        <span class="text-4xl font-display mb-4">{{rollResponse.ticketNumber}}</span>
       </ng-container>
       <ng-template #rolling>
         <div class="min-h-[6rem] flex">
