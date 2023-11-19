@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices.JavaScript;
 using Discord;
 using Discord.WebSocket;
 using RaffleApi.Classes;
@@ -16,8 +15,8 @@ public sealed class DiscordService : IAsyncDisposable
     private readonly ILogger _logger;
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
-    private IMessageChannel? _channel = null;
-    private IUserMessage? _message = null;
+    private IMessageChannel? _channel;
+    private IUserMessage? _message;
     private readonly int _rollPauseDelay = 5000;
 
     public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, ILogger<DiscordService> logger)

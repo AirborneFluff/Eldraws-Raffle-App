@@ -25,7 +25,9 @@ public class RaffleRepository
     {
         return await _context.Raffles
             .Include(r => r.Clan)
+            #nullable disable
             .ThenInclude(c => c.Members)
+            #nullable restore
             .Include(r => r.Host)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .Include(r => r.Entries)

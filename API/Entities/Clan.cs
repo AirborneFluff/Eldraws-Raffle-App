@@ -5,12 +5,17 @@ namespace RaffleApi.Entities;
 public sealed class Clan
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public AppUser? Owner { get; set; }
-    public string OwnerId { get; set; }
+    public required string OwnerId { get; set; }
 
-    public string NormalizedName { get => Name.ToUpper(); set => Name.ToUpper(); }
+    public string NormalizedName
+    {
+        get => Name.ToUpper();
+        set {}
+    }
+
     public ulong? DiscordChannelId { get; set; }
 
     public ICollection<Raffle> Raffles { get; set; } = new Collection<Raffle>();

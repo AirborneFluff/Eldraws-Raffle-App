@@ -1,6 +1,3 @@
-using AutoMapper;
-using RaffleApi.Entities;
-
 namespace RaffleApi.Data.DTOs;
 
 public sealed class RaffleDTO
@@ -10,7 +7,7 @@ public sealed class RaffleDTO
     public ClanInfoDTO? Clan { get; set; }
     public MemberDTO? Host { get; set; }
 
-    public string? Title { get; set; }
+    public required string Title { get; set; }
     public int EntryCost { get; set; }
     public ulong? DiscordMessageId { get; set; }
     public string? DiscordChannelId { get; set; }

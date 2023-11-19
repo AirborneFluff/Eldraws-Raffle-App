@@ -2,6 +2,6 @@
 
 public class MemberDTO
 {
-    public string Id { get; set; }
-    public string UserName { get; set; }
+    public required string Id { get; set; }
+    public required string UserName { get; set; }
 }

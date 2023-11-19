@@ -73,8 +73,8 @@ public sealed class AccountController: ControllerBase
     [HttpGet]
     [Authorize]
     [ServiceFilter(typeof(ValidateUser))]
-    public ActionResult<AppUserDTO> GetUserInfo()
+    public ActionResult<MemberDTO> GetUserInfo()
     {
-        return Ok(_mapper.Map<AppUserDTO>(HttpContext.GetUser()));
+        return Ok(_mapper.Map<MemberDTO>(HttpContext.GetUser()));
     }
 }

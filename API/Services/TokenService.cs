@@ -24,9 +24,10 @@ public sealed class TokenService
 
     public async Task<string> CreateToken(AppUser user)
     {
+        if (user.UserName == null) throw new Exception("Issue creating token: Invalid UserName");
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id),
             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
         };
 

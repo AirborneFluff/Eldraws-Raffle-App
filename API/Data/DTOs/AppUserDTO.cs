@@ -1,11 +1,8 @@
-using System.Collections.ObjectModel;
-using RaffleApi.Entities;
-
 namespace RaffleApi.Data.DTOs;
 
 public sealed class AppUserDTO
 {
-    public string Id { get; set; }
-    public string UserName { get; set; }
-    public string Token { get; set; }
+    public required string Id { get; set; }
+    public required string UserName { get; set; }
+    public required string Token { get; set; }
 }

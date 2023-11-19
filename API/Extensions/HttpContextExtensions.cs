@@ -4,7 +4,7 @@ namespace RaffleApi.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static Clan GetClan(this Microsoft.AspNetCore.Http.HttpContext context)
+    public static Clan GetClan(this HttpContext context)
     {
         if (context.Items["clan"] is not Clan clan)
             throw new Exception("Clan does not exist in this context");
@@ -12,7 +12,7 @@ public static class HttpContextExtensions
         return clan;
     }
     
-    public static AppUser GetUser(this Microsoft.AspNetCore.Http.HttpContext context)
+    public static AppUser GetUser(this HttpContext context)
     {
         if (context.Items["user"] is not AppUser user)
             throw new Exception("User doesn't exist");
@@ -20,7 +20,7 @@ public static class HttpContextExtensions
         return user;
     }
     
-    public static Raffle GetRaffle(this Microsoft.AspNetCore.Http.HttpContext context)
+    public static Raffle GetRaffle(this HttpContext context)
     {
         if (context.Items["raffle"] is not Raffle raffle)
             throw new Exception("Raffle doesn't exist");
