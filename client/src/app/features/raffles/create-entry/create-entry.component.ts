@@ -65,6 +65,7 @@ export class CreateEntryComponent implements OnDestroy {
   }))
 
   initializeForm() {
+    this.gamertag.setValue('');
     this.gamertag.reset();
     this.donation.reset();
   }
@@ -89,7 +90,7 @@ export class CreateEntryComponent implements OnDestroy {
             clan.entrants.push(entrant);
             this.clan$.next(clan)
           }),
-          map(([entrant, clan]) => entrant)
+          map(([entrant, _]) => entrant)
         );
         return of(entrant)
       })).pipe(
