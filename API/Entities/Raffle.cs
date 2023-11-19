@@ -9,10 +9,10 @@ public class Raffle
     public int ClanId { get; set; }
     public Clan? Clan { get; set; }
 
-    public string HostId { get; set; }
+    public required string HostId { get; set; }
     public AppUser? Host { get; set; }
 
-    public string Title { get; set; }
+    public required string Title { get; set; }
     public int EntryCost { get; set; }
     public ulong? DiscordMessageId { get; set; }
     public string? DiscordChannelId { get; set; }
@@ -27,7 +27,7 @@ public class Raffle
 
     public bool HasMember(string userId)
     {
-        if (Clan == null) return false;
-        return Clan.HasMember(userId);;
+        if (Clan == null) throw new Exception("Clan not included for evaluation");
+        return Clan.HasMember(userId);
     } 
 }

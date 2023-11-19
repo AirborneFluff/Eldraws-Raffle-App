@@ -3,5 +3,5 @@
 public class EntrantInfoDTO
 {
     public int Id { get; set; }
-    public string Gamertag { get; set; }
+    public required string Gamertag { get; set; }
 }

@@ -50,10 +50,13 @@ builder.Services.AddIdentityCore<AppUser>(opt =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var key = builder.Configuration["TokenKey"];
+        if (key == null) throw new Exception("JWT Token Key not set");
+        
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -79,7 +82,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(x => x.AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
-    .WithOrigins(builder.Configuration["ClientUrl"]));
+    .WithOrigins("https://localhost:4200"));
 
 app.UseHttpsRedirection();
 

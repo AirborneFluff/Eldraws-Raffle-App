@@ -33,7 +33,7 @@ public class ValidateClanMember : IAsyncActionFilter
             context.HttpContext.Items.Add("clan", clan);
             await next.Invoke();
             return;
-        };
+        }
 
         context.Result = new ForbiddenObjectResult("Only clan members are authorized to do that");
     }

@@ -16,14 +16,10 @@ public static class IntExtensions
     public static string AddNumberMagnitude(this int val)
     {
         var abs = Math.Abs(val);
-        var rounder = Math.Pow(10, 1);
-        var sign = val < 0 ? "-" : ""; // will also work for Negetive numbers
+        var sign = val < 0 ? "-" : "";
 
         var powers = new Dictionary<char, double>
         {
-            //{'Q',Math.Pow(10, 15)},
-            //{'T',Math.Pow(10, 12)},
-            //{'B',Math.Pow(10, 9)},
             {'M',Math.Pow(10, 6)},
             {'K', 1000},
         };

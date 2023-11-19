@@ -1,4 +1,3 @@
-using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.ActionFilters;
@@ -27,8 +26,6 @@ public static class ApplicationServiceExtensions
             var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
             options.UseSqlServer(connStr);
         });
-
-        return;
     }
     
     public static void AddActionFilters(this WebApplicationBuilder builder)
@@ -37,6 +34,5 @@ public static class ApplicationServiceExtensions
         builder.Services.AddScoped<ValidateClanMember>();
         builder.Services.AddScoped<ValidateUser>();
         builder.Services.AddScoped<ValidateRaffle>();
-        return;
     }
 }

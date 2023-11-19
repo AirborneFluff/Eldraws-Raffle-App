@@ -7,8 +7,6 @@ namespace RaffleApi.Helpers;
 
 public static class RaffleEmbedBuilder
 {
-    private static readonly string URL = "https://eldraws.co.uk/";
-    
     public static EmbedBuilder GenerateEmbed(this Raffle raffle)
     {
         var embed = raffle.GenerateDescriptionEmbed();
@@ -32,8 +30,6 @@ public static class RaffleEmbedBuilder
         embed.AddRollValue(rollValue, !reRoll);
         embed.AddWinners(raffle, true);
         embed.AddEntries(raffle);
-
-        //embed.AddField("Trouble viewing this? Try the website...", $"({URL}/raffles/{raffle.Id}/preview)", false);
 
         var currentTime = DateTime.UtcNow.ToString("dd-MMM @ hh:mm tt");
         embed.Footer = new EmbedFooterBuilder()
@@ -65,14 +61,14 @@ public static class RaffleEmbedBuilder
     private static EmbedBuilder AddPrizes(this EmbedBuilder embed, Raffle raffle)
     {
         var prizes = raffle.Prizes;
-        if (!prizes.Any()) return
-            embed.AddField($"Prizes", "No listed prizes yet", false);
+        if (!prizes.Any())
+            return embed.AddField($"Prizes", "No listed prizes yet");
         
         var sb = new StringBuilder();
         foreach(var prize in prizes)
             sb.AppendLine(GetPrizeDescription(raffle, prize));
         
-        embed.AddField($"Prizes", sb.ToString(), false);
+        embed.AddField($"Prizes", sb.ToString());
         
         return embed;
     }
@@ -127,7 +123,7 @@ public static class RaffleEmbedBuilder
         }
 
         if (sb.Length == 0) return embed;
-        embed.AddField($"Winners", sb.ToString(), false);
+        embed.AddField($"Winners", sb.ToString());
     
         return embed;
     }
@@ -141,7 +137,7 @@ public static class RaffleEmbedBuilder
         sb.Append("<a:dices:1172979983321411676> ");
         sb.Append(value.ToString() ?? "...");
     
-        embed.AddField("Roll",sb.ToString(), false);
+        embed.AddField("Roll",sb.ToString());
     
         return embed;
     }
@@ -150,7 +146,7 @@ public static class RaffleEmbedBuilder
     {
         var entries = raffle.Entries;
         if (!entries.Any()) return
-            embed.AddField($"Entries", "Nobody has entered yet", false);
+            embed.AddField($"Entries", "Nobody has entered yet");
     
         var entryLines = new string[entries.Count];
         var entryPos = 0;
@@ -172,14 +168,12 @@ public static class RaffleEmbedBuilder
 
             if (linePos % 10 != 0) continue;
             
-            embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false);
+            embed.AddField($"Page: {pagePos}", fieldSb.ToString());
             fieldSb.Clear();
             pagePos++;
         }
         
-        embed.AddField($"Page: {pagePos}", fieldSb.ToString(), false); // Final page
-    
-        return embed;
+        return embed.AddField($"Page: {pagePos}", fieldSb.ToString());
     }
 
     private static string GetEntryDescription(RaffleEntry entry)

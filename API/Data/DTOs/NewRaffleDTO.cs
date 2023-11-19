@@ -5,12 +5,12 @@ namespace RaffleApi.Data.DTOs;
 public class NewRaffleDTO
 {
     [Required]
-    public string Title { get; set; }
+    public required string Title { get; set; }
     public int EntryCost { get; set; } = 0;
     
-    public DateTime? OpenDate { get; set; } = DateTime.Now;
+    public DateTime OpenDate { get; set; } = DateTime.Now;
     [Required]
-    public DateTime? CloseDate { get; set; }
+    public required DateTime CloseDate { get; set; }
     [Required]
-    public DateTime? DrawDate { get; set; }
+    public required DateTime DrawDate { get; set; }
 }

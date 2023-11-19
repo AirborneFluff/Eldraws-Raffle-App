@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using RaffleApi.Entities;
-
-namespace RaffleApi.Data.DTOs;
+﻿namespace RaffleApi.Data.DTOs;
 
 public class RaffleEntryDTO
 {
@@ -12,7 +9,7 @@ public class RaffleEntryDTO
     public EntrantDTO? Entrant { get; set; }
 
     public int Donation { get; set; }
-    public DateTime InputDate { get; set; } = DateTime.UtcNow;
+    public DateTime InputDate { get; set; } = DateTime.Now;
 
     public Tuple<int, int>? Tickets { get; set; }
 }

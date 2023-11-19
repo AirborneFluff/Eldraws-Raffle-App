@@ -14,7 +14,7 @@ public static class RandomService
 
         return Enumerable
             .Repeat(0, count)
-            .Select(i => rnd.Next(min, max))
+            .Select(_ => rnd.Next(min, max))
             .ToArray();
     }
 }

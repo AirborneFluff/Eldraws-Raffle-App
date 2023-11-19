@@ -5,8 +5,10 @@ namespace RaffleApi.Entities;
 public class RaffleEntry
 {
     public int Id { get; set; }
+    
     public int RaffleId { get; set; }
     public Raffle? Raffle { get; set; }
+    
     public int EntrantId { get; set; }
     public Entrant? Entrant { get; set; }
 
@@ -26,5 +28,5 @@ public class RaffleEntry
     }
 
     [NotMapped]
-    public Tuple<int, int> Tickets { get; set; }
+    public required Tuple<int, int> Tickets { get; set; }
 }

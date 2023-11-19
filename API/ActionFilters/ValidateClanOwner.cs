@@ -33,7 +33,7 @@ public sealed class ValidateClanOwner : IAsyncActionFilter
             context.HttpContext.Items.Add("clan", clan);
             await next.Invoke();
             return;
-        };
+        }
 
         context.Result = new ForbiddenObjectResult("Only the clan owner is authorized to do that");
     }
