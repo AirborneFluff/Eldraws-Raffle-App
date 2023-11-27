@@ -48,7 +48,8 @@ export class RollWinnerFormComponent {
     notNullOrUndefined(),
     filter(raffle => raffle.prizes?.length > 0),
     switchMap(raffle => {
-      const arr = raffle.prizes.filter(prize => prize.winningTicketNumber == null);
+      let arr = raffle.prizes.filter(prize => prize.winningTicketNumber == null);
+      arr.sort((a, b) => a.place - b.place);
       this.prizeCount = arr.length;
       return from(arr)
     }))
