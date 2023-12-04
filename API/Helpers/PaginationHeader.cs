@@ -1,4 +1,6 @@
-﻿namespace RaffleApi.Helpers;
+﻿using RaffleApi.Interfaces;
+
+namespace RaffleApi.Helpers;
 
 public sealed class PaginationHeader
 {
@@ -13,5 +15,13 @@ public sealed class PaginationHeader
         ItemsPerPage = itemsPerPage;
         TotalItems = totalItems;
         TotalPages = totalPages;
+    }
+    
+    public PaginationHeader(IPagedList list)
+    {
+        CurrentPage = list.CurrentPage;
+        ItemsPerPage = list.PageSize;
+        TotalItems = list.TotalCount;
+        TotalPages = list.TotalPages;
     }
 }

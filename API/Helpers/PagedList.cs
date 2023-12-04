@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RaffleApi.Interfaces;
 
 namespace RaffleApi.Helpers;
 
-public class PagedList<T> : List<T>
+public class PagedList<T> : List<T>, IPagedList
 {
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }

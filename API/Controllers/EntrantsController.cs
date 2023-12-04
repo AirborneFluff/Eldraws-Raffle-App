@@ -5,6 +5,7 @@ using RaffleApi.ActionFilters;
 using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
+using RaffleApi.Extensions;
 using RaffleApi.Helpers;
 
 namespace RaffleApi.Controllers;
@@ -32,6 +33,7 @@ public sealed class EntrantsController : ControllerBase
         var result = await _unitOfWork.EntrantRepository.GetByClan(pagination, clanId);
         var entrants =  result.Select(entrant => _mapper.Map<EntrantDTO>(entrant));
         
+        Response.AddPaginationHeader(result);
         return Ok(entrants);
     }
 }

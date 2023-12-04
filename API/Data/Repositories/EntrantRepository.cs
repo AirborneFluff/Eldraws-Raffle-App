@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RaffleApi.Entities;
+﻿using RaffleApi.Entities;
 using RaffleApi.Helpers;
 
 namespace RaffleApi.Data.Repositories;
