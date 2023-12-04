@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RaffleApi.Entities;
+using RaffleApi.Helpers;
 
 namespace RaffleApi.Data.Repositories;
 
@@ -11,19 +12,12 @@ public sealed class EntrantRepository
         _context = context;
     }
     
-    public async Task<List<Entrant>> GetAllByClan(int clanId)
+    public async Task<PagedList<Entrant>> GetByClan(PaginationParams pagination, int clanId)
     {
-        return await _context.Entrants
+        var query = _context.Entrants
             .Where(e => e.ClanId == clanId)
-            .ToListAsync();
-    }
-    public async Task<Entrant?> GetByGamertag(string gamertag)
-    {
-        return await _context.Entrants.FirstOrDefaultAsync(e => e.NormalizedGamertag == gamertag.ToUpper());
-    }
+            .OrderBy(e => e.Id);
 
-    public void Add(Entrant entrant)
-    {
-        _context.Entrants.Add(entrant);
+        return await PagedList<Entrant>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
     }
 }
