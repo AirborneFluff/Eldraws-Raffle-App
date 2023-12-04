@@ -92,5 +92,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.SeedApplicationUsers();
+app.AggregateEntrantDonations();
 
 app.Run();
