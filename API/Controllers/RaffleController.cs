@@ -89,6 +89,7 @@ public sealed class RaffleController : ControllerBase
         newEntry.Tickets = raffle.GetTickets(newEntry.Donation);
         
         raffle.Entries.Add(newEntry);
+        entrant.TotalDonations += newEntry.Donation;
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
@@ -99,12 +100,18 @@ public sealed class RaffleController : ControllerBase
     [ServiceFilter(typeof(ValidateRaffle))]
     public async Task<ActionResult> RemoveEntry(int raffleId, int entryId, int clanId)
     {
+        var clan = HttpContext.GetClan();
         var raffle = HttpContext.GetRaffle();
         
         var entry = raffle.Entries.FirstOrDefault(e => e.Id == entryId);
         if (entry == null) return NotFound("No entry found by that Id");
+        
+        var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entry.EntrantId);
+        if (entrant == null) return BadRequest("Issue finding entrant to update");
 
         raffle.Entries.Remove(entry);
+        entrant.TotalDonations -= entry.Donation;
+        
         raffle.RedistributeTickets();
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));

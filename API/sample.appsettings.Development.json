@@ -5,6 +5,9 @@
   "HostUrl": "https://192.168.1.10:5001",
   "TokenKey": "<your-token-key>",
   "DiscordToken" : "<your-token-key>",
+  "StartupServices": {
+    "AggregateEntrantDonations" : false
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
