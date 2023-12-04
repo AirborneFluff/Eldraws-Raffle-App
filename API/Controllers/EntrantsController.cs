@@ -28,9 +28,9 @@ public sealed class EntrantsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetPaginatedEntrants([FromQuery] PaginationParams pagination, int clanId)
+    public async Task<ActionResult> GetPaginatedEntrants([FromQuery] EntrantParams entrantParams, int clanId)
     {
-        var result = await _unitOfWork.EntrantRepository.GetByClan(pagination, clanId);
+        var result = await _unitOfWork.EntrantRepository.GetByClan(entrantParams, clanId);
         var entrants =  result.Select(entrant => _mapper.Map<EntrantDTO>(entrant));
         
         Response.AddPaginationHeader(result);
