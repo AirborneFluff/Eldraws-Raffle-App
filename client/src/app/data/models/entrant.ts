@@ -1,4 +1,5 @@
 export interface Entrant {
   id: number,
-  gamertag: string
+  gamertag: string,
+  totalDonations: number
 }

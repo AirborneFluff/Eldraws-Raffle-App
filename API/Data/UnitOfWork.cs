@@ -14,6 +14,7 @@ public sealed class UnitOfWork
     
     public ClanRepository ClanRepository => new ClanRepository(_context);
     public RaffleRepository RaffleRepository => new RaffleRepository(_context);
+    public EntrantRepository EntrantRepository => new EntrantRepository(_context);
 
     public async Task<bool> Complete()
     {

@@ -6,6 +6,7 @@ import { RaffleDetailsComponent } from './features/raffles/raffle-details/raffle
 import { ClanDetailsComponent } from './features/clans/clan-details/clan-details.component';
 import { LoginComponent } from './features/login/login/login.component';
 import { RegisterComponent } from './features/registration/register/register.component';
+import { EntrantListComponent } from './features/entrants/entrant-list/entrant-list.component';
 
 const routes: Routes = [
   { path: "", redirectTo: "login", pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { title: "Clans", path: "clans", component: ClanListComponent },
+      { title: "Entrants", path: "clans/:clanId/entrants", component: EntrantListComponent },
       { title: "Raffles", path: "clans/:clanId", component: ClanDetailsComponent },
       { title: "Raffle", path: "clans/:clanId/raffles/:raffleId", component: RaffleDetailsComponent },
     ]

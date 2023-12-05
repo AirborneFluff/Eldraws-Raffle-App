@@ -4,6 +4,7 @@ import { LoginModule } from "./login/login.module";
 import { RegistrationModule } from "./registration/registration.module";
 import { ClansModule } from './clans/clans.module';
 import { RafflesModule } from './raffles/raffles.module';
+import { EntrantsModule } from './entrants/entrants.module';
 
 @NgModule({
   declarations: [],
@@ -12,7 +13,8 @@ import { RafflesModule } from './raffles/raffles.module';
     RegistrationModule,
     LoginModule,
     ClansModule,
-    RafflesModule
+    RafflesModule,
+    EntrantsModule
   ],
   exports: [
     LoginModule,
