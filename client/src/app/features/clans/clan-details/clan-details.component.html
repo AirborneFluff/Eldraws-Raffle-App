@@ -35,6 +35,12 @@
         </mat-expansion-panel>
       </div>
     </div>
+
+    <div class="p-2 mt-4 cursor-pointer" [routerLink]="'/clans/' + clan.id + '/entrants/'">
+      <p class="font-bold text-sm text-primary-500 hover:text-primary-600 transition duration-100 ease-in text-center">
+        Manage Entrants
+      </p>
+    </div>
   </component-frame>
   <create-raffle-button/>
   <app-raffle-list/>

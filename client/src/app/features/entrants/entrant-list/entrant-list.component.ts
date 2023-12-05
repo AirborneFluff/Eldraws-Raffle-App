@@ -32,11 +32,11 @@ export class EntrantListComponent {
   )
 
   pagination$ = this.entrantsResult$.pipe(
-    distinctUntilChanged(),
-    map(result => result.pagination)
+    map(result => result.pagination),
+    notNullOrUndefined()
   )
 
-  nextPage() {
+  loadMore() {
     let nextParams: EntrantParams;
     this.searchParams$.pipe(take(1)).subscribe(params => {
       params.pageNumber += 1;
