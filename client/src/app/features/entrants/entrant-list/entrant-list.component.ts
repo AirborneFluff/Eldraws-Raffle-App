@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
-import { BehaviorSubject, distinctUntilChanged, map, scan, switchMap, take, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, map, scan, switchMap, take, withLatestFrom } from 'rxjs';
 import { EntrantParams } from '../../../data/params/entrant-params';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { Entrant } from '../../../data/models/entrant';
@@ -17,8 +17,9 @@ export class EntrantListComponent {
   }
 
   searchParams$ = new BehaviorSubject<EntrantParams>({
-    pageSize: 10,
-    pageNumber: 1
+    pageSize: 20,
+    pageNumber: 1,
+    orderBy: 'totalDonations'
   });
 
   entrantsResult$ = this.searchParams$.pipe(

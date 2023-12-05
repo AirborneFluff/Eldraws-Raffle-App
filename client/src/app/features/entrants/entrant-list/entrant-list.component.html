@@ -11,6 +11,13 @@
     </component-frame>
   </ng-container>
 
+  <ng-container *ngIf="!entrants.length">
+    <component-frame>
+      <p class="py-1 font-bold text-sm text-primary-500 hover:text-primary-600 transition duration-100 ease-in text-center">
+        No entrants for this clan
+      </p>
+    </component-frame>
+  </ng-container>
 </ng-container>
 
 <ng-template #loading>
