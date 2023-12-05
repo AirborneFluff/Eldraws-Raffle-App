@@ -1,1 +1,10 @@
-<p>entrant-list works!</p>
+<p (click)="nextPage()">Next Page</p>
+
+<ng-container *ngIf="entrants$ | async as entrants else loading">
+  <ng-container *ngFor="let entrant of entrants">
+      <app-entrant-list-item [entrant]="entrant"/>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>
+</ng-template>

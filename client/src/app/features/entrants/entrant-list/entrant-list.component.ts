@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
-import { switchMap } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, scan, switchMap, take, withLatestFrom } from 'rxjs';
 import { EntrantParams } from '../../../data/params/entrant-params';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
+import { Entrant } from '../../../data/models/entrant';
 
 @Component({
   selector: 'app-entrant-list',
@@ -13,15 +14,34 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
 export class EntrantListComponent {
 
   constructor(private clanId$: ClanIdStream, private api: ApiService) {
-    let params: EntrantParams = {
-      pageSize: 10,
-      pageNumber: 1,
-      orderBy: 'totalDonations'
-    }
+  }
 
-    this.clanId$.pipe(
-      notNullOrUndefined(),
-      switchMap(clanId => this.api.Clans.getEntrants(clanId,params))
-    ).subscribe(val => console.log(val))
+  searchParams$ = new BehaviorSubject<EntrantParams>({
+    pageSize: 10,
+    pageNumber: 1
+  });
+
+  entrantsResult$ = this.searchParams$.pipe(
+    withLatestFrom(this.clanId$.pipe(notNullOrUndefined())),
+    switchMap(([params, clanId]) => this.api.Clans.getEntrants(clanId, params)))
+
+  entrants$ = this.entrantsResult$.pipe(
+    map(result => result.result),
+    notNullOrUndefined(),
+    scan((acc: Entrant[], curr) => [...acc, ...curr], [])
+  )
+
+  pagination$ = this.entrantsResult$.pipe(
+    distinctUntilChanged(),
+    map(result => result.pagination)
+  )
+
+  nextPage() {
+    let nextParams: EntrantParams;
+    this.searchParams$.pipe(take(1)).subscribe(params => {
+      params.pageNumber += 1;
+      nextParams = params;
+    });
+    this.searchParams$.next(nextParams!);
   }
 }
