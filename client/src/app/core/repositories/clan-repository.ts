@@ -1,6 +1,9 @@
 import { BaseRepository } from './base-repository';
 import { catchError, map, Observable, of } from 'rxjs';
 import { NewClan, Entrant, Clan } from '../../data/data-models';
+import { EntrantParams } from '../../data/params/entrant-params';
+import { getPaginatedResult, getPaginationHeaders } from '../utils/pagination-helper';
+import { PaginatedResult } from '../utils/pagination';
 
 export class ClanRepository extends BaseRepository {
   public exists(name: string | null): Observable<boolean> {
@@ -32,6 +35,13 @@ export class ClanRepository extends BaseRepository {
     return this.http.post<Entrant>(this.baseUrl + `${clanId}/entrants`, {
       gamertag: gamertag
     })
+  }
+
+  public getEntrants(clanId: number, entrantParams: EntrantParams): Observable<PaginatedResult<Entrant[]>> {
+    let params = getPaginationHeaders(entrantParams.pageNumber, entrantParams.pageSize);
+    if (entrantParams.orderBy) params = params.append("orderBy", entrantParams.orderBy);
+
+    return getPaginatedResult<Entrant[]>(this.baseUrl + `${clanId}/entrants`, params, this.http);
   }
 
   public addMember(clanId: number, memberId: string) {
