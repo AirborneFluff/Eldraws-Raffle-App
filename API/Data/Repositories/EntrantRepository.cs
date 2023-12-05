@@ -19,8 +19,7 @@ public sealed class EntrantRepository
         query = entrantParams.OrderBy switch
         {
             "totalDonations" => query.OrderByDescending(entrant => entrant.TotalDonations),
-            "gamertag" => query.OrderBy(entrant => entrant.NormalizedGamertag),
-            _ => query.OrderBy(entrant => entrant.Id)
+            _ => query.OrderBy(entrant => entrant.NormalizedGamertag)
         };
 
         return await PagedList<Entrant>.CreateAsync(query, entrantParams.PageNumber, entrantParams.PageSize);
