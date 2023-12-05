@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RaffleApi.ActionFilters;
@@ -12,6 +13,7 @@ namespace RaffleApi.Controllers;
 
 [ApiController]
 [Route("api/clans/{clanId}/entrants")]
+[Authorize]
 [ServiceFilter(typeof(ValidateUser))]
 [ServiceFilter(typeof(ValidateClanMember))]
 public sealed class EntrantsController : ControllerBase
