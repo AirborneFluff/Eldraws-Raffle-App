@@ -37,6 +37,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ClanListPlaceholderComponent,
     ClanFormComponent
   ],
+  exports: [
+    ClanListPlaceholderComponent
+  ],
   imports: [
     CommonModule,
     RaffleFormsModule,
