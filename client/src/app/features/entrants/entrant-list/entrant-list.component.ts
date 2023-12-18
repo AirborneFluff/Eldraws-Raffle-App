@@ -1,10 +1,24 @@
 import { Component } from '@angular/core';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
-import { BehaviorSubject, map, scan, switchMap, take, withLatestFrom } from 'rxjs';
+import {
+  BehaviorSubject,
+  debounceTime,
+  map,
+  scan,
+  shareReplay,
+  switchMap,
+  take,
+  withLatestFrom
+} from 'rxjs';
 import { EntrantParams } from '../../../data/params/entrant-params';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { Entrant } from '../../../data/models/entrant';
+
+const INITIAL_SEARCH_PARAMS: EntrantParams = {
+  pageSize: 3,
+  pageNumber: 1,
+  orderBy: 'totalDonations'
+}
 
 @Component({
   selector: 'app-entrant-list',
@@ -12,37 +26,37 @@ import { Entrant } from '../../../data/models/entrant';
   styleUrls: ['./entrant-list.component.scss']
 })
 export class EntrantListComponent {
-
   constructor(private clanId$: ClanIdStream, private api: ApiService) {
   }
 
-  searchParams$ = new BehaviorSubject<EntrantParams>({
-    pageSize: 20,
-    pageNumber: 1,
-    orderBy: 'totalDonations'
-  });
+  private searchParams$ = new BehaviorSubject<EntrantParams>(INITIAL_SEARCH_PARAMS);
 
-  entrantsResult$ = this.searchParams$.pipe(
+  private entrantSearch$ = this.searchParams$.pipe(
+    debounceTime(500),
     withLatestFrom(this.clanId$.pipe(notNullOrUndefined())),
-    switchMap(([params, clanId]) => this.api.Clans.getEntrants(clanId, params)))
-
-  entrants$ = this.entrantsResult$.pipe(
-    map(result => result.result),
-    notNullOrUndefined(),
-    scan((acc: Entrant[], curr) => [...acc, ...curr], [])
+    switchMap(([params, clanId]) => this.api.Clans.getEntrants(clanId, params)),
+    shareReplay(1)
   )
 
-  pagination$ = this.entrantsResult$.pipe(
-    map(result => result.pagination),
-    notNullOrUndefined()
+  entrantsList$ = this.entrantSearch$.pipe(
+    map(result => result.result)
   )
+
+  pagination$ = this.entrantSearch$.pipe(
+    map(result => result.pagination)
+  )
+
+  searchUpdate(event: any) {
+    let params = INITIAL_SEARCH_PARAMS;
+    params.gamertag = event.target.value;
+    this.searchParams$.next(params);
+  }
 
   loadMore() {
-    let nextParams: EntrantParams;
-    this.searchParams$.pipe(take(1)).subscribe(params => {
-      params.pageNumber += 1;
-      nextParams = params;
-    });
-    this.searchParams$.next(nextParams!);
+    let params;
+    this.searchParams$.pipe(take(1)).subscribe(val => params = val);
+
+    params!.pageNumber += 1;
+    this.searchParams$.next(params!);
   }
 }
