@@ -16,7 +16,7 @@ import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { Entrant } from '../../../data/models/entrant';
 
 const INITIAL_SEARCH_PARAMS: EntrantParams = {
-  pageSize: 3,
+  pageSize: 20,
   pageNumber: 1,
   orderBy: 'totalDonations'
 }
