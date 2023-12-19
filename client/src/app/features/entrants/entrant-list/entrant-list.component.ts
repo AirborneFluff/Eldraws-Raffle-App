@@ -13,6 +13,7 @@ import {
 } from 'rxjs';
 import { EntrantParams } from '../../../data/params/entrant-params';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
+import { Entrant } from '../../../data/models/entrant';
 
 const INITIAL_SEARCH_PARAMS: EntrantParams = {
   pageSize: 3,
@@ -32,14 +33,16 @@ export class EntrantListComponent {
   private searchParams$ = new BehaviorSubject<EntrantParams>(INITIAL_SEARCH_PARAMS);
 
   private entrantSearch$ = this.searchParams$.pipe(
-    debounceTime(500),
+    debounceTime(200),
     withLatestFrom(this.clanId$.pipe(notNullOrUndefined())),
     switchMap(([params, clanId]) => this.api.Clans.getEntrants(clanId, params)),
     shareReplay(1)
   )
 
   entrantsList$ = this.entrantSearch$.pipe(
-    map(result => result.result)
+    notNullOrUndefined(),
+    scan((acc: Entrant[], curr) =>
+      curr.pagination.currentPage == 1 ? curr.result : acc.concat(curr.result), [])
   )
 
   pagination$ = this.entrantSearch$.pipe(
@@ -47,16 +50,25 @@ export class EntrantListComponent {
   )
 
   searchUpdate(event: any) {
-    let params = INITIAL_SEARCH_PARAMS;
-    params.gamertag = event.target.value;
-    this.searchParams$.next(params);
+    let params: EntrantParams;
+    this.searchParams$.pipe(take(1)).subscribe(val => params = val);
+
+    params!.pageNumber = 1;
+    params!.gamertag = event.target.value;
+    this.searchParams$.next(params!);
   }
 
   loadMore() {
-    let params;
+    let params: EntrantParams;
+    let currentPage: number;
+
     this.searchParams$.pipe(take(1)).subscribe(val => params = val);
 
-    params!.pageNumber += 1;
+    this.pagination$.pipe(take(1)).pipe(
+      map(pagination => pagination.currentPage)
+    ).subscribe(val => currentPage = val);
+
+    params!.pageNumber = currentPage! + 1;
     this.searchParams$.next(params!);
   }
 }
