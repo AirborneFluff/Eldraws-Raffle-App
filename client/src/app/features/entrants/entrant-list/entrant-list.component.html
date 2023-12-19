@@ -1,7 +1,4 @@
-
-
 <ng-container *ngIf="entrantsList$ | async as entrants else loading">
-
   <component-frame>
     <input class="w-full focus:outline-none text-base" placeholder="Search" (input)="searchUpdate($event)">
   </component-frame>
