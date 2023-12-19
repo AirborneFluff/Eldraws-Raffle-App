@@ -40,6 +40,7 @@ export class ClanRepository extends BaseRepository {
   public getEntrants(clanId: number, entrantParams: EntrantParams): Observable<PaginatedResult<Entrant[]>> {
     let params = getPaginationHeaders(entrantParams.pageNumber, entrantParams.pageSize);
     if (entrantParams.orderBy) params = params.append("orderBy", entrantParams.orderBy);
+    if (entrantParams.gamertag) params = params.append("gamertag", entrantParams.gamertag);
 
     return getPaginatedResult<Entrant[]>(this.baseUrl + `${clanId}/entrants`, params, this.http);
   }

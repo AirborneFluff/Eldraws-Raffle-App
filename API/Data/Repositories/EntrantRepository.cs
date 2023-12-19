@@ -16,6 +16,12 @@ public sealed class EntrantRepository
         var query = _context.Entrants
             .Where(e => e.ClanId == clanId);
 
+        var searchTerm = entrantParams.Gamertag?.ToUpper();
+        if (searchTerm is not null)
+        {
+            query = query.Where(e => e.NormalizedGamertag.Contains(searchTerm));
+        }
+
         query = entrantParams.OrderBy switch
         {
             "totalDonations" => query.OrderByDescending(entrant => entrant.TotalDonations),
