@@ -30,7 +30,7 @@ export class EntrantListComponent {
   constructor(private clanId$: ClanIdStream, private api: ApiService) {
   }
 
-  private searchParams$ = new BehaviorSubject<EntrantParams>(INITIAL_SEARCH_PARAMS);
+  private searchParams$ = new BehaviorSubject<EntrantParams>(Object.create(INITIAL_SEARCH_PARAMS));
 
   private entrantSearch$ = this.searchParams$.pipe(
     debounceTime(200),
@@ -50,11 +50,9 @@ export class EntrantListComponent {
   )
 
   searchUpdate(event: any) {
-    let params: EntrantParams;
-    this.searchParams$.pipe(take(1)).subscribe(val => params = val);
+    const params: EntrantParams = Object.create(INITIAL_SEARCH_PARAMS);
+    params.gamertag = event.target.value;
 
-    params!.pageNumber = 1;
-    params!.gamertag = event.target.value;
     this.searchParams$.next(params!);
   }
 
@@ -65,6 +63,7 @@ export class EntrantListComponent {
     this.searchParams$.pipe(take(1)).subscribe(val => params = val);
 
     this.pagination$.pipe(take(1)).pipe(
+      take(1),
       map(pagination => pagination.currentPage)
     ).subscribe(val => currentPage = val);
 
