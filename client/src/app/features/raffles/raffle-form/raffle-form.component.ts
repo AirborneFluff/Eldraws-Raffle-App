@@ -6,7 +6,7 @@ import { GreaterThanValidator } from '../../../core/validators/greater-than-vali
 import { IntegerValidator } from '../../../core/validators/integer-validator';
 import { Raffle } from '../../../data/models/raffle';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
-import { switchMap, take, withLatestFrom, combineLatest } from 'rxjs';
+import { switchMap, take, withLatestFrom, combineLatest, filter } from 'rxjs';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
 import { NewRaffle } from '../../../data/models/new-raffle';
@@ -14,6 +14,8 @@ import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { Router } from '@angular/router';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import { NavigationService } from '../../../core/services/navigation.service';
+import { MatDialog } from "@angular/material/dialog";
+import { ConfirmDialogComponent } from "../../../shared/dialog/confirm-dialog/confirm-dialog.component";
 
 
 const INITIAL_OPEN_DATE = new Date(new Date().setMinutes(0));
@@ -50,7 +52,8 @@ export class RaffleFormComponent {
               private clan$: CurrentClanStream,
               private router: Router,
               private raffleId$: RaffleIdStream,
-              private navigation: NavigationService) {
+              private navigation: NavigationService,
+              private dialog: MatDialog) {
     this.raffle$.pipe(notNullOrUndefined(), take(1)).subscribe(raffle => {
       this.patchValues(raffle);
     })
@@ -92,17 +95,29 @@ export class RaffleFormComponent {
   }
 
   deleteRaffle() {
-    combineLatest([
-      this.clanId$.pipe(notNullOrUndefined()),
-      this.raffleId$.pipe(notNullOrUndefined())
-    ]).pipe(
-      take(1),
-      switchMap(([clanId, raffleId]) => this.api.Raffles.delete(clanId, raffleId))
-    ).subscribe(() => {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Are you sure?',
+        message: `This will remove the raffle. <br>You will have to manually remove any Discord posts. <br>Entrant donations will still be shown in their total donations.`,
+        btnOkText: 'Yes',
+        btnCancelText: 'No',
+      }
+    }).afterClosed().pipe(
+      filter(confirm => confirm),
+      switchMap(() => this.deleteRaffle$))
+      .subscribe(() => {
         this.raffle$.next(undefined);
         this.navigation.navigateDown();
         this.bottomSheet.dismiss();
       }
     )
   }
+
+  private deleteRaffle$ = combineLatest([
+    this.clanId$.pipe(notNullOrUndefined()),
+    this.raffleId$.pipe(notNullOrUndefined())
+  ]).pipe(
+    take(1),
+    switchMap(([clanId, raffleId]) => this.api.Raffles.delete(clanId, raffleId))
+  )
 }
