@@ -5,8 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RaffleFormsModule } from '../forms/raffle-forms.module';
 
-
-
 @NgModule({
   declarations: [
     ConfirmDialogComponent
