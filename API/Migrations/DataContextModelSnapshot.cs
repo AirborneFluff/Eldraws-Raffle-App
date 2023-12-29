@@ -383,7 +383,6 @@ namespace RaffleApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("_tickets")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Tickets");
 

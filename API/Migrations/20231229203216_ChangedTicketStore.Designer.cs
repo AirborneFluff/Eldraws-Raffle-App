@@ -12,8 +12,8 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231229200343_ChangedTicketStoreMethod")]
-    partial class ChangedTicketStoreMethod
+    [Migration("20231229203216_ChangedTicketStore")]
+    partial class ChangedTicketStore
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -386,7 +386,6 @@ namespace RaffleApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("_tickets")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Tickets");
 

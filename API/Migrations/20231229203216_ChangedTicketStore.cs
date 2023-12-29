@@ -5,11 +5,19 @@
 namespace RaffleApi.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangedTicketStoreMethod : Migration
+    public partial class ChangedTicketStore : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Tickets",
+                table: "Entries",
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
             migrationBuilder.AddColumn<int>(
                 name: "HighTicket",
                 table: "Entries",
@@ -35,6 +43,16 @@ namespace RaffleApi.Migrations
             migrationBuilder.DropColumn(
                 name: "LowTicket",
                 table: "Entries");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Tickets",
+                table: "Entries",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
         }
     }
 }

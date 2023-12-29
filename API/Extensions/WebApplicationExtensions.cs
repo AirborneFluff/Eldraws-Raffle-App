@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Data;
 using RaffleApi.Entities;
@@ -67,20 +68,12 @@ public static class WebApplicationExtensions
         try
         {
             var context = service.GetRequiredService<DataContext>();
-            var entrantDonations = await context.Entries
-                .GroupBy(entry => entry.EntrantId)
-                .Select(g => new
-                {
-                    EntantId = g.Key,
-                    TotalDonations = g.Sum(d => d.Donation)
-                }).ToListAsync();
+            var entries = await context.Entries.ToListAsync();
 
-            foreach (var val in entrantDonations)
+            foreach (var entry in entries)
             {
-                var entrant = await context.Entrants.SingleAsync(entrant => entrant.Id == val.EntantId);
-                entrant.TotalDonations = val.TotalDonations;
+                context.Update(entry);
             }
-
             await context.SaveChangesAsync();
         }
         catch (Exception ex)

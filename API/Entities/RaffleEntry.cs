@@ -19,11 +19,12 @@ public class RaffleEntry
     public int HighTicket { get; set; }
 
     [Column("Tickets")]
-    private string _tickets
+    private string? _tickets
     {
-        get => $"{Tickets.Item1} - {Tickets.Item2}";
+        get => null;
         set
         {
+            if (value is null) return;
             var split = value.Split(" - ");
             LowTicket = int.Parse(split[0]);
             HighTicket = int.Parse(split[1]);
