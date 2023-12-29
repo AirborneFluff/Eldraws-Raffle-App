@@ -86,7 +86,9 @@ public sealed class RaffleController : ControllerBase
         if (entrant == null) return NotFound("No entrant found by that Id in this clan");
         
         var newEntry = _mapper.Map<RaffleEntry>(entryDto);
-        newEntry.Tickets = raffle.GetTickets(newEntry.Donation);
+        var tickets = raffle.GetTickets(newEntry.Donation);
+        newEntry.LowTicket = tickets.Item1;
+        newEntry.HighTicket = tickets.Item2;
         
         raffle.Entries.Add(newEntry);
         entrant.TotalDonations += newEntry.Donation;

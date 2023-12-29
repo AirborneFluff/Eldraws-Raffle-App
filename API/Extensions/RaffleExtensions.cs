@@ -20,7 +20,8 @@ public static class RaffleExtensions
         foreach (var entry in raffle.Entries)
         {
             var ticketCount = entry.Donation / raffle.EntryCost;
-            entry.Tickets = new Tuple<int, int>(count, count + ticketCount - 1);
+            entry.LowTicket = count;
+            entry.HighTicket = count + ticketCount - 1;
             count += ticketCount;
         }
     }
