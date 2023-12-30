@@ -23,24 +23,12 @@ export class RaffleDetailsComponent {
 
   totalDonations$ = this.raffle$.pipe(
     notNullOrUndefined(),
-    map(raffle => {
-      return raffle.entries.reduce((acc, curr) => {
-        return acc + curr.donation
-      }, 0)
-    }),
-    startWith(0)
-  )
+    map(raffle => raffle.totalDonations),
+    startWith(0))
 
   totalTickets$ = this.raffle$.pipe(
     notNullOrUndefined(),
-    map(raffle => {
-      return raffle.entries.reduce((max, entry) => {
-        const item2 = entry.tickets?.item2 ?? 0;
-        return item2 > max ? item2 : max;
-        }, 0);
-      }
-    )
-  )
+    map(raffle => raffle.totalTickets))
 
   statusText$ = combineLatest([
     this.raffle$.pipe(notNullOrUndefined()),

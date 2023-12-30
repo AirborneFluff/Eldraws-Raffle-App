@@ -8,6 +8,8 @@ export interface Raffle {
   entryCost: number,
   discordMessageId: number,
   discordChannelId: string,
+  totalTickets: number,
+  totalDonations: number,
   createdDate: Date,
   openDate: Date,
   closeDate: Date,
