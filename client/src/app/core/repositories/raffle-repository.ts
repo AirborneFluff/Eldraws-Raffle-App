@@ -1,10 +1,13 @@
 import { BaseRepository } from './base-repository';
 import { map, Observable } from 'rxjs';
-import { Raffle, NewRaffle, NewRafflePrize } from '../../data/data-models';
+import { Raffle, NewRaffle, NewRafflePrize, RaffleEntry, Entrant } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
 import { RollParams } from '../../data/models/roll-params';
 import { HttpParams } from '@angular/common/http';
 import { RollWinnerResponse } from '../../data/models/roll-winner-response';
+import { RaffleEntryParams } from '../../data/params/raffle-entry-params';
+import { PaginatedResult } from '../utils/pagination';
+import { getPaginatedResult, getPaginationHeaders } from '../utils/pagination-helper';
 
 export class RaffleRepository extends BaseRepository {
 
@@ -19,24 +22,24 @@ export class RaffleRepository extends BaseRepository {
         }))
       );
   }
-  public getAll(clanId: number): Observable<Raffle[]> {
-      return this.http.get<Raffle[]>(this.baseUrl + `${clanId}/raffles/`);
-  }
   public addNew(clanId: number, newRaffle: NewRaffle): Observable<Raffle> {
       return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles`, newRaffle)
   }
   public delete(clanId: number, raffleId: number): Observable<void> {
     return this.http.delete<void>(this.baseUrl + `${clanId}/raffles/${raffleId}`);
   }
-
   public updateRaffle(clanId: number, raffleId: number, raffle: NewRaffle): Observable<Raffle> {
     return this.http.put<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}`, raffle)
   }
+  public getEntries(clanId: number, raffleId: number, entryParams: RaffleEntryParams): Observable<PaginatedResult<RaffleEntry[]>> {
+    let params = getPaginationHeaders(entryParams.pageNumber, entryParams.pageSize);
+    if (entryParams.orderBy) params = params.append("orderBy", entryParams.orderBy);
 
+    return getPaginatedResult<RaffleEntry[]>(this.baseUrl + `${clanId}/raffles/${raffleId}/entries`, params, this.http);
+  }
   public addEntry(clanId: number, raffleId: number, entry: NewRaffleEntry) {
     return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/entries`, entry);
   }
-
   public removeEntry(clanId: number, raffleId: number, entryId: number) {
     return this.http.delete<Raffle>(this.baseUrl + `${clanId}/raffles/${raffleId}/entries/${entryId}`);
   }
