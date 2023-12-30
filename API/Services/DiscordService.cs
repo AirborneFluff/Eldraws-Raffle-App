@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using RaffleApi.Classes;
 using RaffleApi.Configurations;
@@ -13,19 +12,16 @@ namespace RaffleApi.Services;
 public sealed class DiscordService : IAsyncDisposable
 {
     private readonly UnitOfWork _unitOfWork;
-    private readonly ILogger _logger;
     private readonly DataContext _context;
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
     private IMessageChannel? _channel;
     private IUserMessage? _message;
-    private readonly int _rollPauseDelay = 5000;
 
-    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, ILogger<DiscordService> logger, DataContext context)
+    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, DataContext context)
     {
         _discord = discord;
         _unitOfWork = unitOfWork;
-        _logger = logger;
         _context = context;
 
         var token = config["DiscordToken"];

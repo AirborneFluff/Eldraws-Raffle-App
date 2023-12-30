@@ -1,6 +1,6 @@
 <component-frame>
   <ng-container *ngIf="(entries$ | async) as entries">
-    <div *ngFor="let entry of (entries | reverse)"
+    <div *ngFor="let entry of entries"
       class="flex min-w-0 gap-x-4 py-6 justify-between last:border-none border-b border-gray-200 dark:border-primary-850 relative text-center text-xs pointer-events-none">
       <p class="text-sm font-semibold basis-1/3 flex items-center justify-center">
         <span>{{entry.entrant.gamertag}}</span>
@@ -22,3 +22,11 @@
     </div>
   </ng-container>
 </component-frame>
+
+<ng-container *ngIf="pagination$ | async as pagination">
+  <component-frame class="cursor-pointer" (click)="loadMore()" *ngIf="pagination.currentPage < pagination.totalPages">
+    <p class="py-1 font-bold text-sm text-primary-500 hover:text-primary-600 transition duration-100 ease-in text-center">
+      Load More
+    </p>
+  </component-frame>
+</ng-container>
