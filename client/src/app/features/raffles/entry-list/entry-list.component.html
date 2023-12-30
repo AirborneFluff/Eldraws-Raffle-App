@@ -22,3 +22,11 @@
     </div>
   </ng-container>
 </component-frame>
+
+<ng-container *ngIf="pagination$ | async as pagination">
+  <component-frame class="cursor-pointer" (click)="loadMore()" *ngIf="pagination.currentPage < pagination.totalPages">
+    <p class="py-1 font-bold text-sm text-primary-500 hover:text-primary-600 transition duration-100 ease-in text-center">
+      Load More
+    </p>
+  </component-frame>
+</ng-container>
