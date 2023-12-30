@@ -89,9 +89,12 @@ public sealed class RaffleController : ControllerBase
         var tickets = raffle.GetTickets(newEntry.Donation);
         newEntry.LowTicket = tickets.Item1;
         newEntry.HighTicket = tickets.Item2;
-        
+
         raffle.Entries.Add(newEntry);
+        
         entrant.TotalDonations += newEntry.Donation;
+        raffle.TotalTickets += newEntry.HighTicket == 0 ? 0 : newEntry.HighTicket - newEntry.LowTicket + 1;
+        raffle.TotalDonations += newEntry.Donation;
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
@@ -112,7 +115,10 @@ public sealed class RaffleController : ControllerBase
         if (entrant == null) return BadRequest("Issue finding entrant to update");
 
         raffle.Entries.Remove(entry);
+        
         entrant.TotalDonations -= entry.Donation;
+        raffle.TotalTickets -= entry.HighTicket == 0 ? 0 : entry.HighTicket - entry.LowTicket + 1;
+        raffle.TotalDonations -= entry.Donation;
         
         raffle.RedistributeTickets();
 
@@ -204,7 +210,8 @@ public sealed class RaffleController : ControllerBase
             ticketNumber = null;
             reroll = true;
         }
-        
+
+        prize.Winner = winner;
         prize.WinningTicketNumber = ticketNumber;
 
         var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);

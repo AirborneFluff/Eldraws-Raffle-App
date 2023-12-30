@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231230141749_AddedRaffleAggregates")]
+    partial class AddedRaffleAggregates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -415,17 +418,12 @@ namespace RaffleApi.Migrations
                     b.Property<float>("DonationPercentage")
                         .HasColumnType("real");
 
-                    b.Property<int?>("WinnerId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("WinningTicketNumber")
                         .HasColumnType("int");
 
                     b.HasKey("Place", "RaffleId");
 
                     b.HasIndex("RaffleId");
-
-                    b.HasIndex("WinnerId");
 
                     b.ToTable("Prizes");
                 });
@@ -568,14 +566,7 @@ namespace RaffleApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RaffleApi.Entities.Entrant", "Winner")
-                        .WithMany("Prizes")
-                        .HasForeignKey("WinnerId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("Raffle");
-
-                    b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.AppUser", b =>
@@ -599,8 +590,6 @@ namespace RaffleApi.Migrations
             modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
                 {
                     b.Navigation("Entries");
-
-                    b.Navigation("Prizes");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>

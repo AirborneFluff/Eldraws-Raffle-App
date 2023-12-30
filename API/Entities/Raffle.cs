@@ -16,6 +16,9 @@ public class Raffle
     public int EntryCost { get; set; }
     public ulong? DiscordMessageId { get; set; }
     public string? DiscordChannelId { get; set; }
+
+    public int TotalTickets { get; set; }
+    public int TotalDonations { get; set; }
     
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public DateTime OpenDate { get; set; }

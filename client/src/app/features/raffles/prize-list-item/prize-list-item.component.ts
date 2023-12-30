@@ -26,13 +26,8 @@ export class PrizeListItemComponent {
 
   totalDonations$ = this.raffle$.pipe(
     notNullOrUndefined(),
-    map(raffle => {
-      return raffle.entries.reduce((acc, curr) => {
-        return acc + curr.donation
-      }, 0)
-    }),
-    startWith(0)
-  )
+    map(raffle => raffle.totalDonations),
+    startWith(0))
 
   winner$ = this.prize$.pipe(
     notNullOrUndefined(),
