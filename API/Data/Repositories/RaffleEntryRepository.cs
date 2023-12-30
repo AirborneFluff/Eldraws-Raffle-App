@@ -13,11 +13,6 @@ public sealed class RaffleEntryRepository
         this._context = _context;
     }
 
-    public async Task<RaffleEntry?> GetById(int entryId)
-    {
-        return await _context.Entries.FirstOrDefaultAsync(entry => entry.Id == entryId);
-    }
-
     public async Task<PagedList<RaffleEntry>> GetByRaffle(int raffleId, RaffleEntryParams entryParams)
     {
         var query = _context.Entries
