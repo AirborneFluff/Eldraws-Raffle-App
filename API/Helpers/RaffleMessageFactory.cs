@@ -79,6 +79,7 @@ public class RaffleMessageFactory
         _entries = await _context.Entries
             .Where(entry => entry.RaffleId == _raffleId)
             .Where(entry => entry.LowTicket != 0)
+            .Include(entry => entry.Entrant)
             .OrderBy(entry => entry.LowTicket)
             .ToListAsync();
 
