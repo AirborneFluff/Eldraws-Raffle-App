@@ -105,12 +105,20 @@ public class RaffleMessageFactory
             Title = _raffle.Title,
             Description = _raffle.Description ?? _raffle.DefaultDescription()
         };
-        
         if (_config.RollValue is not null) AddRollingField(embed, (int)_config.RollValue);
         if (_config.ShowWinners) await AddWinnersField(embed);
+        AddDateFooter(embed);
         AddPrizesField(embed);
         AddEntryFields(embed);
+        
         return embed;
+    }
+
+    private void AddDateFooter(EmbedBuilder embed)
+    {
+        var currentTime = DateTime.UtcNow.ToString("dd-MMM @ hh:mm tt");
+        embed.Footer = new EmbedFooterBuilder()
+            .WithText($"Last updated: {currentTime} UTC");
     }
 
     private async Task AddWinnersField(EmbedBuilder embed)
