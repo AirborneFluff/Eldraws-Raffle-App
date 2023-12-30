@@ -208,6 +208,7 @@ public sealed class RaffleController : ControllerBase
         if (raffle.HasEntrantAlreadyWon(winner))
         {
             ticketNumber = null;
+            winner = null;
             reroll = true;
         }
 
