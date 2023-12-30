@@ -37,9 +37,11 @@ public sealed class DiscordService : IAsyncDisposable
         _channel = await GetMessageChannel(channelId);
         if (_channel == null) return FailureResult("Couldn't connect to channel");
 
+        var showWinners = await _unitOfWork.RaffleRepository.HasAnyWinners(raffle.Id);
+
         var messageFactory = new RaffleMessageFactory(_context, raffle.Id, new RaffleMessageFactoryConfig()
         {
-            ShowWinners = raffle.Prizes.Any(p => p.WinningTicketNumber is not null)
+            ShowWinners = showWinners
         });
         await messageFactory.BuildMessages();
 

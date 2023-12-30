@@ -51,9 +51,17 @@ public class RaffleRepository
         return await _context.Entrants.SingleAsync(entrant => entrant.Id == entry.EntrantId);
     }
 
+    public async Task<bool> HasAnyWinners(int raffleId)
+    {
+        return await _context.Prizes
+            .Where(prize => prize.RaffleId == raffleId)
+            .AnyAsync(prize => prize.WinningTicketNumber != null);
+    }
+
     public async Task<bool> HasEntrantWon(int raffleId, int entrantId)
     {
         var prize = await _context.Prizes
+            .Where(prize => prize.RaffleId == raffleId)
             .FirstOrDefaultAsync(prize => prize.WinnerId == entrantId);
         
         return prize is not null;
