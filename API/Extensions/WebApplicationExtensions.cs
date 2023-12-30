@@ -57,6 +57,72 @@ public static class WebApplicationExtensions
         }
     }
 
+    public static async void AggregateRaffleDonations(this WebApplication app)
+    {
+        var perform = app.Configuration.GetSection("StartupServices").GetValue<bool>("AggregateRaffleDonations");
+        if (!perform) return;
+        
+        using var scope = app.Services.CreateScope();
+        var service = scope.ServiceProvider;
+        try
+        {
+            var context = service.GetRequiredService<DataContext>();
+            var donations = await context.Entries
+                .GroupBy(entry => entry.RaffleId)
+                .Select(g => new
+                {
+                    RaffleId = g.Key,
+                    TotalDonations = g.Sum(d => d.Donation)
+                }).ToListAsync();
+
+            foreach (var val in donations)
+            {
+                var raffle = await context.Raffles.SingleAsync(raffle => raffle.Id == val.RaffleId);
+                raffle.TotalDonations = val.TotalDonations;
+            }
+
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = service.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred whilst aggregating raffle donations");
+        }
+    }
+
+    public static async void AggregateRaffleTickets(this WebApplication app)
+    {
+        var perform = app.Configuration.GetSection("StartupServices").GetValue<bool>("AggregateRaffleTickets");
+        if (!perform) return;
+        
+        using var scope = app.Services.CreateScope();
+        var service = scope.ServiceProvider;
+        try
+        {
+            var context = service.GetRequiredService<DataContext>();
+            var donations = await context.Entries
+                .GroupBy(entry => entry.RaffleId)
+                .Select(g => new
+                {
+                    RaffleId = g.Key,
+                    HighestTicket = g.Max(e => e.HighTicket)
+                }).ToListAsync();
+
+            foreach (var val in donations)
+            {
+                var raffle = await context.Raffles.SingleAsync(raffle => raffle.Id == val.RaffleId);
+                raffle.TotalTickets = val.HighestTicket;
+            }
+
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = service.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred whilst aggregating raffle tickets");
+        }
+    }
+
     public static async void MigrateRaffleEntryTickets(this WebApplication app)
     {
         var perform = app.Configuration.GetSection("StartupServices").GetValue<bool>("MigrateTicketData");
@@ -78,7 +144,7 @@ public static class WebApplicationExtensions
         catch (Exception ex)
         {
             var logger = service.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred whilst aggregating entrant donations");
+            logger.LogError(ex, "An error occurred whilst migrating raffle entry tickets");
         }
     }
 }
