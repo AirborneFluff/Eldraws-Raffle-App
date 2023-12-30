@@ -14,7 +14,7 @@ namespace RaffleApi.Controllers;
 [Route("api/clans/{clanId:int}/raffles")]
 [ServiceFilter(typeof(ValidateClanMember))]
 [Authorize]
-public sealed class RaffleController : ControllerBase
+public partial class RaffleController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
@@ -69,58 +69,6 @@ public sealed class RaffleController : ControllerBase
         var raffle = HttpContext.GetRaffle();
 
         _mapper.Map(raffleDto, raffle);
-
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
-
-        return BadRequest();
-    }
-
-    [HttpPost("{raffleId:int}/entries")]
-    [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
-    {
-        var clan = HttpContext.GetClan();
-        var raffle = HttpContext.GetRaffle();
-
-        var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entryDto.EntrantId);
-        if (entrant == null) return NotFound("No entrant found by that Id in this clan");
-        
-        var newEntry = _mapper.Map<RaffleEntry>(entryDto);
-        var tickets = raffle.GetTickets(newEntry.Donation);
-        newEntry.LowTicket = tickets.Item1;
-        newEntry.HighTicket = tickets.Item2;
-
-        raffle.Entries.Add(newEntry);
-        
-        entrant.TotalDonations += newEntry.Donation;
-        raffle.TotalTickets += newEntry.HighTicket == 0 ? 0 : newEntry.HighTicket - newEntry.LowTicket + 1;
-        raffle.TotalDonations += newEntry.Donation;
-
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
-
-        return BadRequest();
-    }
-
-    [HttpDelete("{raffleId:int}/entries/{entryId:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
-    public async Task<ActionResult> RemoveEntry(int raffleId, int entryId, int clanId)
-    {
-        var clan = HttpContext.GetClan();
-        var raffle = HttpContext.GetRaffle();
-        
-        var entry = raffle.Entries.FirstOrDefault(e => e.Id == entryId);
-        if (entry == null) return NotFound("No entry found by that Id");
-        
-        var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entry.EntrantId);
-        if (entrant == null) return BadRequest("Issue finding entrant to update");
-
-        raffle.Entries.Remove(entry);
-        
-        entrant.TotalDonations -= entry.Donation;
-        raffle.TotalTickets -= entry.HighTicket == 0 ? 0 : entry.HighTicket - entry.LowTicket + 1;
-        raffle.TotalDonations -= entry.Donation;
-        
-        raffle.RedistributeTickets();
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
