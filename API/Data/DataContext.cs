@@ -86,6 +86,11 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .WithMany(r => r.Prizes)
             .HasForeignKey(rp => rp.RaffleId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RafflePrize>()
+            .HasOne(rp => rp.Winner)
+            .WithMany(e => e.Prizes)
+            .OnDelete(DeleteBehavior.NoAction);
         
         // ---------- Raffle Prizes ----------
         modelBuilder.Entity<Entrant>()
