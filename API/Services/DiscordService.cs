@@ -2,6 +2,7 @@
 using Discord;
 using Discord.WebSocket;
 using RaffleApi.Classes;
+using RaffleApi.Configurations;
 using RaffleApi.Data;
 using RaffleApi.Entities;
 using RaffleApi.Helpers;
@@ -13,17 +14,19 @@ public sealed class DiscordService : IAsyncDisposable
 {
     private readonly UnitOfWork _unitOfWork;
     private readonly ILogger _logger;
+    private readonly DataContext _context;
     private readonly DiscordSocketClient _discord;
     private readonly string _token;
     private IMessageChannel? _channel;
     private IUserMessage? _message;
     private readonly int _rollPauseDelay = 5000;
 
-    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, ILogger<DiscordService> logger)
+    public DiscordService(DiscordSocketClient discord, IConfiguration config, UnitOfWork unitOfWork, ILogger<DiscordService> logger, DataContext context)
     {
         _discord = discord;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _context = context;
 
         var token = config["DiscordToken"];
         _token = token ?? throw new Exception("Discord Token not defined");
@@ -34,12 +37,18 @@ public sealed class DiscordService : IAsyncDisposable
         _channel = await GetMessageChannel(channelId);
         if (_channel == null) return FailureResult("Couldn't connect to channel");
 
-        var embed = raffle.GenerateEmbed();
+        var showWinners = await _unitOfWork.RaffleRepository.HasAnyWinners(raffle.Id);
+
+        var messageFactory = new RaffleMessageFactory(_context, raffle.Id, new RaffleMessageFactoryConfig()
+        {
+            ShowWinners = showWinners
+        });
+        await messageFactory.BuildMessages();
 
         try
-        { 
-            var result = await PostMessage(embed, raffle);
-            if (result.Failure) return result;
+        {
+            await PostPrimaryMessage(messageFactory.PrimaryMessage, raffle);
+            await PostAdditionalMessages(messageFactory.AdditionalMessages, raffle);
 
             return raffle.DiscordMessageId == null ? FailureResult("Issue sending message") : SuccessResult();
         }
@@ -47,33 +56,23 @@ public sealed class DiscordService : IAsyncDisposable
         {
             return ExceptionResult(e);
         }
-    }
-
-    public async Task<OperationResult> RollWinners(Raffle raffle, ulong channelId, RaffleDrawParams options)
-    {
-        if (raffle.DiscordMessageId == null) return FailureResult("Raffle hasn't been posted to Discord");
-        
-        _channel = await GetMessageChannel(channelId);
-        if (_channel == null) return FailureResult("Couldn't connect to channel");
-
-        var embed = raffle.GenerateRollingEmbed();
-        var updateResult = await UpdateMessage(embed, raffle);
-        if (updateResult.Failure) return updateResult;
-
-        return await Task.Run(() => RollAllWinners(raffle, options));
     }
 
     public async Task<OperationResult> SendRoll(Raffle raffle, ulong channelId, int ticketNumber)
     {
         _channel = await GetMessageChannel(channelId);
         if (_channel == null) return FailureResult("Couldn't connect to channel");
-
-        var embed = raffle.GenerateRollingEmbed(ticketNumber);
+        
+        var messageFactory = new RaffleMessageFactory(_context, raffle.Id, new RaffleMessageFactoryConfig()
+        {
+            ShowWinners = true,
+            RollValue = ticketNumber
+        });
+        await messageFactory.BuildPrimaryMessage();
 
         try
         { 
-            var result = await UpdateMessage(embed, raffle);
-            if (result.Failure) return result;
+            await PostPrimaryMessage(messageFactory.PrimaryMessage, raffle);
 
             return raffle.DiscordMessageId == null ? FailureResult("Issue sending message") : SuccessResult();
         }
@@ -83,35 +82,65 @@ public sealed class DiscordService : IAsyncDisposable
         }
     }
 
-    private async Task<OperationResult> PostMessage(EmbedBuilder embed, Raffle raffle)
+    private async Task<OperationResult> PostPrimaryMessage(EmbedBuilder embed, Raffle raffle)
     {
-        if (raffle.DiscordMessageId == null) return await SendNewMessage(embed, raffle);
-        return await UpdateMessage(embed, raffle);
+        var result = raffle.DiscordMessageId is null
+            ? await SendNewMessage(embed)
+            : await UpdateMessage(embed, (ulong)raffle.DiscordMessageId);
+        
+        if (result is null) return FailureResult("Couldn't post message");
+
+        raffle.DiscordMessageId = result.Id;
+        if (await _unitOfWork.Complete()) SuccessResult();
+
+        return FailureResult("Couldn't post message");
     }
 
-    private async Task<OperationResult> SendNewMessage(EmbedBuilder embed, Raffle raffle)
+    private async Task<OperationResult> PostAdditionalMessages(EmbedBuilder[] embeds, Raffle raffle)
     {
-        if (_channel == null) throw new Exception("Discord channel not set");
+        await DeleteMessages(raffle.AdditionalMessageIds.ToArray());
+        raffle.AdditionalMessageIds.Clear();
+        var tasks = embeds.Select(SendNewMessage);
         
-        _message = await _channel.SendMessageAsync("", false, embed.Build());
-        if (_message == null) return FailureResult("Couldn't send message");
-
-        raffle.DiscordMessageId = _message.Id;
+        foreach (var task in tasks)
+        {
+            var result = await task;
+            if (result is null) continue;
+            
+            raffle.AdditionalMessageIds.Add(result.Id);
+        }
+        
         if (await _unitOfWork.Complete()) return SuccessResult();
-        
-        return FailureResult("Issue setting message Id");
+
+        return FailureResult("Issue posting messages");
     }
 
-    private async Task<OperationResult> UpdateMessage(EmbedBuilder embed, Raffle raffle)
+    private async Task DeleteMessages(ulong[] messageIds)
     {
-        if (raffle.DiscordMessageId == null) throw new Exception("Discord message Id not set");
-        if (_channel == null) throw new Exception("Channel not set");
+        var tasks = messageIds.Select(DeleteMessage);
+        await Task.WhenAll(tasks);
+    }
+
+    private async Task DeleteMessage(ulong messageId)
+    {
+        _message ??= await _channel!.GetMessageAsync(messageId) as IUserMessage;
+        if (_message is null) return;
         
-        _message ??= await _channel.GetMessageAsync((ulong) raffle.DiscordMessageId) as IUserMessage;
-        if (_message == null) return await SendNewMessage(embed, raffle);
+        await _channel!.DeleteMessageAsync(messageId);
+    }
+
+    private async Task<IUserMessage?> SendNewMessage(EmbedBuilder embed)
+    {
+        return await _channel!.SendMessageAsync("", false, embed.Build());
+    }
+
+    private async Task<IUserMessage?> UpdateMessage(EmbedBuilder embed, ulong messageId)
+    {
+        _message ??= await _channel!.GetMessageAsync(messageId) as IUserMessage;
+        if (_message == null) return await SendNewMessage(embed);
+        
         await _message.ModifyAsync(messageProperties => messageProperties.Embed = embed.Build());
-        
-        return SuccessResult();
+        return _message;
     }
     
     private async Task<IMessageChannel?> GetMessageChannel(ulong channelId)
@@ -123,103 +152,6 @@ public sealed class DiscordService : IAsyncDisposable
             await _discord.StartAsync();
 
         return await _discord.GetChannelAsync(channelId) as IMessageChannel;
-    }
-
-    private async Task<OperationResult> RollAllWinners(Raffle raffle, RaffleDrawParams options)
-    {
-        for (var i = 0; i < raffle.Prizes.Count; i++)
-        {
-            var isLast = i == raffle.Prizes.Count - 1;
-
-            var watch = new Stopwatch();
-            watch.Start();
-            var result = await RollNextWinner(raffle, options);
-            if (result.Failure) return FailureResult("Issue rolling winner");
-            if (result.Value == null) continue;
-            
-            var requiredDelay = options.Delay * 1000 - (int)watch.ElapsedMilliseconds;
-            if (!isLast && requiredDelay > 0) continue;
-
-            await Task.Delay(requiredDelay);
-            
-            _logger.Log(LogLevel.Information, watch.ElapsedMilliseconds.ToString());
-        }
-
-        var embed = raffle.GenerateEmbed();
-        return await UpdateMessage(embed, raffle);
-    }
-    
-    private async Task<OperationResult> RollNextWinner(Raffle raffle, RaffleDrawParams options)
-    {
-        var prize = raffle.Prizes
-            .OrderBy(p => p.Place)
-            .FirstOrDefault(p => p.WinningTicketNumber == null);
-
-        if (prize == null) return SuccessResult(null);
-        
-        prize.WinningTicketNumber = await RollTicket(raffle, options);
-        await _unitOfWork.Complete();
-    
-        var embed = raffle.GenerateRollingEmbed();
-        return await UpdateMessage(embed, raffle);
-    }
-
-    private async Task<int> RollTicket(Raffle raffle, RaffleDrawParams options)
-    {
-        
-        var max = raffle.Entries.Select(e => e.Tickets.Item2).Max();
-        var tickets = RandomService.GetRandomIntegerList(max, 1, options.MaxRerolls);
-
-        int? validTicket = null;
-        var lastRolledTicket = tickets[0];
-        var reroll = false;
-        foreach (var t in tickets)
-        {
-            var winner = GetWinnerFromTicket(raffle, t);
-            lastRolledTicket = t;
-            
-            var embed = raffle.GenerateRollingEmbed(t, reroll);
-            
-            var watch = new Stopwatch();
-            watch.Start();
-            await UpdateMessage(embed, raffle);
-            
-            var requiredDelay = _rollPauseDelay - (int)watch.ElapsedMilliseconds;
-            if (requiredDelay > 0) await Task.Delay(requiredDelay);
-
-            if (options.PreventMultipleWins && HasEntrantAlreadyWon(raffle, winner))
-            {
-                reroll = true;
-                continue;
-            }
-
-            validTicket = t;
-            break;
-        }
-
-        return validTicket ?? lastRolledTicket;
-    }
-
-    private Entrant GetWinnerFromTicket(Raffle raffle, int ticketNumber)
-    {
-        var winner = raffle.Entries.FirstOrDefault(e => e.Tickets.Item1 <= ticketNumber && e.Tickets.Item2 >= ticketNumber);
-        var entrant = winner == null ? raffle.Entries.First().Entrant : winner.Entrant;
-        if (entrant == null) throw new Exception("Raffle entries not included");
-
-        return entrant;
-    }
-
-    private bool HasEntrantAlreadyWon(Raffle raffle, Entrant entrant)
-    {
-        foreach (var prize in raffle.Prizes)
-        {
-            if (prize.WinningTicketNumber == null) continue;
-            var winner = GetWinnerFromTicket(raffle, (int) prize.WinningTicketNumber);
-            
-            if (winner.Id == entrant.Id) return true;
-        }
-
-        return false;
     }
 
     public async ValueTask DisposeAsync()

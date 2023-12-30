@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using RaffleApi.Helpers;
 
 namespace RaffleApi.Entities;
 
@@ -33,4 +34,11 @@ public class RaffleEntry
 
     [NotMapped]
     public Tuple<int, int> Tickets => new(LowTicket, HighTicket);
+    
+    public override string ToString()
+    {
+        var gamertag = Entrant?.Gamertag ?? "Unknown";
+        var tickets = $"{Tickets.Item1} - {Tickets.Item2}:".PadString(200, 220);
+        return tickets + gamertag;
+    }
 }

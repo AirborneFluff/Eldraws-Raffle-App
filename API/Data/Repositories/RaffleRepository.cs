@@ -34,9 +34,36 @@ public class RaffleRepository
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<List<Raffle>?> GetAllRaffles()
+    public async Task<int> GetNextAvailableTicket(int raffleId)
     {
-        return await _context.Raffles
-            .ToListAsync();
+        return await _context.Entries
+            .Where(entry => entry.RaffleId == raffleId)
+            .MaxAsync(entry => entry.HighTicket + 1);
+    }
+
+    public async Task<Entrant?> GetWinnerFromTicket(int raffleId, int ticketNumber)
+    {
+        var entry = await _context.Entries
+            .Where(entry => entry.RaffleId == raffleId)
+            .FirstOrDefaultAsync(entry => ticketNumber >= entry.LowTicket && ticketNumber <= entry.HighTicket);
+        
+        if (entry is null) return null;
+        return await _context.Entrants.SingleAsync(entrant => entrant.Id == entry.EntrantId);
+    }
+
+    public async Task<bool> HasAnyWinners(int raffleId)
+    {
+        return await _context.Prizes
+            .Where(prize => prize.RaffleId == raffleId)
+            .AnyAsync(prize => prize.WinningTicketNumber != null);
+    }
+
+    public async Task<bool> HasEntrantWon(int raffleId, int entrantId)
+    {
+        var prize = await _context.Prizes
+            .Where(prize => prize.RaffleId == raffleId)
+            .FirstOrDefaultAsync(prize => prize.WinnerId == entrantId);
+        
+        return prize is not null;
     }
 }

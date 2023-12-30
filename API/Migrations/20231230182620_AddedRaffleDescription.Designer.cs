@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231230182620_AddedRaffleDescription")]
+    partial class AddedRaffleDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -355,10 +358,6 @@ namespace RaffleApi.Migrations
 
                     b.Property<int>("TotalTickets")
                         .HasColumnType("int");
-
-                    b.Property<string>("_additionalMessageIds")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("AdditionalMessages");
 
                     b.HasKey("Id");
 

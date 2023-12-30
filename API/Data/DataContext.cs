@@ -61,6 +61,9 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .HasForeignKey(r => r.HostId)
             .OnDelete(DeleteBehavior.NoAction);
         
+        modelBuilder.Entity<Raffle>()
+            .Property(ExpressionHelper.GetMember<Raffle, string>("_additionalMessageIds"));
+        
         // ---------- Raffle Entry ----------
         modelBuilder.Entity<RaffleEntry>()
             .Property(ExpressionHelper.GetMember<RaffleEntry, string>("_tickets"));
