@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaffleApi.Entities;
 
@@ -17,6 +18,21 @@ public class Raffle
     public ulong? DiscordMessageId { get; set; }
     public string? DiscordChannelId { get; set; }
     public string? Description { get; set; }
+    
+    [Column("AdditionalMessages")]
+    private string? _additionalMessageIds
+    {
+        get => String.Join(',', AdditionalMessageIds);
+        set
+        {
+            if (value is null) return;
+            
+            var split = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            AdditionalMessageIds = split.Select(ulong.Parse).ToList();
+        }
+    }
+
+    [NotMapped] public required ICollection<ulong> AdditionalMessageIds { get; set; } = new List<ulong>();
 
     public int TotalTickets { get; set; }
     public int TotalDonations { get; set; }
