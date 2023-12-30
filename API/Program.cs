@@ -96,5 +96,6 @@ app.AggregateEntrantDonations();
 app.AggregateRaffleDonations();
 app.AggregateRaffleTickets();
 app.MigrateRaffleEntryTickets();
+app.MigratePrizeWinners();
 
 app.Run();

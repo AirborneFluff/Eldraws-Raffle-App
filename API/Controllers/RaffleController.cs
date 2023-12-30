@@ -210,7 +210,8 @@ public sealed class RaffleController : ControllerBase
             ticketNumber = null;
             reroll = true;
         }
-        
+
+        prize.Winner = winner;
         prize.WinningTicketNumber = ticketNumber;
 
         var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);

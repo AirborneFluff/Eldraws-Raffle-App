@@ -147,4 +147,34 @@ public static class WebApplicationExtensions
             logger.LogError(ex, "An error occurred whilst migrating raffle entry tickets");
         }
     }
+
+    public static async void MigratePrizeWinners(this WebApplication app)
+    {
+        var perform = app.Configuration.GetSection("StartupServices").GetValue<bool>("MigratePrizeWinners");
+        if (!perform) return;
+        
+        using var scope = app.Services.CreateScope();
+        var service = scope.ServiceProvider;
+        try
+        {
+            var context = service.GetRequiredService<DataContext>();
+            var prizes = await context.Prizes
+                .Where(p => p.WinningTicketNumber != null)
+                .ToListAsync();
+
+            foreach (var prize in prizes)
+            {
+                var winner = await context.Entries
+                    .Where(entry => entry.RaffleId == prize.RaffleId)
+                    .FirstOrDefaultAsync(e => e.LowTicket <= prize.WinningTicketNumber && e.HighTicket >= prize.WinningTicketNumber);
+                prize.WinnerId = winner?.EntrantId;
+            }
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = service.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred whilst migrating raffle entry tickets");
+        }
+    }
 }
