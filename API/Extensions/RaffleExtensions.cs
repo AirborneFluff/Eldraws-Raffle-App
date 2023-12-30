@@ -1,4 +1,5 @@
-﻿using RaffleApi.Entities;
+﻿using System.Text;
+using RaffleApi.Entities;
 
 namespace RaffleApi.Extensions;
 
@@ -59,5 +60,21 @@ public static class RaffleExtensions
         }
 
         return false;
+    }
+    
+    public static string DefaultDescription(this Raffle raffle)
+    {
+        var descriptionSb = new StringBuilder();
+        var openDate = raffle.OpenDate.ToString("dddd dd MMM");
+        var closeDate = raffle.CloseDate.ToString("dddd dd MMM");
+        var drawDate = raffle.DrawDate.ToString("dddd dd MMM");
+        var drawTime = raffle.DrawDate.ToString("h tt");
+        
+        descriptionSb.AppendLine($"Open from: {openDate}");
+        descriptionSb.AppendLine($"Closes at: {closeDate}");
+        descriptionSb.AppendLine($"Drawing winners at: {drawTime} on {drawDate}");
+        descriptionSb.AppendLine($"Tickets cost: {raffle.EntryCost} each");
+
+        return descriptionSb.ToString();
     }
 }

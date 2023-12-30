@@ -16,6 +16,7 @@ public class Raffle
     public int EntryCost { get; set; }
     public ulong? DiscordMessageId { get; set; }
     public string? DiscordChannelId { get; set; }
+    public string? Description { get; set; }
 
     public int TotalTickets { get; set; }
     public int TotalDonations { get; set; }
