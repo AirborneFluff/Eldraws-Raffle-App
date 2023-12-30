@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Diagnostics;
+using Discord;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Configurations;
 using RaffleApi.Data;
@@ -13,9 +14,9 @@ public class RaffleMessageFactory
     private readonly DataContext _context;
     private readonly int _raffleId;
     private readonly RaffleMessageFactoryConfig _config;
-    private readonly LookAheadEnumerator<string> _entryEnumerator;
-    private readonly IQueryable<RaffleEntry> _entries;
-    private readonly IQueryable<RafflePrize> _prizes;
+    private LookAheadEnumerator<string> _entryEnumerator;
+    private List<RaffleEntry> _entries = new List<RaffleEntry>();
+    private List<RafflePrize> _prizes = new List<RafflePrize>();
     private Raffle _raffle = null!;
     
     private readonly int _maxEmbedLength = 6000;
@@ -38,17 +39,6 @@ public class RaffleMessageFactory
         _config = config;
         _context = context;
         _raffleId = raffleId;
-
-        _entries = context.Entries
-            .Where(entry => entry.RaffleId == raffleId)
-            .Where(entry => entry.LowTicket != 0)
-            .OrderBy(entry => entry.LowTicket);
-
-        _prizes = context.Prizes
-            .Where(prize => prize.RaffleId == raffleId)
-            .OrderBy(prize => prize.Place);
-        
-        _entryEnumerator = new LookAheadEnumerator<string>(_entries.Select(entry => entry.ToString()).GetEnumerator());
     }
 
     public async Task BuildPrimaryMessage()
@@ -85,6 +75,20 @@ public class RaffleMessageFactory
     private async Task LoadRaffle()
     {
         _raffle = await _context.Raffles.SingleAsync(raffle => raffle.Id == _raffleId);
+
+        _entries = await _context.Entries
+            .Where(entry => entry.RaffleId == _raffleId)
+            .Where(entry => entry.LowTicket != 0)
+            .OrderBy(entry => entry.LowTicket)
+            .ToListAsync();
+
+        _prizes = await _context.Prizes
+            .Where(prize => prize.RaffleId == _raffleId)
+            .Include(prize => prize.Winner)
+            .OrderBy(prize => prize.Place)
+            .ToListAsync();
+
+        _entryEnumerator = new LookAheadEnumerator<string>(_entries.Select(entry => entry.ToString()).GetEnumerator());
     }
 
     private EmbedBuilder CreateAdditionalEmbed()
@@ -105,9 +109,10 @@ public class RaffleMessageFactory
             Title = _raffle.Title,
             Description = _raffle.Description ?? _raffle.DefaultDescription()
         };
-        if (_config.RollValue is not null) AddRollingField(embed, (int)_config.RollValue);
-        if (_config.ShowWinners) await AddWinnersField(embed);
         AddDateFooter(embed);
+        
+        if (_config.RollValue is not null) AddRollingField(embed, (int)_config.RollValue);
+        if (_config.ShowWinners) AddWinnersField(embed);
         AddPrizesField(embed);
         AddEntryFields(embed);
         
@@ -121,24 +126,15 @@ public class RaffleMessageFactory
             .WithText($"Last updated: {currentTime} UTC");
     }
 
-    private async Task AddWinnersField(EmbedBuilder embed)
+    private void AddWinnersField(EmbedBuilder embed)
     {
-        var prizes = await _prizes.ToListAsync();
-        
-        if (!prizes.Any())
+        if (!_prizes.Any())
         {
-            embed.AddField("Prizes", _noPrizesMessage);
+            embed.AddField("Winners", _noPrizesMessage);
             return;
         }
 
-        var winnersList = new List<string>();
-        var tasks = prizes.Select(async prize => await GetWinnerLine(prize));
-        foreach (var task in tasks)
-        {
-            var result = await task;
-            winnersList.Add(result);
-        }
-        embed.AddLinedField("Winners", winnersList.GetEnumerator());
+        embed.AddLinedField("Winners", _prizes.Select(GetWinnerLine).GetEnumerator());
     }
 
     private void AddRollingField(EmbedBuilder embed, int value)
@@ -148,21 +144,18 @@ public class RaffleMessageFactory
 
     private void AddPrizesField(EmbedBuilder embed)
     {
-        var prizes = _raffle.Prizes;
-        if (!prizes.Any())
+        if (!_prizes.Any())
         {
             embed.AddField("Prizes", _noPrizesMessage);
             return;
         }
 
-        using var enumerator = prizes.Select(prize => prize.ToString()).GetEnumerator();
-        embed.AddLinedField("Prizes", enumerator);
+        embed.AddLinedField("Prizes", _prizes.Select(prize => prize.ToString()).GetEnumerator());
     }
 
     private void AddEntryFields(EmbedBuilder embed)
     {
         if (!_entryEnumerator.HasNext) return;
-        
         var remainingCharacterCount = _maxEmbedLength - embed.Length;
         var fieldCount = (int)Math.Ceiling((double)remainingCharacterCount / EmbedBuilderExtensions.MaxFieldLength);
         var maxFieldCount = Math.Min(_maxFieldCount - embed.Fields.Count, fieldCount);
@@ -177,9 +170,9 @@ public class RaffleMessageFactory
         }
     }
 
-    private async Task<string> GetWinnerLine(RafflePrize prize)
+    private string GetWinnerLine(RafflePrize prize)
     {
-        var winner = await _context.Entrants.FirstOrDefaultAsync(entrant => entrant.Id == prize.WinnerId);
+        var winner = prize.Winner;
         var prizePlace = prize.Place.AddPositionalSynonym().PadString(65, 75);
         
         if (winner is not null) return prizePlace + winner.Gamertag;

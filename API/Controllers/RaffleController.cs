@@ -198,22 +198,15 @@ public sealed class RaffleController : ControllerBase
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
 
-        var rollValue = RandomService.GetRandomInteger(raffle.GetLastTicket(), 1);
-        int? ticketNumber = rollValue;
+        var rollValue = RandomService.GetRandomInteger(raffle.TotalTickets, 1);
 
-        var winner = raffle.GetEntrantFromTicket(rollValue);
+        var winner = await _unitOfWork.RaffleRepository.GetWinnerFromTicket(raffleId, rollValue);
         if (winner == null) throw new Exception($"There was an issue getting the winner for ticket: {rollValue}");
 
-        var reroll = false;
-        if (raffle.HasEntrantAlreadyWon(winner))
-        {
-            ticketNumber = null;
-            winner = null;
-            reroll = true;
-        }
+        var reroll = await _unitOfWork.RaffleRepository.HasEntrantWon(raffleId, winner.Id);
 
-        prize.Winner = winner;
-        prize.WinningTicketNumber = ticketNumber;
+        prize.Winner = reroll ? null : winner;
+        prize.WinningTicketNumber = reroll ? null : rollValue;
 
         var result = await _discord.SendRoll(raffle, (ulong)clan.DiscordChannelId, rollValue);
         if (result.Failure) return BadRequest(result.ExceptionMessage ?? result.FailureMessage);
