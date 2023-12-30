@@ -93,5 +93,6 @@ app.MapControllers();
 
 app.SeedApplicationUsers();
 app.AggregateEntrantDonations();
+app.MigrateRaffleEntryTickets();
 
 app.Run();

@@ -56,4 +56,29 @@ public static class WebApplicationExtensions
             logger.LogError(ex, "An error occurred whilst aggregating entrant donations");
         }
     }
+
+    public static async void MigrateRaffleEntryTickets(this WebApplication app)
+    {
+        var perform = app.Configuration.GetSection("StartupServices").GetValue<bool>("MigrateTicketData");
+        if (!perform) return;
+        
+        using var scope = app.Services.CreateScope();
+        var service = scope.ServiceProvider;
+        try
+        {
+            var context = service.GetRequiredService<DataContext>();
+            var entries = await context.Entries.ToListAsync();
+
+            foreach (var entry in entries)
+            {
+                context.Update(entry);
+            }
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = service.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred whilst aggregating entrant donations");
+        }
+    }
 }
