@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Discord;
+﻿using Discord;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Configurations;
 using RaffleApi.Data;
