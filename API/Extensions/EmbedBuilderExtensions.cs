@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Discord;
-using RaffleApi.Helpers;
 
 namespace RaffleApi.Extensions;
 

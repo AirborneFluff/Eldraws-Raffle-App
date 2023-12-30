@@ -20,12 +20,10 @@ public sealed class EntrantsController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
-    private readonly UserManager<AppUser> _userManager;
 
-    public EntrantsController(IMapper mapper, UnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public EntrantsController(IMapper mapper, UnitOfWork unitOfWork)
     {
         _mapper = mapper;
-        _userManager = userManager;
         _unitOfWork = unitOfWork;
     }
 
