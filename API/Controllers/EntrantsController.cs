@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RaffleApi.ActionFilters;
 using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
-using RaffleApi.Entities;
 using RaffleApi.Extensions;
 using RaffleApi.Helpers;
 
@@ -20,12 +18,10 @@ public sealed class EntrantsController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly UnitOfWork _unitOfWork;
-    private readonly UserManager<AppUser> _userManager;
 
-    public EntrantsController(IMapper mapper, UnitOfWork unitOfWork, UserManager<AppUser> userManager)
+    public EntrantsController(IMapper mapper, UnitOfWork unitOfWork)
     {
         _mapper = mapper;
-        _userManager = userManager;
         _unitOfWork = unitOfWork;
     }
 

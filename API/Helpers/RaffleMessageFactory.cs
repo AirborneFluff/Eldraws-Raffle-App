@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Discord;
+﻿using Discord;
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Configurations;
 using RaffleApi.Data;
@@ -15,12 +14,11 @@ public class RaffleMessageFactory
     private readonly int _raffleId;
     private readonly RaffleMessageFactoryConfig _config;
     private LookAheadEnumerator<string> _entryEnumerator;
-    private List<RaffleEntry> _entries = new List<RaffleEntry>();
-    private List<RafflePrize> _prizes = new List<RafflePrize>();
+    private List<RaffleEntry> _entries = new();
+    private List<RafflePrize> _prizes = new();
     private Raffle _raffle = null!;
     
     private readonly int _maxEmbedLength = 6000;
-    private readonly int _maxTitleLength = 256;
     private readonly int _maxFieldCount = 25;
 
     private readonly string _noPrizesMessage = "No prizes have been listed yet";
@@ -28,7 +26,7 @@ public class RaffleMessageFactory
     private readonly string _pendingEmoji = "<a:threepointsanima:1005525060490117191>";
     private readonly string _diceEmoji = "<a:dices:1172979983321411676>";
 
-    private int _entryPages = 0;
+    private int _entryPages;
 
     private IList<EmbedBuilder> _messages = new List<EmbedBuilder>();
     public EmbedBuilder PrimaryMessage => _messages.First();
@@ -156,7 +154,11 @@ public class RaffleMessageFactory
 
     private void AddEntryFields(EmbedBuilder embed)
     {
-        if (!_entryEnumerator.HasNext) return;
+        if (!_entryEnumerator.HasNext)
+        {
+            embed.AddField("Entries", _noEntriesMessage);
+            return;
+        }
         var remainingCharacterCount = _maxEmbedLength - embed.Length;
         var fieldCount = (int)Math.Ceiling((double)remainingCharacterCount / EmbedBuilderExtensions.MaxFieldLength);
         var maxFieldCount = Math.Min(_maxFieldCount - embed.Fields.Count, fieldCount);
