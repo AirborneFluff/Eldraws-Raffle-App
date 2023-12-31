@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Entities;
+using RaffleApi.Extensions;
 
 namespace RaffleApi.Data.Repositories;
 
@@ -29,8 +30,6 @@ public class RaffleRepository
             .Include(r => r.Host)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .ThenInclude(p => p.Winner)
-            .Include(r => r.Entries)
-            .ThenInclude(e => e.Entrant)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
@@ -65,5 +64,29 @@ public class RaffleRepository
             .FirstOrDefaultAsync(prize => prize.WinnerId == entrantId);
         
         return prize is not null;
+    }
+
+    public async Task RedistributeTickets(int raffleId)
+    {
+        var raffle = await _context.Raffles.FirstOrDefaultAsync(raffle => raffle.Id == raffleId);
+        if (raffle is null) return;
+        
+        var query = _context.Entries
+            .Where(entry => entry.RaffleId == raffleId)
+            .OrderBy(entry => entry.LowTicket)
+            .AsEnumerable();
+        
+        var lowTicket = 1;
+        
+        foreach (var entry in query)
+        {
+            var highTicket = raffle.GetHighTicket(entry.Donation, lowTicket);
+            if (highTicket == 0) continue;
+        
+            entry.LowTicket = lowTicket;
+            entry.HighTicket = highTicket;
+            
+            lowTicket = highTicket + 1;
+        }
     }
 }

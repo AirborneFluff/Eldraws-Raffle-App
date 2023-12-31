@@ -22,4 +22,9 @@ public sealed class RaffleEntryRepository
 
         return await PagedList<RaffleEntry>.CreateAsync(query, entryParams.PageNumber, entryParams.PageSize);
     }
+
+    public async Task<RaffleEntry?> GetById(int entryId)
+    {
+        return await _context.Entries.FirstOrDefaultAsync(entry => entry.Id == entryId);
+    }
 }
