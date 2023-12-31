@@ -20,9 +20,12 @@ public partial class RaffleController
         if (entrant == null) return NotFound("No entrant found by that Id in this clan");
         
         var newEntry = _mapper.Map<RaffleEntry>(entryDto);
-        var tickets = raffle.GetTickets(newEntry.Donation);
-        newEntry.LowTicket = tickets.Item1;
-        newEntry.HighTicket = tickets.Item2;
+        var nextTicket = await _unitOfWork.RaffleRepository.GetNextAvailableTicket(raffleId);
+        
+        var highTicket = raffle.GetHighTicket(newEntry.Donation, nextTicket);
+        
+        newEntry.LowTicket = nextTicket;
+        newEntry.HighTicket = highTicket;
 
         raffle.Entries.Add(newEntry);
         
@@ -41,8 +44,8 @@ public partial class RaffleController
     {
         var clan = HttpContext.GetClan();
         var raffle = HttpContext.GetRaffle();
-        
-        var entry = raffle.Entries.FirstOrDefault(e => e.Id == entryId);
+
+        var entry = await _unitOfWork.EntryRepository.GetById(entryId);
         if (entry == null) return NotFound("No entry found by that Id");
         
         var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entry.EntrantId);
@@ -54,8 +57,9 @@ public partial class RaffleController
         raffle.TotalTickets -= entry.HighTicket == 0 ? 0 : entry.HighTicket - entry.LowTicket + 1;
         raffle.TotalDonations -= entry.Donation;
         
-        raffle.RedistributeTickets();
+        if (!await _unitOfWork.Complete()) return BadRequest("Issue updating database");
 
+        await _unitOfWork.RaffleRepository.RedistributeTickets(raffle.Id);
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
         return BadRequest();

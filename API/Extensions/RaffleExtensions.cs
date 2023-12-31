@@ -77,4 +77,12 @@ public static class RaffleExtensions
 
         return descriptionSb.ToString();
     }
+    
+    public static int GetHighTicket(this Raffle raffle, int donation, int lowTicket)
+    {
+        var requiredTickets = (int) Math.Floor((decimal) donation / raffle.EntryCost);
+        if (requiredTickets == 0) return 0;
+
+        return lowTicket + requiredTickets - 1;
+    }
 }
