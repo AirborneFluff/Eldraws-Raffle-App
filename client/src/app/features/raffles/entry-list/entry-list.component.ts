@@ -6,23 +6,21 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
   BehaviorSubject,
   combineLatest,
-  debounceTime,
   map,
   of,
   scan,
   shareReplay,
-  startWith, Subject,
+  startWith,
   switchMap,
-  take, tap,
+  take,
   withLatestFrom
 } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/dialog/confirm-dialog/confirm-dialog.component';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
-import { Entrant } from '../../../data/models/entrant';
 import { RaffleEntryParams } from '../../../data/params/raffle-entry-params';
-import { EntrantParams } from '../../../data/params/entrant-params';
+import { EntryStream } from '../../../core/streams/entry-stream';
 
 const INITIAL_SEARCH_PARAMS: RaffleEntryParams = {
   pageSize: 50,
@@ -36,10 +34,14 @@ const INITIAL_SEARCH_PARAMS: RaffleEntryParams = {
   styleUrls: ['./entry-list.component.scss']
 })
 export class EntryListComponent {
-  constructor(private raffle$: CurrentRaffleStream, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private dialog: MatDialog) {
+  constructor(private raffle$: CurrentRaffleStream, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private dialog: MatDialog, private entryUpdates$: EntryStream) {
+    this.entryUpdates$.subscribe(changes => {
+      this.loadMore(1)
+    })
   }
 
   private searchParams$ = new BehaviorSubject<RaffleEntryParams>(Object.create(INITIAL_SEARCH_PARAMS));
+  private entryRemove$ = new BehaviorSubject<RaffleEntry | undefined>(undefined);
 
   private entryStream$ = this.searchParams$.pipe(
     notNullOrUndefined(),
@@ -50,11 +52,20 @@ export class EntryListComponent {
     shareReplay(1)
   )
 
-  entries$ = this.entryStream$.pipe(
-    notNullOrUndefined(),
+  entries$ = combineLatest([
+    this.entryRemove$.pipe(notNullOrUndefined(), startWith(undefined)),
+    this.entryStream$.pipe(notNullOrUndefined())
+  ]).pipe(
+    map(([update, stream]) => {
+      // if (!!update) {
+      //   let index = stream.result.findIndex(ent => ent.id == update.id);
+      //   if (index != -1) stream.result.splice(index, 1)
+      //   this.entryRemove$.next(undefined);
+      // }
+      return stream;
+    }),
     scan((acc: RaffleEntry[], curr) =>
-      curr.pagination.currentPage == 1 ? curr.result : acc.concat(curr.result), []),
-    tap(val => console.log(val))
+      curr.pagination.currentPage == 1 ? curr.result : acc.concat(curr.result), [])
   )
 
   pagination$ = this.entryStream$.pipe(
@@ -81,11 +92,12 @@ export class EntryListComponent {
           switchMap(([clanId, raffleId]) => this.api.Raffles.removeEntry(clanId, raffleId, entry.id))
         )
     })).subscribe(updatedRaffle => {
-      this.raffle$.next(updatedRaffle)
+      this.raffle$.next(updatedRaffle);
+      this.loadMore(1);
     })
   }
 
-  loadMore() {
+  loadMore(pageNumber?: number) {
     let params: RaffleEntryParams;
     let currentPage: number;
 
@@ -96,7 +108,7 @@ export class EntryListComponent {
       map(pagination => pagination.currentPage)
     ).subscribe(val => currentPage = val);
 
-    params!.pageNumber = currentPage! + 1;
+    params!.pageNumber = pageNumber ?? currentPage! + 1;
     this.searchParams$.next(params!);
   }
 }
