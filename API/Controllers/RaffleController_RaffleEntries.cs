@@ -24,7 +24,7 @@ public partial class RaffleController
         
         var highTicket = raffle.GetHighTicket(newEntry.Donation, nextTicket);
         
-        newEntry.LowTicket = nextTicket;
+        newEntry.LowTicket = highTicket == 0 ? 0 : nextTicket;
         newEntry.HighTicket = highTicket;
 
         raffle.Entries.Add(newEntry);
