@@ -16,6 +16,7 @@ import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import { parseNumericSuffix } from '../../../core/utils/parse-numeric-suffix';
 import { CurrentClanStream } from '../../../core/streams/current-clan-stream';
 import { CurrentRaffleStream } from '../../../core/streams/current-raffle-stream';
+import { EntryStream } from '../../../core/streams/entry-stream';
 
 @Component({
   selector: 'app-create-entry',
@@ -26,7 +27,7 @@ export class CreateEntryComponent implements OnDestroy {
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl('', [Validators.required, Validators.min(0)])
   subscriptions = new Subscription();
-  constructor(private api: ApiService, private clanId: ClanIdStream, private clan$: CurrentClanStream, private raffleId: RaffleIdStream, private raffle$: CurrentRaffleStream) {
+  constructor(private api: ApiService, private clanId: ClanIdStream, private clan$: CurrentClanStream, private raffleId: RaffleIdStream, private raffle$: CurrentRaffleStream, private entryUpdates$: EntryStream) {
     this.subscriptions.add(this.selectedEntrant$.subscribe());
   }
 
@@ -105,6 +106,7 @@ export class CreateEntryComponent implements OnDestroy {
       ).subscribe(updatedRaffle => {
         this.raffle$.next(updatedRaffle);
         this.submitted$.next(false);
+        this.entryUpdates$.next(undefined);
         this.initializeForm();
     })
   }
