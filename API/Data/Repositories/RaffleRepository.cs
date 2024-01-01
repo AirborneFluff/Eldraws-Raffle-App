@@ -35,9 +35,14 @@ public class RaffleRepository
 
     public async Task<int> GetNextAvailableTicket(int raffleId)
     {
+        if (await _context.Entries
+            .Where(entry => entry.RaffleId == raffleId)
+            .AnyAsync() == false) return 1;
+        
         return await _context.Entries
             .Where(entry => entry.RaffleId == raffleId)
             .MaxAsync(entry => entry.HighTicket + 1);
+
     }
 
     public async Task<Entrant?> GetWinnerFromTicket(int raffleId, int ticketNumber)
