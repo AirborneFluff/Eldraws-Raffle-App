@@ -4,6 +4,7 @@ using RaffleApi.Configurations;
 using RaffleApi.Data;
 using RaffleApi.Entities;
 using RaffleApi.Extensions;
+using RaffleApi.Utilities;
 using EmbedBuilderExtensions = RaffleApi.Extensions.EmbedBuilderExtensions;
 
 namespace RaffleApi.Helpers;
@@ -111,8 +112,8 @@ public class RaffleMessageFactory
         AddDateFooter(embed);
         
         if (_config.RollValue is not null) AddRollingField(embed, (int)_config.RollValue);
-        if (_config.ShowWinners) AddWinnersField(embed);
-        AddPrizesField(embed);
+        if (_config.ShowWinners) AddWinnersFields(embed);
+        AddPrizesFields(embed);
         AddEntryFields(embed);
         
         return embed;
@@ -125,7 +126,7 @@ public class RaffleMessageFactory
             .WithText($"Last updated: {currentTime} UTC");
     }
 
-    private void AddWinnersField(EmbedBuilder embed)
+    private void AddWinnersFields(EmbedBuilder embed)
     {
         if (!_prizes.Any())
         {
@@ -133,15 +134,17 @@ public class RaffleMessageFactory
             return;
         }
 
-        embed.AddLinedField("Winners", _prizes.Select(GetWinnerLine).GetEnumerator());
+        var fields = EmbedUtilities.CreateLinedFields("Winners", _prizes.Select(GetWinnerLine));
+        embed.Fields.AddRange(fields);
     }
 
     private void AddRollingField(EmbedBuilder embed, int value)
     {
-        embed.AddField("Roll", "Rolling... " + _diceEmoji + value);
+        var content = "Rolling... " + (_config.UseCustomEmojis ? _diceEmoji : String.Empty) + value;
+        embed.AddField("Roll", content);
     }
 
-    private void AddPrizesField(EmbedBuilder embed)
+    private void AddPrizesFields(EmbedBuilder embed)
     {
         if (!_prizes.Any())
         {
@@ -149,7 +152,8 @@ public class RaffleMessageFactory
             return;
         }
 
-        embed.AddLinedField("Prizes", _prizes.Select(prize => prize.ToString()).GetEnumerator());
+        var fields = EmbedUtilities.CreateLinedFields("Prizes", _prizes.Select(prize => prize.ToString()));
+        embed.Fields.AddRange(fields);
     }
 
     private void AddEntryFields(EmbedBuilder embed)
@@ -179,7 +183,7 @@ public class RaffleMessageFactory
         var prizePlace = prize.Place.AddPositionalSynonym().PadString(65, 75);
         
         if (winner is not null) return prizePlace + winner.Gamertag;
-        if (_config.RollValue is not null) return prizePlace + _pendingEmoji;
+        if (_config.RollValue is not null && _config.UseCustomEmojis) return prizePlace + _pendingEmoji;
         return prizePlace;
     }
 }
