@@ -140,7 +140,8 @@ public class RaffleMessageFactory
 
     private void AddRollingField(EmbedBuilder embed, int value)
     {
-        embed.AddField("Roll", "Rolling... " + _diceEmoji + value);
+        var content = "Rolling... " + (_config.UseCustomEmojis ? _diceEmoji : String.Empty) + value;
+        embed.AddField("Roll", content);
     }
 
     private void AddPrizesFields(EmbedBuilder embed)
@@ -182,7 +183,7 @@ public class RaffleMessageFactory
         var prizePlace = prize.Place.AddPositionalSynonym().PadString(65, 75);
         
         if (winner is not null) return prizePlace + winner.Gamertag;
-        if (_config.RollValue is not null) return prizePlace + _pendingEmoji;
+        if (_config.RollValue is not null && _config.UseCustomEmojis) return prizePlace + _pendingEmoji;
         return prizePlace;
     }
 }
