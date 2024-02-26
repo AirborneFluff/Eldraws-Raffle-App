@@ -44,4 +44,5 @@ public class LookAheadEnumerator<T> : IEnumerator<T>
     }
 
     public bool HasNext => _hasNext;
+    public T Next => _next;
 }
