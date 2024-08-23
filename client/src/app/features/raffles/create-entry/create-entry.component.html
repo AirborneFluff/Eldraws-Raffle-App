@@ -17,12 +17,18 @@
             <mat-option *ngIf="!(entrants$ | async)" class="mat-option-center" disabled>
               <mat-spinner diameter="24"></mat-spinner>
             </mat-option>
-            <mat-option *ngFor="let entrant of filteredEntrants$ | async" [value]="entrant.gamertag">
+            <mat-option *ngFor="let entrant of filteredEntrants$ | async" [value]="entrant.gamertag" [disabled]="!entrant.active">
               <span>{{entrant.gamertag}}</span>
+              <small
+                *ngIf="!entrant.active"
+                class="ml-2.5 text-xs font-semibold tracking-wider align-top">INACTIVE</small>
             </mat-option>
           </mat-autocomplete>
           <mat-error *ngIf="gamertag.hasError('required')">
             A gamertag is <strong>required</strong>
+          </mat-error>
+          <mat-error *ngIf="gamertag.hasError('inactiveEntrant')">
+            This entrant is set as <strong>inactive</strong>
           </mat-error>
         </mat-form-field>
       </div>
@@ -37,7 +43,11 @@
       </div>
     </div>
     <ng-container *ngIf="!(submitted$ | async) else submitted">
-      <button mat-raised-button class="w-full" (click)="submit()" [disabled]="entryForm.invalid">Add Entry</button>
+      <button
+        mat-raised-button
+        class="w-full"
+        (click)="submit()"
+        [disabled]="entryForm.invalid || !(selectedEntrantValid$ | async)">Add Entry</button>
     </ng-container>
   </div>
 </component-frame>

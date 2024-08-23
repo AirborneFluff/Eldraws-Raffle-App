@@ -50,7 +50,22 @@ export class CreateEntryComponent implements OnDestroy {
       const entrant = entrants.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase());
       return of(entrant);
     }),
+    tap(entrant => {
+      const currentErrors = this.gamertag.errors || {};
+
+      if (entrant && !entrant.active) {
+        this.gamertag.setErrors({ ...currentErrors, inactiveEntrant: true });
+        return;
+      }
+      delete currentErrors['inactiveEntrant'];
+      this.gamertag.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+    }),
     shareReplay(1)
+  )
+
+  selectedEntrantValid$ = this.selectedEntrant$.pipe(
+    map(entrant => entrant == undefined ? true : entrant.active),
+    startWith(true)
   )
 
   entryForm = new FormGroup<any>({
@@ -64,13 +79,16 @@ export class CreateEntryComponent implements OnDestroy {
     this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
   ]).pipe(
     map(([entrants, filter = '']) => {
-    return entrants.filter(entrant => {
-      const inSearch = entrant.gamertag.toLowerCase().includes(filter.toLowerCase())
-      const isActive = entrant.active
-
-      return inSearch && isActive;
+      const filteredEntrants = entrants
+        .filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
+        .sort((a, b) => {
+          if (a.active === b.active) return 0;
+          return a.active ? -1 : 1;
+        });
+      const activeFilteredEntrants = filteredEntrants.filter(entrant => entrant.active)
+      return activeFilteredEntrants.length > 3 ? activeFilteredEntrants : filteredEntrants;
     })
-  }))
+  )
 
   initializeForm() {
     this.gamertag.setValue('');
