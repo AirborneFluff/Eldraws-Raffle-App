@@ -1,4 +1,5 @@
-﻿using RaffleApi.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RaffleApi.Entities;
 using RaffleApi.Helpers;
 
 namespace RaffleApi.Data.Repositories;
@@ -24,10 +25,20 @@ public sealed class EntrantRepository
 
         query = entrantParams.OrderBy switch
         {
-            "totalDonations" => query.OrderByDescending(entrant => entrant.TotalDonations),
-            _ => query.OrderBy(entrant => entrant.NormalizedGamertag)
+            "totalDonations" => query
+                .OrderByDescending(entrant => entrant.Active)
+                .ThenByDescending(entrant => entrant.TotalDonations),
+            _ => query
+                .OrderByDescending(entrant => entrant.Active)
+                .ThenBy(entrant => entrant.NormalizedGamertag)
         };
+        
 
         return await PagedList<Entrant>.CreateAsync(query, entrantParams.PageNumber, entrantParams.PageSize);
+    }
+
+    public Task<Entrant?> GetById(int entrantId)
+    {
+        return _context.Entrants.FirstOrDefaultAsync(entrant => entrant.Id == entrantId);
     }
 }

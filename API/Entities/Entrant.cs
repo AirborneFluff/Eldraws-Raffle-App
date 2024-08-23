@@ -9,6 +9,8 @@ public class Entrant
     public required string Gamertag { get; set; }
     public int TotalDonations { get; set; }
 
+    public bool Active { get; set; } = true;
+
     public string NormalizedGamertag
     {
         get => Gamertag.ToUpper();

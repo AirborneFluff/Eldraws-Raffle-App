@@ -64,7 +64,12 @@ export class CreateEntryComponent implements OnDestroy {
     this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
   ]).pipe(
     map(([entrants, filter = '']) => {
-    return entrants.filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
+    return entrants.filter(entrant => {
+      const inSearch = entrant.gamertag.toLowerCase().includes(filter.toLowerCase())
+      const isActive = entrant.active
+
+      return inSearch && isActive;
+    })
   }))
 
   initializeForm() {

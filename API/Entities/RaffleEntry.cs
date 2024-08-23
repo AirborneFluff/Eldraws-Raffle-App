@@ -19,7 +19,7 @@ public class RaffleEntry
     public int LowTicket { get; set; }
     public int HighTicket { get; set; }
 
-    public bool Complimentary { get; set; } = false;
+    public bool Complimentary { get; set; }
 
     [Column("Tickets")]
     private string? _tickets
