@@ -1,5 +1,6 @@
 export interface Entrant {
   id: number,
   gamertag: string,
-  totalDonations: number
+  totalDonations: number,
+  active: boolean
 }

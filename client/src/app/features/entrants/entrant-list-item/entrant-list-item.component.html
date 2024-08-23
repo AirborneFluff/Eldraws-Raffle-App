@@ -1,9 +1,18 @@
 <ng-container *ngIf="entrant">
   <component-frame>
     <div class="flex justify-between items-center">
-      <div class="pointer-events-none">
-        <h1 class="font-display leading-none text-2xl">{{entrant.gamertag}}</h1>
+      <div class="pointer-events-none" [ngClass]="!entrant.active ? 'text-gray-500' : ''">
+        <h1 class="font-display leading-none text-2xl">
+          <span>{{entrant.gamertag}}</span>
+          <small *ngIf="!entrant.active" class="ml-2.5 text-xs font-semibold tracking-wider align-top">INACTIVE</small>
+        </h1>
         <h2 class="font-light leading-tight">Donations: {{entrant.totalDonations | shortNumber}}</h2>
+      </div>
+
+      <div class="flex gap-2 px-4">
+        <div class="p-2 bg-red flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer" (click)="toggleEntrantActivity()">
+          <mat-icon>{{entrant.active ? 'person' : 'person_off'}}</mat-icon>
+        </div>
       </div>
     </div>
   </component-frame>

@@ -52,4 +52,9 @@ export class ClanRepository extends BaseRepository {
   public removeMember(clanId: number, memberId: string) {
     return this.http.delete<Clan>(this.baseUrl + `${clanId}/members/${memberId}`, {})
   }
+
+  public setMemberActivity(clanId: number, entrantId: number, active: boolean) {
+    const endpoint = active ? 'setActive' : 'setInactive'
+    return this.http.post<Entrant>(this.baseUrl + `${clanId}/entrants/${entrantId}/${endpoint}`, {})
+  }
 }

@@ -3,7 +3,7 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { ApiService } from '../../../core/services/api.service';
 import {
   BehaviorSubject,
-  debounceTime,
+  debounceTime, filter,
   map,
   scan,
   shareReplay,
