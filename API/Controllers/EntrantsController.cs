@@ -34,4 +34,28 @@ public sealed class EntrantsController : ControllerBase
         Response.AddPaginationHeader(result);
         return Ok(entrants);
     }
+
+    [HttpPost("{entrantId:int}/setInactive")]
+    public async Task<ActionResult> SetEntrantInactive(int clanId, int entrantId)
+    {
+        var entrant = await _unitOfWork.EntrantRepository.GetById(entrantId);
+        if (entrant == null) return NotFound();
+
+        entrant.Active = false;
+        
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<EntrantDTO>(entrant));
+        return BadRequest();
+    }
+
+    [HttpPost("{entrantId:int}/setActive")]
+    public async Task<ActionResult> SetEntrantActive(int clanId, int entrantId)
+    {
+        var entrant = await _unitOfWork.EntrantRepository.GetById(entrantId);
+        if (entrant == null) return NotFound();
+
+        entrant.Active = true;
+        
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<EntrantDTO>(entrant));
+        return BadRequest();
+    }
 }
