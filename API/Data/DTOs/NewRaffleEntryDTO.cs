@@ -9,4 +9,6 @@ public class NewRaffleEntryDTO
     [Required]
     [Range(0, int.MaxValue)]
     public int Donation { get; set; }
+
+    public bool Complimentary { get; set; } = false;
 }

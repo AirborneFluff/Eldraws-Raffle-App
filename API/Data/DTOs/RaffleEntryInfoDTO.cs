@@ -10,6 +10,7 @@ public class RaffleEntryInfoDTO
 
     public int Donation { get; set; }
     public DateTime InputDate { get; set; } = DateTime.Now;
+    public bool Complimentary { get; set; }
 
     [NotMapped]
     public Tuple<int, int>? Tickets { get; set; }

@@ -19,6 +19,8 @@ public class RaffleEntry
     public int LowTicket { get; set; }
     public int HighTicket { get; set; }
 
+    public bool Complimentary { get; set; } = false;
+
     [Column("Tickets")]
     private string? _tickets
     {

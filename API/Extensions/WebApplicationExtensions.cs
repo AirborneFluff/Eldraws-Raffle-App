@@ -35,6 +35,7 @@ public static class WebApplicationExtensions
         {
             var context = service.GetRequiredService<DataContext>();
             var entrantDonations = await context.Entries
+                .Where(entry => !entry.Complimentary)
                 .GroupBy(entry => entry.EntrantId)
                 .Select(g => new
                 {
@@ -68,6 +69,7 @@ public static class WebApplicationExtensions
         {
             var context = service.GetRequiredService<DataContext>();
             var donations = await context.Entries
+                .Where(entry => !entry.Complimentary)
                 .GroupBy(entry => entry.RaffleId)
                 .Select(g => new
                 {

@@ -28,10 +28,14 @@ public partial class RaffleController
         newEntry.HighTicket = highTicket;
 
         raffle.Entries.Add(newEntry);
+
+        if (!entryDto.Complimentary)
+        {
+            entrant.TotalDonations += newEntry.Donation;
+            raffle.TotalDonations += newEntry.Donation;
+        }
         
-        entrant.TotalDonations += newEntry.Donation;
         raffle.TotalTickets += newEntry.HighTicket == 0 ? 0 : newEntry.HighTicket - newEntry.LowTicket + 1;
-        raffle.TotalDonations += newEntry.Donation;
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
 
