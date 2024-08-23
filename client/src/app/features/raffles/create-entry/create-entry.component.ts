@@ -26,6 +26,7 @@ import { EntryStream } from '../../../core/streams/entry-stream';
 export class CreateEntryComponent implements OnDestroy {
   gamertag = new FormControl('', Validators.required)
   donation = new FormControl('', [Validators.required, Validators.min(0)])
+  complimentary = new FormControl(false, [Validators.required])
   subscriptions = new Subscription();
   constructor(private api: ApiService, private clanId: ClanIdStream, private clan$: CurrentClanStream, private raffleId: RaffleIdStream, private raffle$: CurrentRaffleStream, private entryUpdates$: EntryStream) {
     this.subscriptions.add(this.selectedEntrant$.subscribe());
@@ -54,7 +55,8 @@ export class CreateEntryComponent implements OnDestroy {
 
   entryForm = new FormGroup<any>({
     gamertag: this.gamertag,
-    donation: this.donation
+    donation: this.donation,
+    complimentary: this.complimentary
   })
 
   filteredEntrants$ = combineLatest([
@@ -100,7 +102,8 @@ export class CreateEntryComponent implements OnDestroy {
         switchMap(([entrant, clanId, raffleId]) => {
           return this.api.Raffles.addEntry(clanId, raffleId, {
             entrantId: entrant.id,
-            donation: parseNumericSuffix(donation)
+            donation: parseNumericSuffix(donation),
+            complimentary: this.complimentary.value!
           })
         })
       ).subscribe(updatedRaffle => {

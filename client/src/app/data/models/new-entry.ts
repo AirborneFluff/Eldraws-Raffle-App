@@ -1,4 +1,5 @@
 export interface NewRaffleEntry {
   entrantId: number,
-  donation: number
+  donation: number,
+  complimentary: boolean
 }
