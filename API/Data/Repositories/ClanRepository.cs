@@ -25,26 +25,47 @@ public sealed class ClanRepository
     {
         return _context.Clans
             .Include(c => c.Owner)
-            .Include(c => c.Members)
-            .Include(c => c.Entrants)
-            .Include(c => c.Raffles)
             .Where(c => c.Members.FirstOrDefault(m => m.MemberId == userId) != null)
             .ToListAsync();
     }
 
-    public Task<Clan?> GetById(int id)
+    public Task<Clan> GetById(int id)
     {
         return _context.Clans
             .Include(c => c.Owner)
             .Include(c => c.Members)
             .ThenInclude(m => m.Member)
-            .Include(c => c.Entrants)
             .Include(c => c.Raffles)
-            .FirstOrDefaultAsync(clan => clan.Id == id);
+            .SingleAsync(clan => clan.Id == id);
     }
 
     public Task<Clan?> GetByName(string name)
     {
         return _context.Clans.FirstOrDefaultAsync(clan => clan.Name.ToUpper() == name.ToUpper());
+    }
+
+    public Task<bool> IsUserMember(int clanId, string userId)
+    {
+        return _context.ClanMembers
+            .AnyAsync(cm => cm.MemberId == userId && cm.ClanId == clanId);
+    }
+
+    public Task<bool> IsUserOwner(int clanId, string userId)
+    {
+        return _context.Clans
+            .AnyAsync(c => c.OwnerId == userId && c.Id == clanId);
+    }
+
+    public Task<Clan> GetById_Only(int id)
+    {
+        return _context.Clans
+            .SingleAsync(clan => clan.Id == id);
+    }
+
+    public Task<bool> EntrantExists(int clanId, string gamertag)
+    {
+        return _context.Entrants
+            .AnyAsync(en => en.ClanId == clanId &&
+                            string.Equals(en.Gamertag.ToLower(), gamertag.ToLower(), StringComparison.Ordinal));
     }
 }

@@ -125,7 +125,7 @@ public partial class RaffleController : ControllerBase
     public async Task<ActionResult> PostRaffleToDiscord(int raffleId, int clanId, int prizePlace)
     {
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById_Only(clanId);
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
         var result = await _discord.PostRaffle(raffle, (ulong)clan.DiscordChannelId);
@@ -139,7 +139,7 @@ public partial class RaffleController : ControllerBase
     public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
     {
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById_Only(clanId);
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);

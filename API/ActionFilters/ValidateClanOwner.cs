@@ -21,20 +21,14 @@ public sealed class ValidateClanOwner : IAsyncActionFilter
         if (clanId == null) throw new Exception("ClanId not provided for validation");
         
         var userId = context.HttpContext.User.GetUserId();
-
-        var clan = await _unitOfWork.ClanRepository.GetById((int) clanId);
-        if (clan == null)
+        var isOwner = await _unitOfWork.ClanRepository.IsUserOwner((int)clanId, userId);
+        
+        if (!isOwner)
         {
-            context.Result = new NotFoundObjectResult("No clan found by that Id");
+            context.Result = new NotFoundObjectResult("Only the clan owner is authorized to do that");
             return;
         }
-        if (clan.OwnerId == userId)
-        {
-            context.HttpContext.Items.Add("clan", clan);
-            await next.Invoke();
-            return;
-        }
-
-        context.Result = new ForbiddenObjectResult("Only the clan owner is authorized to do that");
+        
+        await next.Invoke();
     }
 }

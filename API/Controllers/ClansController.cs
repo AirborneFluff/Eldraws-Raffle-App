@@ -71,7 +71,7 @@ public sealed class ClansController : ControllerBase
     [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
     {
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
 
         _mapper.Map(clanDto, clan);
 
@@ -96,14 +96,15 @@ public sealed class ClansController : ControllerBase
     [ServiceFilter(typeof(ValidateClanMember))]
     public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClan(int clanId)
     {
-        return Ok(_mapper.Map<ClanDTO>(HttpContext.GetClan()));
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        return Ok(_mapper.Map<ClanDTO>(clan));
     }
     
     [HttpDelete("{clanId:int}")]
     [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> DeleteClan(int clanId)
     {
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById_Only(clanId);
         
         _unitOfWork.ClanRepository.Remove(clan);
         if (await _unitOfWork.Complete()) return Ok();
@@ -115,7 +116,7 @@ public sealed class ClansController : ControllerBase
     [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> AddMember(string memberId, int clanId)
     {
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
         if (clan.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
             return Conflict("This user is already a member of this clan");
 
@@ -138,7 +139,7 @@ public sealed class ClansController : ControllerBase
     [ServiceFilter(typeof(ValidateClanOwner))]
     public async Task<ActionResult<ClanDTO>> RemoveMember(string memberId, int clanId)
     {
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
         var user = HttpContext.GetUser();
         
         if (memberId == user.Id) return BadRequest("You cannot remove yourself from the clan");
@@ -157,12 +158,12 @@ public sealed class ClansController : ControllerBase
     [ServiceFilter(typeof(ValidateClanMember))]
     public async Task<ActionResult<ClanDTO>> AddEntrant([FromBody] NewEntrantDTO entrantDto, int clanId)
     {
-        var clan = HttpContext.GetClan();
+        var clan = await _unitOfWork.ClanRepository.GetById_Only(clanId);
 
-        var entrant = clan.Entrants.FirstOrDefault(e => e.NormalizedGamertag == entrantDto.Gamertag.ToUpper());
-        if (entrant != null) return Conflict(_mapper.Map<EntrantInfoDTO>(entrant));
+        var entrantExists = await _unitOfWork.ClanRepository.EntrantExists(clanId, entrantDto.Gamertag);
+        if (entrantExists) return Conflict();
 
-        entrant = new Entrant
+        var entrant = new Entrant
         {
             ClanId = clanId,
             Gamertag = entrantDto.Gamertag

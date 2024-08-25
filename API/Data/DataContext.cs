@@ -10,6 +10,7 @@ public sealed class DataContext : IdentityDbContext <AppUser>
     public DataContext(DbContextOptions<DataContext> options) : base(options) {}
 
     public required DbSet<Clan> Clans { get; set; }
+    public required DbSet<ClanMember> ClanMembers { get; set; }
     public required DbSet<Raffle> Raffles { get; set; }
     public required DbSet<Entrant> Entrants { get; set; }
     public required DbSet<RaffleEntry> Entries { get; set; }

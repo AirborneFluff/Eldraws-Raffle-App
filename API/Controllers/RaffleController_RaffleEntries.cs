@@ -13,11 +13,10 @@ public partial class RaffleController
     [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
     {
-        var clan = HttpContext.GetClan();
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
-        var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entryDto.EntrantId);
-        if (entrant == null) return NotFound("No entrant found by that Id in this clan");
+        var entrant = await _unitOfWork.EntrantRepository.GetById(entryDto.EntrantId);
+        if (entrant?.ClanId != clanId) return NotFound("No entrant found by that Id in this clan");
         
         var newEntry = _mapper.Map<RaffleEntry>(entryDto);
         var nextTicket = await _unitOfWork.RaffleRepository.GetNextAvailableTicket(raffleId);
@@ -46,14 +45,13 @@ public partial class RaffleController
     [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> RemoveEntry(int raffleId, int entryId, int clanId)
     {
-        var clan = HttpContext.GetClan();
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         var entry = await _unitOfWork.EntryRepository.GetById(entryId);
         if (entry == null) return NotFound("No entry found by that Id");
         
-        var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entry.EntrantId);
-        if (entrant == null) return BadRequest("Issue finding entrant to update");
+        var entrant = await _unitOfWork.EntrantRepository.GetById(entry.EntrantId);
+        if (entrant?.ClanId != clanId) return NotFound("No entrant found by that Id in this clan");
 
         raffle.Entries.Remove(entry);
         
