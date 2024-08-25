@@ -15,6 +15,7 @@ public sealed class EntrantRepository
     public async Task<PagedList<Entrant>> GetByClan(EntrantParams entrantParams, int clanId)
     {
         var query = _context.Entrants
+            .AsNoTracking()
             .Where(e => e.ClanId == clanId);
 
         var searchTerm = entrantParams.Gamertag?.ToUpper();

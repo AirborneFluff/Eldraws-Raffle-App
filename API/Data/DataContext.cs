@@ -101,6 +101,16 @@ public sealed class DataContext : IdentityDbContext <AppUser>
             .HasIndex(e => new { e.ClanId, e.NormalizedGamertag })
             .IsUnique();
 
+        modelBuilder.Entity<Entrant>()
+            .HasIndex(e => e.ClanId);
 
+        modelBuilder.Entity<Entrant>()
+            .HasIndex(e => e.NormalizedGamertag);
+
+        modelBuilder.Entity<Entrant>()
+            .HasIndex(e => new { e.Active, e.TotalDonations });
+
+        modelBuilder.Entity<Entrant>()
+            .HasIndex(e => new { e.Active, e.NormalizedGamertag });
     }
 }
