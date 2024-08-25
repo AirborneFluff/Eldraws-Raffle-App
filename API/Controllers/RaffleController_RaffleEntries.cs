@@ -10,11 +10,11 @@ namespace RaffleApi.Controllers;
 public partial class RaffleController
 {
     [HttpPost("{raffleId:int}/entries")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> AddEntry(int raffleId, [FromBody] NewRaffleEntryDTO entryDto, int clanId)
     {
         var clan = HttpContext.GetClan();
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         var entrant = clan.Entrants.FirstOrDefault(e => e.Id == entryDto.EntrantId);
         if (entrant == null) return NotFound("No entrant found by that Id in this clan");
@@ -43,11 +43,11 @@ public partial class RaffleController
     }
 
     [HttpDelete("{raffleId:int}/entries/{entryId:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> RemoveEntry(int raffleId, int entryId, int clanId)
     {
         var clan = HttpContext.GetClan();
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         var entry = await _unitOfWork.EntryRepository.GetById(entryId);
         if (entry == null) return NotFound("No entry found by that Id");
@@ -60,8 +60,6 @@ public partial class RaffleController
         entrant.TotalDonations -= entry.Donation;
         raffle.TotalTickets -= entry.HighTicket == 0 ? 0 : entry.HighTicket - entry.LowTicket + 1;
         raffle.TotalDonations -= entry.Donation;
-        
-        if (!await _unitOfWork.Complete()) return BadRequest("Issue updating database");
 
         await _unitOfWork.RaffleRepository.RedistributeTickets(raffle.Id);
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
@@ -70,7 +68,7 @@ public partial class RaffleController
     }
     
     [HttpGet("{raffleId:int}/entries")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> GetRaffleEntries(int clanId, int raffleId, [FromQuery]RaffleEntryParams pageParams)
     {
         var result = await _unitOfWork.EntryRepository.GetByRaffle(raffleId, pageParams);
