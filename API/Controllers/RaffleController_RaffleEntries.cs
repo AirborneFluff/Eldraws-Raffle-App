@@ -55,9 +55,13 @@ public partial class RaffleController
 
         raffle.Entries.Remove(entry);
         
-        entrant.TotalDonations -= entry.Donation;
+        if (!entry.Complimentary)
+        {
+            entrant.TotalDonations -= entry.Donation;
+            raffle.TotalDonations -= entry.Donation;
+        }
+        
         raffle.TotalTickets -= entry.HighTicket == 0 ? 0 : entry.HighTicket - entry.LowTicket + 1;
-        raffle.TotalDonations -= entry.Donation;
 
         await _unitOfWork.RaffleRepository.RedistributeTickets(raffle.Id);
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<RaffleDTO>(raffle));
