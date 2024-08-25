@@ -17,12 +17,27 @@ public class RaffleRepository
     {
         _context.Raffles.Add(raffle);
     }
+    
     public void Delete(Raffle raffle)
     {
         _context.Raffles.Remove(raffle);
     }
+    
+    public async Task Delete(int raffleId)
+    {
+        var raffle = await _context.Raffles.FirstOrDefaultAsync(r => r.Id == raffleId);
+        if (raffle == null) return;
+        _context.Raffles.Remove(raffle);
+    }
 
-    public async Task<Raffle?> GetById(int id)
+    public Task<bool> Exists(int id)
+    {
+        return _context.Raffles
+            .Where(r => r.Id == id)
+            .AnyAsync();
+    }
+
+    public async Task<Raffle> GetById(int id)
     {
         return await _context.Raffles
             .Include(r => r.Clan)
@@ -30,7 +45,7 @@ public class RaffleRepository
             .Include(r => r.Host)
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .ThenInclude(p => p.Winner)
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .SingleAsync(r => r.Id == id);
     }
 
     public async Task<int> GetNextAvailableTicket(int raffleId)

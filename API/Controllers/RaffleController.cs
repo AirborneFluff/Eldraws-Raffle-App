@@ -28,10 +28,11 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpGet("{raffleId:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> GetRaffle(int raffleId, int clanId)
     {
-        return Ok(_mapper.Map<RaffleDTO>(HttpContext.GetRaffle()));
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
+        return Ok(_mapper.Map<RaffleDTO>(raffle));
     }
     
     [HttpPost]
@@ -51,22 +52,20 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpDelete("{raffleId:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> DeleteRaffle(int raffleId, int clanId)
     {
-        var raffle = HttpContext.GetRaffle();
-        _unitOfWork.RaffleRepository.Delete(raffle);
-
+        await _unitOfWork.RaffleRepository.Delete(raffleId);
         if (await _unitOfWork.Complete()) return Ok();
 
         return BadRequest();
     }
 
     [HttpPut("{raffleId:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> UpdateRaffle(int raffleId, [FromBody] NewRaffleDTO raffleDto, int clanId)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         _mapper.Map(raffleDto, raffle);
 
@@ -76,10 +75,10 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpPost("{raffleId:int}/prizes")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> AddPrize(int raffleId, [FromBody] NewRafflePrizeDTO prizeDto, int clanId)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
         
         var newPrize = _mapper.Map<RafflePrize>(prizeDto);
         raffle.Prizes.Add(newPrize);
@@ -90,10 +89,10 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpDelete("{raffleId:int}/prizes/{prizePlace:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> RemovePrize(int raffleId, int clanId, int prizePlace)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
@@ -106,10 +105,10 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpPut("{raffleId:int}/prizes/{prizePlace:int}")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> UpdatePrize(int raffleId, int clanId, int prizePlace, [FromBody] UpdateRafflePrizeDTO prizeDto)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
 
         var prize = raffle.Prizes.FirstOrDefault(p => p.Place == prizePlace);
         if (prize == null) return NotFound("No prize with that placement");
@@ -122,10 +121,10 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpPost("{raffleId:int}/discord")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> PostRaffleToDiscord(int raffleId, int clanId, int prizePlace)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
@@ -136,10 +135,10 @@ public partial class RaffleController : ControllerBase
     }
 
     [HttpPost("{raffleId:int}/prizes/{prizePlace:int}/roll-winner")]
-    [ServiceFilter(typeof(ValidateRaffle))]
+    [ServiceFilter(typeof(ValidateRaffleExists))]
     public async Task<ActionResult> RollWinner(int raffleId, int clanId, int prizePlace)
     {
-        var raffle = HttpContext.GetRaffle();
+        var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
         var clan = HttpContext.GetClan();
         if (clan.DiscordChannelId == null) return BadRequest("This clan has no Discord channel registered");
         
