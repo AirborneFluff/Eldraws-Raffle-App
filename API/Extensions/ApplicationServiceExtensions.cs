@@ -12,6 +12,7 @@ public static class ApplicationServiceExtensions
     public static void AddApplicationsServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<UnitOfWork>();
+        builder.Services.AddScoped<Data.v2.UnitOfWork>();
         builder.Services.AddScoped<DiscordService>();
 
         builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
