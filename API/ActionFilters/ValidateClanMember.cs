@@ -21,20 +21,14 @@ public class ValidateClanMember : IAsyncActionFilter
         if (clanId == null) throw new Exception("ClanId not provided for validation");
         
         var userId = context.HttpContext.User.GetUserId();
-
-        var clan = await _unitOfWork.ClanRepository.GetById((int) clanId);
-        if (clan == null)
+        var memberExists = await _unitOfWork.ClanRepository.IsUserMember((int)clanId, userId);
+        
+        if (!memberExists)
         {
-            context.Result = new NotFoundObjectResult("No clan found by that Id");
+            context.Result = new NotFoundObjectResult("Only clan members are authorized to do that");
             return;
         }
-        if (clan.Members.FirstOrDefault(x => x.MemberId == userId) != null)
-        {
-            context.HttpContext.Items.Add("clan", clan);
-            await next.Invoke();
-            return;
-        }
-
-        context.Result = new ForbiddenObjectResult("Only clan members are authorized to do that");
+        
+        await next.Invoke();
     }
 }

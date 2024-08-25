@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RaffleApi.Data;
 
@@ -11,9 +12,11 @@ using RaffleApi.Data;
 namespace RaffleApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240825155052_AddedIndexingForGamertag")]
+    partial class AddedIndexingForGamertag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,7 +253,7 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Clans", (string)null);
+                    b.ToTable("Clans");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.ClanMember", b =>
@@ -274,7 +277,7 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("ClanMembers", (string)null);
+                    b.ToTable("ClanMembers");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Entrant", b =>
@@ -319,7 +322,7 @@ namespace RaffleApi.Migrations
                     b.HasIndex("ClanId", "NormalizedGamertag")
                         .IsUnique();
 
-                    b.ToTable("Entrants", (string)null);
+                    b.ToTable("Entrants");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.Raffle", b =>
@@ -381,7 +384,7 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("HostId");
 
-                    b.ToTable("Raffles", (string)null);
+                    b.ToTable("Raffles");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.RaffleEntry", b =>
@@ -423,7 +426,7 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("RaffleId");
 
-                    b.ToTable("Entries", (string)null);
+                    b.ToTable("Entries");
                 });
 
             modelBuilder.Entity("RaffleApi.Entities.RafflePrize", b =>
@@ -452,7 +455,7 @@ namespace RaffleApi.Migrations
 
                     b.HasIndex("WinnerId");
 
-                    b.ToTable("Prizes", (string)null);
+                    b.ToTable("Prizes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
