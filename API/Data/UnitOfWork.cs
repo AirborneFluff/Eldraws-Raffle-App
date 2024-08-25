@@ -10,7 +10,6 @@ public sealed class UnitOfWork
     {
         _context = context;
     }
-
     
     public ClanRepository ClanRepository => new ClanRepository(_context);
     public RaffleRepository RaffleRepository => new RaffleRepository(_context);
@@ -21,10 +20,5 @@ public sealed class UnitOfWork
     {
         try { return await _context.SaveChangesAsync() > 0; }
         catch { return false; }
-    }
-
-    public bool HasChanges()
-    {
-        return _context.ChangeTracker.HasChanges();
     }
 }
