@@ -22,4 +22,9 @@ public class ClanRepository
     {
         _context.Clans.Add(clan);
     }
+
+    public Task<Clan> GetById(int id)
+    {
+        return _context.Clans.SingleAsync(clan => clan.Id == id);
+    }
 }

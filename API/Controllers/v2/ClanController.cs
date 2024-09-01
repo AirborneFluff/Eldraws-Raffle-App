@@ -48,6 +48,27 @@ public sealed class ClansController : ControllerBase
         
         return BadRequest();
     }
+    
+    [HttpPut("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanOwner))]
+    public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
+    {
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        _mapper.Map(clanDto, clan);
+
+        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
+        
+        return BadRequest("Issue updating clan");
+    }
+    
+    [HttpGet("{clanId:int}")]
+    [ServiceFilter(typeof(ValidateClanMember))]
+    public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClan(int clanId)
+    {
+        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        return Ok(_mapper.Map<ClanDTO>(clan));
+    }
+    
     /*
     [HttpGet("search")]
     public async Task<ActionResult<ClanDTO>> SearchByClanName([FromQuery] string name)
@@ -60,20 +81,6 @@ public sealed class ClansController : ControllerBase
             id = clan.Id,
             name = clan.Name
         });
-    }
-    
-    
-    [HttpPut("{clanId:int}")]
-    [ServiceFilter(typeof(ValidateClanOwner))]
-    public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
-    {
-        var clan = await _unitOfWork.ClanRepository.GetById(clanId);
-
-        _mapper.Map(clanDto, clan);
-
-        if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
-        
-        return BadRequest("Issue updating clan");
     }
     
     [HttpGet]
