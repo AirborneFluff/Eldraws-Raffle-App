@@ -181,8 +181,9 @@ public class RaffleMessageFactory
     {
         var winner = prize.Winner;
         var prizePlace = prize.Place.AddPositionalSynonym().PadString(65, 75);
+        var ticket = prize.WinningTicketNumber is null ? "??" : prize.WinningTicketNumber.ToString();
         
-        if (winner is not null) return prizePlace + winner.Gamertag;
+        if (winner is not null) return $"{prizePlace}{winner.Gamertag} ({ticket})";
         if (_config.RollValue is not null && _config.UseCustomEmojis) return prizePlace + _pendingEmoji;
         return prizePlace;
     }
