@@ -5,14 +5,14 @@ import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatest, distinctUntilChanged,
   map,
   of,
   scan,
-  shareReplay,
+  shareReplay, skip,
   startWith,
   switchMap,
-  take,
+  take, tap,
   withLatestFrom
 } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
@@ -35,7 +35,7 @@ const INITIAL_SEARCH_PARAMS: RaffleEntryParams = {
 })
 export class EntryListComponent {
   constructor(private raffle$: CurrentRaffleStream, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private dialog: MatDialog, private entryUpdates$: EntryStream) {
-    this.entryUpdates$.subscribe(changes => {
+    this.entryUpdates$.pipe(skip(1)).subscribe(changes => {
       this.loadMore(1)
     })
   }
@@ -48,6 +48,8 @@ export class EntryListComponent {
     withLatestFrom(
       this.raffleId$.pipe(notNullOrUndefined()),
       this.clanId$.pipe(notNullOrUndefined())),
+    distinctUntilChanged(),
+    tap(obj => console.log(obj)),
     switchMap(([params, raffleId, clanId]) => this.api.Raffles.getEntries(clanId, raffleId, params)),
     shareReplay(1)
   )
