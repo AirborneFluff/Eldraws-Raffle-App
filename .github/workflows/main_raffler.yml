@@ -22,7 +22,7 @@ jobs:
 
       - name: Build with dotnet
         working-directory: ./API 
-        run: dotnet build -c Release -o
+        run: dotnet build -c Release
 
       - name: dotnet publish
         working-directory: ./API
