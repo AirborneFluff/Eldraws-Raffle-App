@@ -66,7 +66,6 @@ public sealed class ClanRepository
     public Task<bool> EntrantExists(int clanId, string gamertag)
     {
         return _context.Entrants
-            .AnyAsync(en => en.ClanId == clanId &&
-                            string.Equals(en.Gamertag.ToLower(), gamertag.ToLower(), StringComparison.Ordinal));
+            .AnyAsync(en => en.ClanId == clanId && en.Gamertag.ToLower() == gamertag.ToLower());
     }
 }
