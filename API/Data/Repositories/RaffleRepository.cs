@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RaffleApi.Entities;
 using RaffleApi.Extensions;
+using RaffleApi.Helpers;
 
 namespace RaffleApi.Data.Repositories;
 
@@ -46,6 +47,20 @@ public class RaffleRepository
             .Include(r => r.Prizes.OrderBy(p => p.Place))
             .ThenInclude(p => p.Winner)
             .SingleAsync(r => r.Id == id);
+    }
+
+    public async Task<PagedList<Raffle>> GetByClan(RafflesPageParams pageParams, int clanId)
+    {
+        var query = _context.Raffles
+            .AsNoTracking()
+            .Include(r => r.Clan)
+            .Include(r => r.Host)
+            .Where(r => pageParams.EndCloseDate == null || r.CloseDate < pageParams.EndCloseDate)
+            .Where(r => pageParams.StartCloseDate == null || r.CloseDate >= pageParams.StartCloseDate)
+            .Where(e => e.ClanId == clanId)
+            .OrderByDescending(r => r.CloseDate);
+
+        return await PagedList<Raffle>.CreateAsync(query, pageParams);
     }
 
     public async Task<int> GetNextAvailableTicket(int raffleId)

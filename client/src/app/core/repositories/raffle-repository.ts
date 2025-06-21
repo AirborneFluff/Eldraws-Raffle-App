@@ -1,6 +1,6 @@
 import { BaseRepository } from './base-repository';
 import { map, Observable } from 'rxjs';
-import { Raffle, NewRaffle, NewRafflePrize, RaffleEntry, Entrant } from '../../data/data-models';
+import { Raffle, NewRaffle, NewRafflePrize, RaffleEntry } from '../../data/data-models';
 import { NewRaffleEntry } from '../../data/models/new-entry';
 import { RollParams } from '../../data/models/roll-params';
 import { HttpParams } from '@angular/common/http';
@@ -8,6 +8,7 @@ import { RollWinnerResponse } from '../../data/models/roll-winner-response';
 import { RaffleEntryParams } from '../../data/params/raffle-entry-params';
 import { PaginatedResult } from '../utils/pagination';
 import { getPaginatedResult, getPaginationHeaders } from '../utils/pagination-helper';
+import { RafflesPageParams } from '../../data/params/raffles-page-params';
 
 export class RaffleRepository extends BaseRepository {
 
@@ -21,6 +22,17 @@ export class RaffleRepository extends BaseRepository {
           drawDate: new Date(response.drawDate),
         }))
       );
+  }
+  public getRaffles(pageParams: RafflesPageParams): Observable<PaginatedResult<Raffle[]>> {
+    let params = getPaginationHeaders(pageParams.pageNumber, pageParams.pageSize);
+    if (pageParams.endCloseDate) {
+      params = params.append('endCloseDate', pageParams.endCloseDate);
+    }
+    if (pageParams.startCloseDate) {
+      params = params.append('startCloseDate', pageParams.startCloseDate);
+    }
+
+    return getPaginatedResult<Raffle[]>(this.baseUrl + `${pageParams.clanId}/raffles/list`, params, this.http);
   }
   public addNew(clanId: number, newRaffle: NewRaffle): Observable<Raffle> {
       return this.http.post<Raffle>(this.baseUrl + `${clanId}/raffles`, newRaffle)

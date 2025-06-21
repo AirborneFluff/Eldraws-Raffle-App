@@ -1,18 +1,18 @@
-import { Component} from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { RaffleEntry } from '../../../data/models/raffle-entry';
 import { ApiService } from '../../../core/services/api.service';
 import { ClanIdStream } from '../../../core/streams/clan-id-stream';
 import { RaffleIdStream } from '../../../core/streams/raffle-id-stream';
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatest, distinctUntilChanged,
   map,
   of,
   scan,
-  shareReplay,
-  startWith,
+  shareReplay, skip,
+  startWith, Subscription,
   switchMap,
-  take,
+  take, tap,
   withLatestFrom
 } from 'rxjs';
 import { notNullOrUndefined } from '../../../core/pipes/not-null';
@@ -23,7 +23,7 @@ import { RaffleEntryParams } from '../../../data/params/raffle-entry-params';
 import { EntryStream } from '../../../core/streams/entry-stream';
 
 const INITIAL_SEARCH_PARAMS: RaffleEntryParams = {
-  pageSize: 50,
+  pageSize: 20,
   pageNumber: 1,
   orderBy: 'descending'
 }
@@ -33,11 +33,20 @@ const INITIAL_SEARCH_PARAMS: RaffleEntryParams = {
   templateUrl: './entry-list.component.html',
   styleUrls: ['./entry-list.component.scss']
 })
-export class EntryListComponent {
+export class EntryListComponent implements OnDestroy {
+  private subscriptions = new Subscription();
+
   constructor(private raffle$: CurrentRaffleStream, private api: ApiService, private clanId$: ClanIdStream, private raffleId$: RaffleIdStream, private dialog: MatDialog, private entryUpdates$: EntryStream) {
-    this.entryUpdates$.subscribe(changes => {
-      this.loadMore(1)
-    })
+    this.subscriptions.add(
+      this.entryUpdates$.pipe(skip(1)).subscribe(() => {
+        this.loadMore(1);
+      })
+    );
+
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   private searchParams$ = new BehaviorSubject<RaffleEntryParams>(Object.create(INITIAL_SEARCH_PARAMS));
@@ -48,6 +57,8 @@ export class EntryListComponent {
     withLatestFrom(
       this.raffleId$.pipe(notNullOrUndefined()),
       this.clanId$.pipe(notNullOrUndefined())),
+    distinctUntilChanged(),
+    tap(obj => console.log(obj)),
     switchMap(([params, raffleId, clanId]) => this.api.Raffles.getEntries(clanId, raffleId, params)),
     shareReplay(1)
   )

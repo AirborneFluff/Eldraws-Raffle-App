@@ -7,6 +7,7 @@ using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
 using RaffleApi.Extensions;
+using RaffleApi.Helpers;
 
 namespace RaffleApi.Controllers;
 
@@ -72,9 +73,9 @@ public sealed class ClansController : ControllerBase
     public async Task<ActionResult<ClanDTO>> UpdateClan(UpdateClanDTO clanDto, int clanId)
     {
         var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound("No clan found by that Id");
 
         _mapper.Map(clanDto, clan);
-
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<ClanDTO>(clan));
         
         return BadRequest("Issue updating clan");
@@ -97,6 +98,8 @@ public sealed class ClansController : ControllerBase
     public async Task<ActionResult<IEnumerable<ClanInfoDTO>>> GetClan(int clanId)
     {
         var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound();
+        
         return Ok(_mapper.Map<ClanDTO>(clan));
     }
     
@@ -117,6 +120,8 @@ public sealed class ClansController : ControllerBase
     public async Task<ActionResult<ClanDTO>> AddMember(string memberId, int clanId)
     {
         var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound();
+        
         if (clan.Members.FirstOrDefault(m => m.MemberId == memberId) != null)
             return Conflict("This user is already a member of this clan");
 
@@ -140,6 +145,7 @@ public sealed class ClansController : ControllerBase
     public async Task<ActionResult<ClanDTO>> RemoveMember(string memberId, int clanId)
     {
         var clan = await _unitOfWork.ClanRepository.GetById(clanId);
+        if (clan == null) return NotFound();
         var user = HttpContext.GetUser();
         
         if (memberId == user.Id) return BadRequest("You cannot remove yourself from the clan");
@@ -173,5 +179,14 @@ public sealed class ClansController : ControllerBase
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<EntrantInfoDTO>(entrant));
         
         return BadRequest();
+    }
+
+    [HttpGet("{clanId:int}/entrants/search")]
+    [ServiceFilter(typeof(ValidateClanMember))]
+    public async Task<ActionResult> SearchEntrants([FromQuery] EntrantSearchParams searchParams, int clanId)
+    {
+        var result = await _unitOfWork.EntrantRepository.SearchByGamertag(searchParams.SearchTerm, clanId);
+        var entrants =  result.Select(entrant => _mapper.Map<EntrantDTO>(entrant));
+        return Ok(entrants);
     }
 }

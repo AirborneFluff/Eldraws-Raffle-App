@@ -29,15 +29,13 @@ public sealed class ClanRepository
             .ToListAsync();
     }
 
-    public Task<Clan> GetById(int id)
+    public Task<Clan?> GetById(int id)
     {
         return _context.Clans
             .Include(c => c.Owner)
             .Include(c => c.Members)
             .ThenInclude(m => m.Member)
-            .Include(c => c.Raffles)
-            .Include(c => c.Entrants)
-            .SingleAsync(clan => clan.Id == id);
+            .FirstOrDefaultAsync(clan => clan.Id == id);
     }
 
     public Task<Clan?> GetByName(string name)

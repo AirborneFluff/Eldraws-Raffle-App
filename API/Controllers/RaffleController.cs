@@ -6,6 +6,7 @@ using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
 using RaffleApi.Extensions;
+using RaffleApi.Helpers;
 using RaffleApi.Services;
 
 namespace RaffleApi.Controllers;
@@ -33,6 +34,16 @@ public partial class RaffleController : ControllerBase
     {
         var raffle = await _unitOfWork.RaffleRepository.GetById(raffleId);
         return Ok(_mapper.Map<RaffleDTO>(raffle));
+    }
+
+    [HttpGet("list")]
+    public async Task<ActionResult> GetRafflesList([FromQuery] RafflesPageParams pageParams, int clanId)
+    {
+        var result = await _unitOfWork.RaffleRepository.GetByClan(pageParams, clanId);
+        var raffles =  result.Select(r => _mapper.Map<RaffleDTO>(r));
+        
+        Response.AddPaginationHeader(result);
+        return Ok(raffles);
     }
     
     [HttpPost]
