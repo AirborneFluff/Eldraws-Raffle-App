@@ -35,7 +35,6 @@ public sealed class ClanRepository
             .Include(c => c.Owner)
             .Include(c => c.Members)
             .ThenInclude(m => m.Member)
-            .Include(c => c.Entrants)
             .FirstOrDefaultAsync(clan => clan.Id == id);
     }
 

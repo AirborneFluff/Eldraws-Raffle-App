@@ -4,6 +4,7 @@ import { NewClan, Entrant, Clan } from '../../data/data-models';
 import { EntrantParams } from '../../data/params/entrant-params';
 import { getPaginatedResult, getPaginationHeaders } from '../utils/pagination-helper';
 import { PaginatedResult } from '../utils/pagination';
+import { HttpParams } from '@angular/common/http';
 
 export class ClanRepository extends BaseRepository {
   public exists(name: string | null): Observable<boolean> {
@@ -56,5 +57,11 @@ export class ClanRepository extends BaseRepository {
   public setMemberActivity(clanId: number, entrantId: number, active: boolean) {
     const endpoint = active ? 'setActive' : 'setInactive'
     return this.http.post<Entrant>(this.baseUrl + `${clanId}/entrants/${entrantId}/${endpoint}`, {})
+  }
+
+  public searchEntrants(clanId: number, searchTerm: string): Observable<Entrant[]> {
+    let params = new HttpParams;
+    params = params.append('searchTerm', searchTerm);
+    return this.http.get<Entrant[]>(this.baseUrl + `${clanId}/entrants/search`, { params: params })
   }
 }

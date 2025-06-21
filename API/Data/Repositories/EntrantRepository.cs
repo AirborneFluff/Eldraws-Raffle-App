@@ -37,6 +37,17 @@ public sealed class EntrantRepository
 
         return await PagedList<Entrant>.CreateAsync(query, entrantParams.PageNumber, entrantParams.PageSize);
     }
+    
+    public Task<List<Entrant>> SearchByGamertag(string gamertag, int clanId)
+    {
+        return _context.Entrants
+            .AsNoTracking()
+            .Where(e => e.ClanId == clanId)
+            .Where(e => e.NormalizedGamertag.Contains(gamertag.ToUpper()))
+            .OrderBy(e => e.NormalizedGamertag)
+            .Take(5)
+            .ToListAsync();
+    }
 
     public Task<Entrant?> GetById(int entrantId)
     {

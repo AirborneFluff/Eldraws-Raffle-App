@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatest, debounceTime, distinctUntilChanged,
   map,
   of, shareReplay,
   startWith, Subscription,
@@ -38,16 +38,34 @@ export class CreateEntryComponent implements OnDestroy {
 
   submitted$ = new BehaviorSubject<boolean>(false);
 
-  entrants$ = this.clan$.pipe(
-    notNullOrUndefined(),
-    map(clan => clan.entrants),
-    shareReplay({refCount: true, bufferSize: 1}));
+  filteredEntrants$ = combineLatest([
+    this.clanId.pipe(notNullOrUndefined()),
+    this.gamertag.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      notNullOrUndefined()
+    )
+  ]).pipe(
+    switchMap(([clanId, filter = '']) => {
+      if (!filter || filter.length < 2) return of([]);
+      return this.api.Clans.searchEntrants(clanId, filter).pipe(
+        map(entrants => entrants.sort((a, b) => {
+          if (a.active === b.active) return 0;
+          return a.active ? -1 : 1;
+        }))
+      );
+    }),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   selectedEntrant$ = this.gamertag.valueChanges.pipe(
     notNullOrUndefined(),
-    withLatestFrom(this.entrants$),
+    withLatestFrom(this.filteredEntrants$),
     switchMap(([gamertag, entrants]) => {
-      const entrant = entrants.find(entrant => entrant.gamertag.toLowerCase() == gamertag.toLowerCase());
+      const entrant = entrants.find(entrant =>
+        entrant.gamertag.toLowerCase() === gamertag.toLowerCase()
+      );
       return of(entrant);
     }),
     tap(entrant => {
@@ -61,34 +79,18 @@ export class CreateEntryComponent implements OnDestroy {
       this.gamertag.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
     }),
     shareReplay(1)
-  )
+  );
 
   selectedEntrantValid$ = this.selectedEntrant$.pipe(
     map(entrant => entrant == undefined ? true : entrant.active),
     startWith(true)
-  )
+  );
 
-  entryForm = new FormGroup<any>({
+  entryForm = new FormGroup({
     gamertag: this.gamertag,
     donation: this.donation,
     complimentary: this.complimentary
-  })
-
-  filteredEntrants$ = combineLatest([
-    this.entrants$.pipe(notNullOrUndefined()),
-    this.gamertag.valueChanges.pipe(notNullOrUndefined(), startWith(''))
-  ]).pipe(
-    map(([entrants, filter = '']) => {
-      const filteredEntrants = entrants
-        .filter(entrant => entrant.gamertag.toLowerCase().includes(filter.toLowerCase()))
-        .sort((a, b) => {
-          if (a.active === b.active) return 0;
-          return a.active ? -1 : 1;
-        });
-      const activeFilteredEntrants = filteredEntrants.filter(entrant => entrant.active)
-      return activeFilteredEntrants.length > 3 ? activeFilteredEntrants : filteredEntrants;
-    })
-  )
+  });
 
   initializeForm() {
     this.gamertag.setValue('');
@@ -110,14 +112,7 @@ export class CreateEntryComponent implements OnDestroy {
       withLatestFrom(this.clanId.pipe(notNullOrUndefined())),
       switchMap(([entrant, clanId]) => {
         this.submitted$.next(true);
-        if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag).pipe(
-          withLatestFrom(this.clan$.pipe(notNullOrUndefined())),
-          tap(([entrant, clan]) => {
-            clan.entrants.push(entrant);
-            this.clan$.next(clan)
-          }),
-          map(([entrant, _]) => entrant)
-        );
+        if (!entrant) return this.api.Clans.addEntrant(clanId, gamertag);
         return of(entrant)
       })).pipe(
         take(1),

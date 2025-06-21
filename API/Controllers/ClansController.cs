@@ -7,6 +7,7 @@ using RaffleApi.Data;
 using RaffleApi.Data.DTOs;
 using RaffleApi.Entities;
 using RaffleApi.Extensions;
+using RaffleApi.Helpers;
 
 namespace RaffleApi.Controllers;
 
@@ -178,5 +179,14 @@ public sealed class ClansController : ControllerBase
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<EntrantInfoDTO>(entrant));
         
         return BadRequest();
+    }
+
+    [HttpGet("{clanId:int}/entrants/search")]
+    [ServiceFilter(typeof(ValidateClanMember))]
+    public async Task<ActionResult> SearchEntrants([FromQuery] EntrantSearchParams searchParams, int clanId)
+    {
+        var result = await _unitOfWork.EntrantRepository.SearchByGamertag(searchParams.SearchTerm, clanId);
+        var entrants =  result.Select(entrant => _mapper.Map<EntrantDTO>(entrant));
+        return Ok(entrants);
     }
 }
